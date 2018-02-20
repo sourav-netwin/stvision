@@ -1,0 +1,1040 @@
+
+/* Custom class events*/
+.custom-event {
+    background-color: silver;
+    min-height: 47px;
+    width: 10px;
+    cursor: pointer;
+    position: absolute;
+    top: 0;
+    border-radius: 5px;
+    border: solid 1px silver;
+}
+/* End custom class events*/
+
+#dialog_modal_create_class {
+    display: inline-block;
+    margin-bottom: -5px;
+}
+
+#courseHoursStats{
+    color:red;
+    font-style: italic;
+}
+
+.nationality-flags{
+    cursor: pointer;
+}
+
+.btn-tuition{
+    width: 75px !important;
+}
+
+.webkit .dataTables_length .text {
+        position: relative !important;
+        top: -8px !important;
+    }
+
+.box.with-table .content table:not(.borders) td:last-child, .box.with-table .content table:not(.borders) th:last-child {
+    border-right: 1px solid #dfdfdf;
+}
+
+table.styled:not(.borders) tbody tr:last-child td{
+    border-bottom: 1px solid #dfdfdf;
+}
+
+.h2-separater::after {
+    background: #dddee1 none repeat scroll 0 0;
+    content: " ";
+    display: block;
+    height: 1px;
+    left: 0;
+    position: absolute;
+    top: 50%;
+    width: 100%;
+}
+.h2-separater span {
+    background: #fdfdfd none repeat scroll 0 0;
+    padding: 0 5px;
+    position: relative;
+    z-index: 1;
+}
+
+#lnkStudnetsList:hover{
+    text-decoration: underline;
+}
+
+.detailContainer, #teacherDetail{
+    padding-top: 10px;
+}
+#teacherDetail{
+    padding-top: 10px;
+    height: 440px !important;
+    overflow-y: scroll;
+}
+#teacherDetail .toggleFilter{
+    display: none;
+}
+.detailContainer .clr, #teacherDetail .clr{
+    margin-bottom: 15px;
+    padding-bottom: 9px;
+    clear: both;
+}
+.detailContainer .grid_3, #teacherDetail .grid_3{
+    width: 22%;
+}
+
+.detailContainer .grid_6, #teacherDetail .grid_6{
+    width: 48%;
+}
+
+.detailContainer .grid_9, #teacherDetail .grid_9{
+    width: 72%;
+}
+
+.detailContainer .grid_9 > span , #teacherDetail .grid_9 > span {
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    margin-right: 2px;
+    margin-top: 6px;
+    padding: 1px 4px;
+}
+
+#lnkStudnetsList, #teacherDetail .clr a, #teacherDetail .clr aa:visited {
+    color: #225087!important;
+    font-weight: bold;
+    outline: 0 none;
+    text-decoration: underline;
+}
+
+#lnkStudnetsList, #teacherDetail a, #teacherDetail a:visited,.hlt-link a,.hlt-link a:visited,.hlt-link-a,.hlt-link-a:visited {
+    color: #225087!important;
+    font-weight: normal;
+    outline: 0 none;
+    text-decoration: underline;
+}
+
+#historyTable a.paginate_active{
+    color: #fff!important;
+}
+
+#lnkStudnetsList:hover,.hlt-link a:hover, #teacherDetail  a:hover {
+    color: #0066ee!important;
+}
+
+#dialog_modal_add_teacher div.error {
+    /*border: medium none !important;
+    color: #f00;
+    float: right;
+    margin: -20px 0 0 !important;
+    width: 47% !important;
+    position: relative;*/
+
+}
+
+
+.left-class {
+    float: left;
+    padding: 2px 10px 0 0;
+}
+
+.reportsFilters .box{
+    min-height: 85px !important;
+}
+
+.abook {
+    color: green;
+    padding: 2px;
+}
+
+.pbook {
+    color: red;
+    padding: 2px;
+}
+
+
+div.error{
+    border: none!important;
+    color: #f00;
+    margin: -20px 0 0 0!important;
+    position: absolute;
+}
+div.error p{
+    border: none!important;
+    color: #f00;
+    margin: 2px 0 0 0!important;
+}
+.tuition_success{
+    background: #d7f4d8 none repeat scroll 0 0;
+    border: 1px solid #009e00;
+    color: #333;
+    padding: 3px 4px 3px 4px;
+}
+
+.tuition_error{
+    background: #fbe6f2 none repeat scroll 0 0;
+    border: 1px solid #d893a1;
+    color: #333;
+    padding: 3px 4px 3px 4px;
+}
+
+.operation a{
+    margin-right: 2px;
+}
+
+.operation a span{
+    padding-left: 2px;
+}
+
+
+/* tuition calender css */
+.tuitionCalDiv{
+    overflow-y: hidden;
+    padding-bottom: 10px;
+}
+#tuitionCalTable{
+    width:100%;
+}
+
+#tuitionCalTable tr td,#tuitionCalTable tr th{
+    text-align: center;
+    vertical-align: middle;
+    width: 125px;
+    border: 1px solid #ccc;
+    position: relative;
+}
+
+#tuitionCalTable tr td{
+    height: 33px !important;
+}
+
+.icon-plus-book:before{
+    content: "";
+    background: rgba(0, 0, 0, 0) url("../img/icons/packs/fugue/16x16/shadeless/plus-circle.png") no-repeat scroll 0 0;/*toggle-small-expand*/
+    padding: 8px;
+
+}
+.icon-plus-book{
+    opacity: 0.7;
+    float: none!important;
+    margin: 0 auto;
+}
+.icon-plus-book:hover{
+    opacity: 1;
+}
+#tuitionCalTable tr td div {
+    clear: both;
+}
+
+#tuitionCalTable tr:first-child th {
+	background: #ffffff;
+	background: url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiA/Pgo8c3ZnIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgdmlld0JveD0iMCAwIDEgMSIgcHJlc2VydmVBc3BlY3RSYXRpbz0ibm9uZSI+CiAgPGxpbmVhckdyYWRpZW50IGlkPSJncmFkLXVjZ2ctZ2VuZXJhdGVkIiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSIgeDE9IjAlIiB5MT0iMCUiIHgyPSIwJSIgeTI9IjEwMCUiPgogICAgPHN0b3Agb2Zmc2V0PSIwJSIgc3RvcC1jb2xvcj0iI2ZmZmZmZiIgc3RvcC1vcGFjaXR5PSIxIi8+CiAgICA8c3RvcCBvZmZzZXQ9IjMwJSIgc3RvcC1jb2xvcj0iI2Y2ZjZmNiIgc3RvcC1vcGFjaXR5PSIxIi8+CiAgICA8c3RvcCBvZmZzZXQ9IjMwJSIgc3RvcC1jb2xvcj0iI2Y2ZjZmNiIgc3RvcC1vcGFjaXR5PSIxIi8+CiAgICA8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiNlNWU1ZTUiIHN0b3Atb3BhY2l0eT0iMSIvPgogIDwvbGluZWFyR3JhZGllbnQ+CiAgPHJlY3QgeD0iMCIgeT0iMCIgd2lkdGg9IjEiIGhlaWdodD0iMSIgZmlsbD0idXJsKCNncmFkLXVjZ2ctZ2VuZXJhdGVkKSIgLz4KPC9zdmc+);
+	background: -moz-linear-gradient(top,  #ffffff 0%, #f6f6f6 30%, #f6f6f6 30%, #e5e5e5 100%);
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#ffffff), color-stop(30%,#f6f6f6), color-stop(30%,#f6f6f6), color-stop(100%,#e5e5e5));
+	background: -webkit-linear-gradient(top,  #ffffff 0%,#f6f6f6 30%,#f6f6f6 30%,#e5e5e5 100%);
+	background: -o-linear-gradient(top,  #ffffff 0%,#f6f6f6 30%,#f6f6f6 30%,#e5e5e5 100%);
+	background: -ms-linear-gradient(top,  #ffffff 0%,#f6f6f6 30%,#f6f6f6 30%,#e5e5e5 100%);
+	background: linear-gradient(to bottom,  #ffffff 0%,#f6f6f6 30%,#f6f6f6 30%,#e5e5e5 100%);
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', endColorstr='#e5e5e5',GradientType=0 );
+
+	padding: 8px 10px;
+	color: #000;
+	/*border-top: 1px solid #cecece;*/
+	/*border-bottom: 1px solid #ccc;*/
+ }
+ #tuitionCalTable td:first-child {
+	background: #ffffff;
+	background: url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiA/Pgo8c3ZnIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgdmlld0JveD0iMCAwIDEgMSIgcHJlc2VydmVBc3BlY3RSYXRpbz0ibm9uZSI+CiAgPGxpbmVhckdyYWRpZW50IGlkPSJncmFkLXVjZ2ctZ2VuZXJhdGVkIiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSIgeDE9IjAlIiB5MT0iMCUiIHgyPSIwJSIgeTI9IjEwMCUiPgogICAgPHN0b3Agb2Zmc2V0PSIwJSIgc3RvcC1jb2xvcj0iI2ZmZmZmZiIgc3RvcC1vcGFjaXR5PSIxIi8+CiAgICA8c3RvcCBvZmZzZXQ9IjMwJSIgc3RvcC1jb2xvcj0iI2Y2ZjZmNiIgc3RvcC1vcGFjaXR5PSIxIi8+CiAgICA8c3RvcCBvZmZzZXQ9IjMwJSIgc3RvcC1jb2xvcj0iI2Y2ZjZmNiIgc3RvcC1vcGFjaXR5PSIxIi8+CiAgICA8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiNlNWU1ZTUiIHN0b3Atb3BhY2l0eT0iMSIvPgogIDwvbGluZWFyR3JhZGllbnQ+CiAgPHJlY3QgeD0iMCIgeT0iMCIgd2lkdGg9IjEiIGhlaWdodD0iMSIgZmlsbD0idXJsKCNncmFkLXVjZ2ctZ2VuZXJhdGVkKSIgLz4KPC9zdmc+);
+	background: -moz-linear-gradient(top,  #ffffff 0%, #f6f6f6 30%, #f6f6f6 30%, #e5e5e5 100%);
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#ffffff), color-stop(30%,#f6f6f6), color-stop(30%,#f6f6f6), color-stop(100%,#e5e5e5));
+	background: -webkit-linear-gradient(top,  #ffffff 0%,#f6f6f6 30%,#f6f6f6 30%,#e5e5e5 100%);
+	background: -o-linear-gradient(top,  #ffffff 0%,#f6f6f6 30%,#f6f6f6 30%,#e5e5e5 100%);
+	background: -ms-linear-gradient(top,  #ffffff 0%,#f6f6f6 30%,#f6f6f6 30%,#e5e5e5 100%);
+	background: linear-gradient(to bottom,  #ffffff 0%,#f6f6f6 30%,#f6f6f6 30%,#e5e5e5 100%);
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', endColorstr='#e5e5e5',GradientType=0 );
+
+	padding: 8px 10px;
+	color: #000;
+	/*border-top: 1px solid #cecece;*/
+
+ }
+
+ /* SATURDAY SUNDAY COLUMNS */
+ #tuitionCalTable th.satSun{
+     background: rgba(0, 0, 0, 0) linear-gradient(to bottom, #ccc 0%, #f6f6f6 30%, #f6f6f6 30%, #ccc 100%) repeat scroll 0 0 !important;
+ }
+ #tuitionCalTable td.satSun{
+     background: #ccc;
+ }
+
+
+/*
+#tuitionCalTable > tbody tr:first-child{
+    -moz-border-bottom-colors: none;
+    -moz-border-left-colors: none;
+    -moz-border-right-colors: none;
+    -moz-border-top-colors: none;
+    box-shadow: 0 1px 0 rgba(255, 255, 255, 0.3) inset;
+    height: 25px;
+    margin-bottom: 0;
+    margin-left: -1px;
+    margin-right: -1px;
+    background-color: #E9ECF1;
+}
+
+*/
+
+i.dialogbtn{
+    color: unset;
+    cursor: pointer;
+    float: left;
+    font-size: 9px;
+}
+
+.calendar-tool label span.text{
+    padding-right:4px;
+}
+
+.calendar-tool #btnCalShow{
+    vertical-align: middle;
+}
+
+/* popup form */
+#createClass{
+    margin-right: 10px;
+    float: left;
+    min-width: 450px;
+    width:30%;
+}
+
+#studentsList, #statsStudentsList {
+    /*height: 400px !important;*/
+    overflow-y: auto;
+}
+
+#classListingData {
+    overflow-y: auto;
+/*    height: 360px;*/
+}
+
+.agerange {
+    font-weight: normal;
+    font-size: 11px;
+}
+
+.studentlist-legents{
+    display: inline;
+    padding-bottom: 10px;
+    padding-right: 5px;
+    padding-top: 10px;
+    text-align: right;
+    position: absolute;
+    top: 0;
+    right: 0;
+}
+.studentlist-legents > span{
+    border: 1px solid silver;
+    font-weight: bold;
+    font-size: 11px;
+    border-radius: 5px;
+    padding-top: 2px;
+    padding-bottom: 2px;
+    padding-left: 4px;
+    padding-right: 4px;
+}
+
+/* display: block;
+    width: 136px;*/
+
+.studentlist-elmentary{
+    background-color: #73E0FD;
+}
+.studentlist-pre-int{
+    background-color: #B3F8AE;
+}
+.studentlist-intermediate{
+    background-color: #FCFDB0;
+}
+.studentlist-upper-int{
+    background-color: #F6D2AD;
+}
+.studentlist-advanced{
+    background-color: #FD9BAD;
+}
+
+
+#studentsList table tbody tr td, #statsStudentsList table tbody tr td{
+    text-align: center;
+}
+
+.viewStudents {
+    /*height: 314px !important;
+    max-height: 344px;
+     overflow: auto;
+    */
+   overflow-y: auto;
+   margin-bottom: 10px;
+}
+
+.viewStudents table tbody tr td{
+    text-align: center;
+}
+
+.flag-green{
+    background: #d7f4d8 none repeat scroll 0 0;
+    border: 1px solid #009e00;
+    color: #333;
+    padding: 3px 4px 3px 4px;
+}
+.flag-red{
+    background: #fbe6f2 none repeat scroll 0 0;
+    border: 1px solid #d893a1;
+    color: #333;
+    padding: 3px 4px 3px 4px;
+}
+.lbl-space{
+    width: 50%;
+    float: left;
+    padding-bottom: 2px;
+}
+
+.showloading::after {
+    background: rgba(0, 0, 0, 0) url("../img/elements/loading/spinner.gif") repeat scroll 0 0;
+    content: " ";
+    display: block;
+    height: 32px;
+    left: 50%;
+    margin-left: -16px;
+    margin-top: 50px;
+    position: absolute;
+    width: 32px;
+    z-index: 99999999!important;
+}
+
+.showloadingClasslisting::after {
+    background: rgba(0, 0, 0, 0) url("../img/elements/loading/spinner.gif") repeat scroll 0 0;
+    content: " ";
+    display: inline-block;
+    height: 32px;
+    margin-top: 50px;
+    position: relative;
+    width: 32px;
+    z-index: 99999999!important;
+}
+
+
+.course-hours{
+    cursor: pointer;
+}
+
+#frmClass label.error{
+    z-index: 1;
+}
+
+#frmClass .row .form-data{
+    min-height: 30px;
+}
+
+#frmClass .row > label {
+    padding: 6px 0;
+    width: 70px;
+}
+
+#frmClass .row > div > *:not(.icon):not(label){
+    margin: 6px 0;
+}
+
+#frmClass .form-data{
+    padding-top: 6px;
+    margin-left: 86px;
+}
+#frmClass input, #frmClass select, #frmClass #selCourse_chzn, #frmClass selBookings_chzn{
+    margin-top: 0!important;
+}
+
+form label.error:not(.inline)::after{
+    z-index: 99;
+}
+
+#classListing{
+    float: left;
+    width:60%;
+}
+
+@media screen and (max-width: 1300px) {
+
+    #createClass{
+        margin-right: 10px;
+        float: left;
+        min-width: 450px;
+        width:100%;
+    }
+    #classListing{
+        float: left;
+        width:100%;
+    }
+
+    #dialog_modal_create_class, #dialog_modal_teacher_class{
+        overflow-y: scroll;
+        width: auto;
+    }
+
+    /* teachers popup */
+    #createTeacher{
+        margin-right: 10px;
+        float: left;
+        min-width: 450px;
+        width:100%!important;
+    }
+    #teacherListing{
+        float: left;
+        width:100%!important;
+    }
+
+    #dialog_modal_teacher_class{
+        overflow-y: scroll;
+        width: auto;
+        height: unset!important;
+    }
+
+}
+
+
+/* create class */
+#lblStudentsPerRooms {
+    color: green;
+}
+
+.chzn-results{
+    max-height: 150px!important;
+}
+
+/* teachers popup */
+
+#createTeacher{
+    margin-right: 10px;
+    float: left;
+    min-width: 450px;
+    width:30%;
+}
+
+#frmTeacher label.error{
+    z-index: 1;
+}
+
+#frmTeacher .row .form-data{
+    min-height: 30px;
+}
+#frmTeacher .row > label {
+    padding: 6px 0;
+    width: 70px;
+}
+
+#frmTeacher .row > div > *:not(.icon):not(label){
+    margin-bottom: 4px;
+    margin-left: 0;
+    margin-right: 0;
+    margin-top: 0 !important;
+}
+
+#frmTeacher .form-data{
+    padding-top: 6px;
+    margin-left: 86px;
+}
+
+#teacherListing{
+    float: left;
+    width:60%;
+}
+
+#frmJobOffer label.error{
+    z-index: 1;
+}
+
+#frmJobOffer .row .form-data{
+    min-height: 30px;
+}
+#frmJobOffer .row > label {
+    padding: 6px 0;
+    width: 70px;
+}
+
+#frmJobOffer .row > div > *:not(.icon):not(label){
+    margin-bottom: 4px;
+    margin-left: 0;
+    margin-right: 0;
+    margin-top: 0 !important;
+}
+
+#frmJobOffer .form-data{
+    padding-top: 6px;
+    margin-left: 86px;
+}
+
+
+/* presence popup */
+.myform label.error{
+    z-index: 1;
+}
+
+.myform .row .form-data{
+    min-height: 30px;
+}
+.myform .row > label {
+    padding: 6px 0;
+    width: 70px;
+}
+
+.myform .row > div > *:not(.icon):not(label){
+    margin-bottom: 4px;
+    margin-left: 0;
+    margin-right: 0;
+    margin-top: 0 !important;
+}
+
+.myform .form-data{
+    padding-top: 6px;
+    margin-left: 86px;
+}
+
+.myform textarea{
+    height: 145px!important;
+}
+
+
+#report-view ul{
+    list-style: outside none none;
+}
+
+#report-view ul li{
+    border: 1px solid silver;
+}
+
+#report-view .export-button{
+    float: right;
+    margin-left: 5px;
+    margin-top: 3px;
+    vertical-align: middle;
+}
+.res_grid_8 #txtClassDate {
+    width: 100px;
+}
+
+.direct-search{
+    width: auto;
+    display: inline;
+    float: right;
+    margin-left: 1%;
+    margin-right: 1%;
+    position: relative;
+}
+
+/* USERS MY ACCOUNT CSS */
+.detailsDiv{
+    padding-top: 10px;
+}
+.detailsDiv .clr {
+    clear: both;
+    margin-bottom: 15px;
+    padding-bottom: 9px;
+}
+
+.detailsDiv .grid_9 > span {
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    margin-right: 2px;
+    margin-top: 6px;
+    padding: 1px 4px;
+    display: inline-block;
+}
+
+.detailsDiv .clr a, .detailsDiv .clr aa:visited {
+    color: #225087!important;
+    font-weight: bold;
+    outline: 0 none;
+    text-decoration: underline;
+}
+
+.detailsDiv a, .detailsDiv a:visited {
+    color: #225087!important;
+    font-weight: normal;
+    outline: 0 none;
+    text-decoration: underline;
+}
+
+.detailsDiv  a:hover {
+    color: #0066ee!important;
+}
+
+.btn-profile-edit{
+    float: right;text-align: right;margin-top: -5px;
+}
+
+.gridFilters{
+    width:200px;
+    padding: 2px;
+    margin-right: 20px;
+    margin-top: 2px;
+    float: left;
+}
+#priority-box{
+    width: 98%;
+    padding-top: 15px;
+}
+.priorityText{
+    text-align:center;
+    width: 75px;
+}
+
+/* USER ACCOUNT DASHBORD */
+.bold-uline{
+    font-weight: bold;
+    text-decoration: underline;
+}
+
+/* SURVEY REPROT */
+.head .ques-head , .ques-number {
+
+    font-style: inherit;
+    font-weight: bold;
+}
+.display-bullets {
+    display: list-item;
+    margin-left: 12px;
+}
+
+.survey-start-div{
+    text-align: center;
+}
+
+.btn-survey{
+    font-size: 16px;
+}
+
+#btnStartSurvey{
+    width:auto!important;
+}
+
+.survey-stat-bar-container {
+    min-height: 60px;
+    width: 30px;
+    margin-bottom: 2px;
+    position: relative;
+    padding-top: 5px;
+    border: 1px solid silver;
+
+}
+
+.survey-stat-bar {
+    width: 30px;
+    position: absolute;
+    bottom: 0;
+}
+
+.survey-stat-bar-container .yes {
+    background-color: #0f0;
+}
+
+.survey-stat-bar-container .no {
+    background-color: #f00;
+}
+
+.survey-stat-bar-container .poor {
+    background-color: #f00;
+	color: #000 !important;
+}
+
+.survey-stat-bar-container .satisfactory {
+    background-color: #ff7e00;
+	color: #000 !important;
+}
+
+.survey-stat-bar-container .good {
+    background-color: #ffc600;
+	color: #000 !important;
+}
+
+.survey-stat-bar-container .excellent {
+    background-color: #0f0;
+	color: #000 !important;
+}
+
+.survey-stat-bar-container .poor a {
+	color: #000 !important;
+}
+
+.survey-stat-bar-container .satisfactory a {
+	color: #000 !important;
+}
+
+.survey-stat-bar-container .good a {
+	color: #000 !important;
+}
+
+.survey-stat-bar-container .excellent a {
+	color: #000 !important;
+}
+
+.survey-report-content .head{
+    margin-top: 10px;
+}
+
+.survey-stat-bar span {
+    bottom: 0;
+    position: absolute;
+}
+.survey-stat-bar.yes span{
+    color: #000;
+}
+.survey-stat-bar.no span{
+    color: #000;
+}
+#lblQuestion{
+    font-weight: bold;
+}
+.border-bot-5-pad{
+    border-bottom: 1px solid silver;
+    padding-bottom: 5px;
+}
+
+table.styled th:first-child {
+    border-left: 1px solid #dfdfdf;
+}
+
+#surveyUsersList .dataTables_length .text{
+    top: 0px !important;
+}
+
+.stdGLUser td{
+    text-align: center;
+}
+
+
+/* SURVEY REPORTS */
+@media screen and (max-width: 900px) {
+    .survey-report-content .grid_4{
+        clear: both;
+        width: 98%;
+    }
+}
+@media screen and (max-width: 650px) {
+    #btnBack{
+        margin-top: 10px;
+    }
+    #frmSurveyReport #txtCalFromDate, #frmSurveyReport #txtCalToDate{
+        width: 75px!important;
+    }
+}
+@media screen and (max-width: 500px) {
+    .survey-stat-bar-container{
+        width: 16px;
+    }
+    .survey-stat-bar{
+        width: 16px;
+    }
+    .survey-stat-bar span{
+        transform: rotate(270deg);
+	bottom: 8px;
+        left: -4px;
+        padding-bottom: 0;
+    }
+}
+
+
+/* RESPONSIVE CSS */
+@media screen and (max-width: 1078px) {
+    .detailsDiv .clr .grid_3:nth-child(3) {
+        clear: both;
+    }
+    .detailsDiv .grid_9{
+        width: 98%;
+    }
+}
+
+@media screen and (max-width: 1024px) {
+	.res_grid_8
+	{
+            width: 97.667%!important;
+	}
+
+        .res-grid_4{
+            width: 64.667%!important;
+        }
+
+}
+
+@media screen and (max-width: 768px) {
+    .direct-search{
+        width: 98%;
+    }
+    .duration{
+        width: 98%!important;
+    }
+    #frmTeacherReport .content .grid_4{
+        width: 98%;
+    }
+}
+
+@media screen and (max-width: 945px) {
+    .duration{
+            width: 98%!important;
+    }
+}
+
+/* comman classes */
+.mr-top-10{
+    margin-top: 10px;
+}
+
+.bt-mr-15{
+    padding-bottom: 15px;
+}
+
+.tuition-filter-left{
+    text-align: left;
+    float: left;
+}
+.tuition-filter-left #btnCalShow, .tuition-filter-left label, .tuition-filter-left input{
+    margin-bottom: 4px;
+    width: 80px!important;
+}
+/* end of calender css */
+
+
+/* Course master */
+#priority-box .grid_3, #priority-box .grid_6 {
+    padding-top: 4px;
+}
+
+@media screen and (max-width: 500px) {
+
+    #frmCourse #selCampus_chzn{
+        width:150px!important;
+    }
+    #frmCourse #txtCourseName{
+        width: 150px!important;
+    }
+    input[aria-controls="DataTables_Table_0"]{
+        width: 85px;
+    }
+
+    #frmRooms div.form-data[style]{
+        margin-left: 100px !important;
+    }
+    #frmRooms .row label[style]{
+        width: 100px !important;
+        word-break: break-all;
+    }
+
+    #frmRooms .row label[style]{
+        width: 100px !important;
+        word-break: break-all;
+    }
+    .btn-tuition {
+        width: 65px !important;
+    }
+
+    #ui-datepicker-div[style] {
+        left: 90px !important;
+    }
+
+    #priority-box .grid_3, #priority-box .grid_6 {
+        width: 98%;
+    }
+}
+
+@media screen and (max-width: 650px) {
+    #frmSearch .grid_12, #frmSearch .duration{
+        margin-bottom: 5px;
+    }
+    .tuition-filter-left
+    {
+        width: 98%;
+    }
+    .tuition-filter-left label, .tuition-filter-left input{
+        width: 200px!important;
+        display: block;
+    }
+
+    .responsive-dialog.ui-dialog[style] {
+            width: 300px !important;
+    }
+}
+@media screen and (max-width: 1100px) {
+    table.styled{
+        word-break: break-all;
+    }
+}
+
+.webservice-import {
+    border-left: none !important;
+}
+
+.webservice-report-form input {
+    width: 95% !important;
+}
+
+.form-custom-select-container {
+    width: 95% !important;
+    padding-left: 5px;
+    padding-right: 7px;
+}
+
+.form-custom-select-container a {
+    margin-left: -5px !important;
+    margin-right: -7px !important;
+}
+
+.form-custom-select-container .chzn-container .chzn-drop{
+    width: auto;
+    margin-left: -5px;
+    right: 0;
+    margin-right: -7px;
+}
+
+.webservice-report-table th {
+    padding-right: 20px !important;
+}
+
+.clear-left {
+    clear: left;
+}
+
+.green-row td:last-child {
+    background-color: #9c9 !important;
+}
+
+.webservice-report-table,
+.reimbursement-report {
+    table-layout: fixed;
+    word-wrap: break-word;
+}
+
+.reimbursement-report tr th {
+    border-top: 1px solid #dfdfdf;
+}
+
+.reimbursement-report tr th:last-child {
+    background-color: #ccc !important;
+    border-left: 1px solid #ccc;
+    border-bottom: 1px solid #fff;
+}
+
+.reimbursement-report tr td:last-child  {
+    background-color: #ccc !important;
+    color: black !important;
+}
+
+table td.right {
+    text-align: right;
+}
+
+.text-bold {
+    font-weight: bold;
+    color: black !important;
+}
+
+#report-view .pdf-button{
+    float: right;
+    margin-bottom: 5px;
+}

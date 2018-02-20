@@ -1,0 +1,150 @@
+﻿table.styled tbody tr:nth-child(2n+1) td.n_confirmed,
+table.styled tbody tr:nth-child(2n) td.n_confirmed{
+	background-color:#9c9;
+}
+
+table.styled tbody tr:nth-child(2n+1) td.n_active,
+table.styled tbody tr:nth-child(2n) td.n_active{
+	background-color:#ff9;
+}
+
+table.styled tbody tr:nth-child(2n+1) td.n_elapsed,
+table.styled tbody tr:nth-child(2n) td.n_elapsed{
+	background-color:#f96;
+}
+
+table.styled tbody tr:nth-child(2n+1) td.n_tbc,
+table.styled tbody tr:nth-child(2n) td.n_tbc{
+	background-color:#69f;
+}
+
+table.styled tbody tr:nth-child(2n+1) td.n_rejected,
+table.styled tbody tr:nth-child(2n) td.n_rejected{
+	background-color:#f99;
+}
+
+ul.legenda{
+	padding-left:0;
+}
+
+ul.legenda li{
+	line-height:35px;
+	list-style-type:none;
+	margin-bottom:5px;
+}
+
+ul.legenda li span{display: block;float: left;font-weight: bold;height: 35px;padding: 0 5px;text-align: center;width: 90px;border-radius:5px;-moz-border-radius:5px;-webkit-border-radius:5px;margin-right:5px;}
+
+span.li-tbc{background-color:#69f;}
+span.li-active{background-color:#ff9;}
+span.li-confirmed{background-color:#9c9;}
+span.li-elapsed{background-color:#f96;}
+span.li-rejected{background-color:#f99;}
+
+span.datearrivo{
+	border-right:1px solid #f00;
+	font-weight:bold;
+	color:#000;
+	padding:0 5px;
+}
+
+div#accomodations,span.accocentro{
+	display:none;
+}
+
+em.minitit{
+	font-weight:bold;
+	display:block;
+	width:100%;
+	font-style:normal;
+	text-transform:uppercase;
+	color:#225087;
+}
+
+table.styled tbody tr:nth-child(2n) td.pdf-create span,
+table.styled tbody tr:nth-child(2n) td.pdf-create-printed span, 
+table.styled tbody tr:nth-child(2n) td.pdf-create-payed span,
+table.styled tbody tr:nth-child(2n+1) td.pdf-create span,
+table.styled tbody tr:nth-child(2n+1) td.pdf-create-printed span, 
+table.styled tbody tr:nth-child(2n+1) td.pdf-create-payed span {
+margin:0 auto;
+display: block;
+width: 30px;
+height: 30px;
+background: transparent url() center center no-repeat;
+text-indent: -9999px;
+}
+
+table.styled tbody tr:nth-child(2n) td.pdf-create span,
+table.styled tbody tr:nth-child(2n+1) td.pdf-create span{
+	background-image:url(../img/added/pdf-create.png);
+}
+
+table.styled tbody tr:nth-child(2n) td.pdf-create-printed span,
+table.styled tbody tr:nth-child(2n+1) td.pdf-create-printed span{
+	background-image:url(../img/added/pdf-create-printed.png);
+}
+
+table.styled tbody tr:nth-child(2n) td.pdf-create-payed span,
+table.styled tbody tr:nth-child(2n+1) td.pdf-create-payed span{
+	background-image:url(../img/added/pdf-create-payed.png);
+}
+
+input[type="text"].rosterField{
+	padding:2px;
+	width:75px;
+}
+
+input[type="text"].rosterField.w30{
+	width:30px;
+}
+
+input[type="text"].rosterField.w40{
+	width:40px;
+}
+
+input[type="text"].rosterField.w55{
+	width:55px;
+}
+
+input[type="text"].rosterField.w60{
+	width:60px;
+}
+
+input[type="text"].rosterField.w80{
+	width:80px;
+}
+
+#copyFirst{
+	display:none;
+}
+
+.buttonSendPax{
+	position:absolute;
+	left:15px;
+}
+
+.pdf-visa a{
+	background-image:url(../img/added/pdf-create-payed.png);
+}
+
+
+p.rigaDash font{
+	width:130px;
+	float:left;
+}
+
+p.rigaDash img{
+	margin-right:5px;
+}
+
+p.rigaDash a.goToDetail{
+	float:right;
+}
+
+p.rigaDash em{
+	float:right;
+	font-weight:bold;
+	margin-right:15px;
+}
+

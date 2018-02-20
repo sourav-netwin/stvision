@@ -1,0 +1,315 @@
+.contaTP{
+    float:left;
+    width:25px;
+}
+
+.tdMese0{
+    background-color:#c0e2ff;
+    color:#666;
+    font-weight:bold;
+}
+
+.tdMese1{
+    background-color:#9fdcc0;
+    color:#666;
+    font-weight:bold;
+}
+
+.table > tbody > tr > td.text-center.info{
+	background-color:#69f;
+}
+
+.table > tbody > tr > td.text-center.warning{
+	background-color:#ff9;
+}
+
+.table > tbody > tr > td.text-center.warning2{
+	background-color:#f99;
+}
+
+.table > tbody > tr > td.text-center.success{
+	background-color:#9c9;
+}
+
+.table > tbody > tr > td.text-center.danger{
+	background-color:#f96;
+}
+
+
+.table > tbody > tr.avalRow > td.text-center.info{
+	background-color:#69f;
+}
+
+.table > tbody > tr.avalRow > td.text-center.warning{
+	background-color:#ff9;
+}
+
+.table > tbody > tr.avalRow > td.text-center.success{
+	background-color:#6fdf49;
+}
+
+.table > tbody > tr.avalRow > td.text-center.danger{
+	background-color:#c00;
+	color:#fff;
+	font-weight:bold;
+}
+
+
+.table > tbody > tr.rigaAvail > td{
+	border-top:2px solid #666;
+}
+
+#NA_Roster.table > tbody > tr > td,
+#NA_Roster.table > thead > tr > th{
+	font-size:10px;
+	vertical-align:middle;
+	padding:2px;
+}
+
+#NA_Calendar.table > tbody > tr > td,
+#NA_Calendar.table > thead > tr > th{
+	font-size:11px;
+}
+
+#NA_Roster.table > tbody > tr > td span.infoName{
+	font-weight:bold;
+	color:#000;
+	font-size:11px;
+}
+
+#NA_Roster.table > tbody > tr > td span.tdGl{
+	color:#d00;
+}
+
+#NA_Roster .infoPax .glyphicon{
+	color:#0000dd;
+	cursor:pointer;
+}
+
+#NA_Roster.table > tbody > tr > td.infoFlights{
+	width:140px;
+}
+
+#NA_Roster.table > tbody > tr > td.infoPax{
+	width:200px;
+}
+
+#NA_Roster.table > tbody > tr > td.info35{
+	width:35px;
+}
+
+#NA_Roster.table > tbody > tr > td.info20{
+	width:20px;
+}
+
+#NA_Roster.table > tbody > tr > td.infoAcco{	
+	text-transform:capitalize;
+}
+
+span.infoSex{
+	background-color: #333;
+    border-radius: 15px;
+	-webkit-border-radius: 15px;
+	-moz-border-radius: 15px;
+    color: #fff;
+    display: block;
+    font-size: 10px;
+    font-weight: bold;
+    height: 15px;
+    line-height: 15px;
+    padding: 0 3px;
+    text-align: center;
+    top: 5px;
+    width: 15px;
+}
+
+span.infoTipoPax{
+	width:auto;
+}
+
+.tabAvail td input{
+	width:100%;
+	border:none;
+	background-color:transparent;
+	text-align:center;
+}
+
+.btnToggle{
+	clear:both;
+	display:block;
+	margin-bottom:15px;
+	width:200px;
+}
+
+.table-condensed > thead > tr > th, .table-condensed > tbody > tr > th, .table-condensed > tfoot > tr > th, .table-condensed > thead > tr > td, .table-condensed > tbody > tr > td, .table-condensed > tfoot > tr > td{
+	padding:2px;
+	vertical-align:middle;
+}
+
+.table-condensed > thead > tr > th{
+	background-color: #428bca;
+    color: #fff;
+    font-size: 10px;
+    padding: 6px 2px;
+}
+
+
+input[disabled], select[disabled], textarea[disabled], input[readonly], select[readonly], textarea[readonly] {
+    cursor: pointer;
+}
+
+tr.newBkList td:first-child{
+	width:70px;
+	font-weight:bold;
+	color:#111;
+}
+
+tr.newBkList td:nth-child(2){
+	width:40px;
+	font-weight:bold;
+	font-size:15px;
+}
+
+tr.newBkList td:nth-child(3){
+	width:180px;
+}
+
+tr.newBkList td:nth-child(4){
+	width:90px;
+	text-align:center;	
+}
+
+tr.newBkList td:nth-child(4) span.glyphicon-arrow-right{
+	font-size:12px;
+	margin-right:4px;
+	color:#090;
+}
+
+tr.newBkList td:nth-child(4) span.glyphicon-arrow-left{
+	font-size:12px;
+	margin-right:4px;
+	color:#c00;
+}
+
+tr.newBkList td:nth-child(5){
+	width:50px;
+	color:#090;
+	font-weight:bold;
+	font-size:15px;
+}
+
+tr.newBkList td:nth-child(6){
+	width:55px;
+	font-size:16px;
+	color:#ccc;
+	text-indent:-9999px;
+}
+
+tr.newBkList td:nth-child(7),
+tr.newBkList td:nth-child(8),
+tr.newBkList td:nth-child(9),
+tr.newBkList td:nth-child(10),
+tr.newBkList td:nth-child(11),
+tr.newBkList td:nth-child(12),
+tr.newBkList td:nth-child(13){
+	width:35px;
+	font-size:16px;
+	color:#ccc;
+}
+
+tr.newBkList td:nth-child(14),
+tr.newBkList td:nth-child(15){
+	width:70px;
+}
+
+
+
+.evidIco{
+	color:#000;
+}
+
+tr.newBkList td:nth-child(7),
+.evidIcoRed{
+	color:#f00;
+}
+
+
+tr.newBkList td:nth-child(8),
+.evidIcoGreen{
+	color:#090;
+}
+
+.visaControl,
+.clickRoster,
+.clickNote{
+	cursor:pointer;
+}
+	
+td.text-center .btn-xs{
+	font-size:11px;
+	border:none;
+	border-radius:10px;
+	-moz-border-radius:10px;
+	-webkit-border-radius:10px;
+}
+
+#newAva2015 .panel-body{
+	min-height:350px;
+}
+
+ul.listaInBk,
+ul.listaInBk li{
+	margin:0;
+	padding:0;
+}
+
+.rLocked{
+	margin-left:10px;
+	color:#fff;
+	font-weight:bold;
+	background-color:#c00;
+	padding:4px;
+	border-radius:5px;
+	-moz-border-radius:5px;
+	-webkit-border-radius:5px;
+}
+
+.ui-autocomplete{
+	z-index:9999 !important;
+}
+
+span.dataActive{
+position: relative;
+font-size:9px;
+display: block;
+text-indent: 0px;
+color:#000;
+}
+
+#updatingAll{
+	display: none;
+	width: 304px;
+	height: 304px;
+	margin-left: -152px;
+	margin-top: -152px;
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	background-color: #428cc4;
+	text-align: center;
+	border-radius:50px;
+	-moz-border-radius:50px;
+	-webkit-border-radius:50px;
+}
+
+#updatingAll img{
+	margin-top:75px;
+}
+
+.fln{
+	color:#090;
+	font-size:11px;
+}
+
+
+
