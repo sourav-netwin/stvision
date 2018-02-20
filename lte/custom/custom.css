@@ -1,0 +1,1101 @@
+body > .overlay,
+.overlay-wrapper > .overlay,
+.box > .loading-img,
+.overlay-wrapper > .loading-img {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+}
+body .overlay,
+.overlay-wrapper .overlay {
+	z-index: 9999;
+	background: rgba(255, 255, 255, 0);
+	border-radius: 3px;
+}
+body .overlay > .fa,
+.overlay-wrapper .overlay > .fa {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	color: #000;
+	font-size: 30px;
+}
+body .overlay.dark,
+.overlay-wrapper .overlay.dark {
+	background: rgba(0, 0, 0, 0);
+}
+body .overlay > .over-message{
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, 130%);
+    font-weight: bold;
+}
+
+.navbar-custom-menu > .navbar-nav > li > .dropdown-menu {
+    right: 0;
+}
+
+.ui-datepicker{
+    z-index: 99999!important;
+}
+
+a.underline , .hlt-link a {
+    text-decoration: underline!important;
+}
+
+label.normal {
+    font-weight: unset !important;
+}
+
+.error{
+    color: #FF0000;
+}
+
+label.error{
+	color: #FF0000;
+	font-weight: 500;
+	font-size: 13px;
+}
+.alert{
+	padding: 5px !important;
+}
+.alert-dismissable .close, .alert-dismissible .close{
+	right: 0px !important;
+}
+.required-field{
+	color: #FF0000 !important;
+}
+.top5{
+	margin-top: 10px !important;
+}
+
+/* margin cls*/
+.mr-left-10{
+	margin-left: 10px;
+}
+.mr-top-10{
+	margin-top: 10px;
+}
+.mr-top-25{
+    margin-top: 25px
+}
+
+.mr-bot-10{
+	margin-bottom: 10px;
+}
+.mr-left-25{
+	margin-left: 25px;
+}
+
+/* margin cls*/
+.breadcrumb a:not(.hit-dashboard){
+    cursor: default;
+}
+.hit-dashboard span{
+    cursor: pointer!important;
+}
+
+
+@media(max-width: 770px){
+	.margin-bottom-responsive{
+		margin-bottom: 5px;
+	}
+	.session-message{
+		width: 100%;
+		margin-top: 10px;
+	}
+	.btn-create{
+		text-align: center;
+	}
+}
+
+.tooltip{
+	overflow: visible !important;
+}
+.dataTables_wrapper select option, .dataTables_wrapper select option:hover{
+	border-right: 1px solid #000;
+}
+.sa-button-container button.cancel{
+	background-color: #dd4b39 !important;
+	border-color: #d73925 !important;
+}
+.mr-top-7{
+	margin-top: 7px;
+}
+.mr-bt-tp-3{
+	margin: 3px 0 !important;
+}
+.box-header .box-title{
+	padding-right: 20px !important;
+}
+.width-full{
+	width: 100% !important;
+}
+
+.modal-dialog.small {
+    width: 30%; /* respsonsive width */
+	font-size: 100%;
+}
+.modal-dialog.large {
+    width: 95%; /* respsonsive width */
+}
+.light-bg {
+    border: 1px solid #DDD;
+    border-radius: 4px;
+    padding: 0 3px;
+    margin: 0 2px 0 0;
+    background-color: #F5F5F5;
+}
+@media(max-width: 768px){
+	.modal-dialog.small {
+		width: unset; /* respsonsive width */
+	}
+}
+.box-header-small{
+	padding: 5px !important;
+}
+.box-header-small h3{
+	font-size: 15px !important;
+}
+.overflow-auto{
+	overflow: auto !important;
+}
+table.vertical-middle td{
+	vertical-align: middle !important;
+}
+.bg-grey{
+	background-color: grey !important;
+}
+.info-cal{
+	background-color: #69f;
+}
+.success-cal{
+	background-color: #9c9;
+}
+.active-cal{
+	background-color: #f5f5f5;
+}
+.success-low-cal{
+	background-color: #9FDCC0;
+}
+.info-low-cal{
+	background-color: #C0E2FF;
+}
+body {
+	padding-right: 0 !important
+}
+.margin-5{
+	margin: 10px;
+}
+.min-wd-24{
+    min-width: 24px;
+}
+.min-wd-20{
+    min-width: 20px;
+}
+.session-message{
+    float: right;
+    min-height: 1px;
+    padding-left: 15px;
+    padding-right: 15px;
+    position: relative;
+    height: 34px;
+
+}
+
+.bootstrap-timepicker-widget.dropdown-menu.open {
+    display: inline-block;
+    z-index: 99999 !important;
+}
+.min-width-85{
+	min-width: 85px !important;
+}
+.locked {
+    color: #FF0000 !important;
+    font-size: 13px !important;
+}
+textarea{
+	max-width: 100% !important;
+}
+
+.modalCustom .nav-tabs-custom{
+	margin-bottom: 0 !important;
+	box-shadow: unset !important;
+}
+.datepicker table tr td.disabled, .datepicker table tr td.disabled:hover {
+    color: #8D8D8D !important;
+}
+
+.ui-autocomplete{
+	z-index: 9999;
+}
+
+/* Tuition schedule css Date: 23-Aug-2016 */
+.tuitionCalDiv{
+    overflow-y: hidden;
+    padding-bottom: 10px;
+}
+.abook {
+    color: green;
+    padding: 2px;
+}
+
+.pbook {
+    color: red;
+    padding: 2px;
+}
+.icon-plus-book::before {
+    background: rgba(0, 0, 0, 0) url("../../img/icons/packs/fugue/16x16/shadeless/plus-circle.png") no-repeat scroll 0 0;
+    content: "";
+    padding: 8px;
+}
+i.dialogbtn {
+    color: unset;
+    cursor: pointer;
+    float: left;
+    font-size: 9px;
+}
+.icon-plus-book {
+    float: none !important;
+    margin: 0 auto;
+    opacity: 0.7;
+}
+#tuitionCalTable tr td{
+    text-align: center;
+}
+#tuitionCalTable tr td:first-of-type{
+    text-align: left;
+}
+
+/* plan: class timetable */
+.event_td{
+    position: relative;
+    height: 47px!important;
+}
+
+.modal-lg-95-per {
+    width: 95%;
+
+}
+
+.classlisting-header-stats{
+	position: fixed;
+	text-align: right;
+}
+
+.mr-right-5{
+    margin-right: 5px;
+}
+
+/* SATURDAY SUNDAY COLUMNS */
+#tuitionCalTable th.satSun{
+	background: #ECF0F5;
+}
+#tuitionCalTable td.satSun{
+	background: #ECF0F5;
+}
+
+
+/* STUDENTS LIST MODAL */
+#lblStudentsPerRooms {
+    color: green;
+}
+
+.agerange {
+    font-weight: normal;
+    font-size: 11px;
+}
+
+.studentlist-legents > div{
+    border: 1px solid silver;
+    font-weight: bold;
+    font-size: 11px;
+    border-radius: 5px;
+    padding-top: 2px;
+    padding-bottom: 2px;
+    padding-left: 4px;
+    padding-right: 4px;
+    float: left;
+    margin-right: 2px;
+}
+
+/* display: block;
+    width: 136px;*/
+
+.studentlist-elmentary{
+    background-color: #73E0FD;
+}
+.studentlist-pre-int{
+    background-color: #B3F8AE;
+}
+.studentlist-intermediate{
+    background-color: #FCFDB0;
+}
+.studentlist-upper-int{
+    background-color: #F6D2AD;
+}
+.studentlist-advanced{
+    background-color: #FD9BAD;
+}
+
+.viewStudents {
+	overflow-y: auto;
+	margin-bottom: 10px;
+}
+
+/* END: STUDENTS LIST MODAL */
+.tuition_error{
+    padding: 5px !important;
+    background-color: #dd4b39 !important;
+    color: #fff !important;
+    border-color: #d73925;
+    border-radius: 3px;
+    margin-bottom: 20px;
+    margin-top: 10px;
+    text-align: center;
+}
+
+.tuition_success{
+    padding: 5px !important;
+    background-color: #00a65a !important;
+    color: #fff !important;
+    border-color: #008d4c;
+    border-radius: 3px;
+    margin-bottom: 20px;
+    margin-top: 10px;
+    text-align: center;
+}
+/* Endtuition schedule css Date: 23-Aug-2016 */
+.mr-top-30{
+	margin-top: 30px !important;
+}
+.mr-top-25{
+	margin-top: 25px !important;
+}
+.mr-top-11{
+	margin-top: 15px !important;
+}
+.border-bot-5-pad{
+	padding-bottom: 5px;
+}
+.ques-head{
+	font-weight: bold;
+}
+
+.progress.vertical{
+	height: 65px !important;
+}
+.progress.vertical a,.progress.vertical a:hover{
+	color: #000;
+	position: relative;
+	top: 50px;
+	font-size: 13px;
+}
+.res-main-head{
+	font-size:18px;
+	font-weight: bold;
+	margin: 10px 0;
+}
+.max-height-100{
+	max-height: 100px !important;
+	overflow: auto !important;
+}
+@media only screen and (max-width:545px){
+	.reportHead .col-xs-1:nth-of-type(2) {
+		margin-left: -8px !important;
+	}
+	.progress.vertical{
+		width: 15px !important;
+	}
+	.progress.vertical a, .progress.vertical a:hover{
+		top: 35px !important;
+	}
+	.progress.vertical a span {
+		transform: rotate(-90deg) translate(0, -90%);
+		transform-origin: 100% 0;
+		display: block;
+		margin-left: -14px;
+	}
+
+        /* for tuition schedule */
+        .modal-lg-95-per {
+            width: 95%;
+            margin: 0 auto;
+        }
+        .classlisting-header-stats{
+            position: relative;
+        }
+        .classlisting-header-stats .label{
+            margin-bottom: 2px;
+        }
+}
+.cursor-default{
+	cursor: default !important;
+}
+.progress.vertical{
+	width: 35px;
+}
+
+.modal-dialog.large{
+	/*margin-right: 26.5px;*/
+}
+.margin-auto{
+	margin: auto !important;
+}
+/* ********************************************* */
+/* Upload */
+
+.customfile-input-hidden {
+    position: absolute;
+	right: 0;
+	top: 0;
+
+	height: 100%;
+
+    cursor: pointer;
+
+    background: transparent;
+    border: 0;
+
+    -ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";
+	filter: alpha(opacity=0);
+	opacity: 0;
+    z-index: 999;
+}
+
+.customfile {
+	position: relative;
+    cursor: pointer;
+    overflow: hidden;
+
+	margin: 1px;
+}
+
+.customfile.error {
+	border: none;
+}
+
+.customfile-input {
+	padding: 4px;
+
+	box-shadow: inset 0 1px 1px rgba(0,0,0,0.22);
+	border-radius: 3px;
+	border: 1px solid #a0a0a0;
+	background: #fff;
+}
+
+.customfile.error .customfile-input {
+	border: 1px solid #db5656;
+}
+.customfile.error.customfile-hover .customfile-input {
+	box-shadow: inset 0 1px 1px rgba(0,0,0,0.22),
+		0 0 7px rgba(219,86,86,0.69);
+}
+
+.customfile-hover .customfile-input {
+	border: 1px solid #5695db;
+	box-shadow: inset 0 1px 1px rgba(0,0,0,0.22),
+		0 0 7px rgba(86,149,219,0.69);
+}
+
+.customfile-disabled .customfile-input {
+    opacity: .5;
+    filter: progid:DXImageTransform.Microsoft.Alpha(opacity=0);
+    cursor: not-allowed;
+}
+
+.customfile-feedback {
+    display: block;
+	padding: 1px;
+	padding-right: 60px;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	overflow: hidden;
+}
+
+.customfile-feedback-populated {
+    padding-left: 20px;
+    background: url(../img/icons/packs/fugue/16x16/document.png) no-repeat left center;
+}
+
+.customfile-button {
+	padding: 5px 10px;
+
+	position: absolute;
+    right: 0;
+	top: 0;
+	bottom: 0;
+
+	border: 1px solid #a0a0a0;
+	border-radius: 0 3px 3px 0;
+	background-color: #3c8dbc;
+	color: #FFFFFF;
+
+	/*background: url('../img/elements/upload/bg-normal.png') repeat-x #eaecf0;*/
+}
+
+.customfile-hover {
+	/*border: 1px solid #0b4d99;*/
+	/*background-color: #3c8dbc;*/
+	/*background: url('../img/elements/upload/bg-hover.png') repeat-x #1b67bf;*/
+}
+
+.customfile-focus .customfile-button {
+	border: 1px solid #0b4d99;
+	background: #195ca9;
+	box-shadow: inset 0 1px 3px rgba(0,0,0,0.56);
+}
+.modalCustom, .modalCustom .modal-dialog{
+	padding-right: 0 !important;
+}
+@media(max-width: 767px){
+	.with-file{
+		width: 80%;
+		margin: auto;
+		padding-right: 0 !important;
+	}
+}
+.sort-text{
+	font-size: 12px !important;
+	margin-top: 4px !important;
+}
+.width-200{
+	width: 200px;
+}
+.map-place-message{
+	margin: 0 0 20px 0 !important;
+}
+.title-small {
+    font-size: 13px !important;
+    margin-top: 4px !important;
+}
+.cursor-pointer{
+	cursor: pointer !important;
+}
+
+.text-normal{
+	font-weight: 500 !important;
+}
+.width-175 {
+    width: 175px !important;
+}
+.mr-right-15{
+	margin-right: 15px !important;
+}
+.font-10{
+	font-size: 10px !important;
+}
+.font-12{
+	font-size: 12px !important;
+}
+.no-line-height{
+	line-height: 0 !important;
+}
+.notif-tkt{
+	position: absolute;
+	margin-top: 6px;
+	margin-left: 2px;
+}
+.template-demo{
+	display: inline-block;
+	visibility: hidden;
+	vertical-align: text-top;
+	margin-top: -2px;
+	font-size: 20px;
+	cursor: pointer;
+	color: rgb(0, 125, 165);
+}
+.width-80-per{
+	width: 80% !important;
+}
+.display-inline{
+	display: inline !important;
+}
+.break-word{
+	word-wrap: break-word !important;
+}
+.max-width-180{
+	max-width: 180px !important;
+}
+.mr-bot-5{
+	margin-bottom: 5px !important;
+}
+.min-wd-95{
+	min-width: 95px !important;
+}
+
+/* Custom class events*/
+.custom-event {
+    background-color: silver;
+    min-height: 47px;
+    width: 10px;
+    cursor: pointer;
+    position: absolute;
+    top: 0;
+    border-radius: 5px;
+    border: solid 1px silver;
+}
+/* End custom class events*/
+
+/* for tuition schedule */
+.hasDatepicker{
+    min-width: 92px;
+}
+#courseHoursStats{
+    color:red;
+    font-style: italic;
+}
+
+.mr-top-4{
+	margin-top: 4px !important;
+}
+#teacherDetail #diplomas span {
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    margin-right: 2px;
+    margin-top: 6px;
+    padding: 1px 4px;
+}
+
+
+.form-control.nobbg {
+    padding: 0px;
+    text-align: center;
+    min-width: 24px;
+}
+.table > tbody > tr.rigaAvail > td {
+    border-top: 2px solid #666;
+}
+.text-info.info.text-danger.danger > span {
+    color: #f00;
+}
+.table-condensed > thead > tr > th {
+    background-color: #367fa9;
+    color: #fff;
+    font-size: 10px;
+    padding: 6px 2px;
+}
+.text-danger{
+    color: #F00;
+}
+
+.profile-agent{
+    margin-left: 72px;
+    margin-top: 7px;
+}
+.profile-agent .book{
+    margin-top: 5px;
+}
+
+@media only screen and (max-width: 650px) {
+    .modal-header .close{
+        position: absolute;
+        right: 10px;
+        top: 6px;
+    }
+}
+
+.callout-note{
+    background-color: #f5f5f5!important;
+}
+.ui-accordion .box-tools.pull-right{
+    font-size: small;
+}
+.custom-btn-group{
+	width: 230px;
+	white-space: nowrap;
+}
+.campus_edit_title {
+	margin-left: 10px;
+}
+.campus_edit_title h3,
+.campus_edit_title h5 {
+	display: inline-block;
+	margin-top: 0px;
+	margin-bottom: 0px;
+}
+.campus_edit_title h5 {
+	margin-left: 5px;
+}
+
+.campus_table .custom-btn-group span {
+	display: inline-block;
+}
+
+.campus_table .custom-btn-group span a {
+	border-radius: 0;
+}
+
+.campus_table .custom-btn-group span:first-child a{
+	-webkit-border-top-left-radius: 3px;
+	-webkit-border-bottom-left-radius: 3px;
+	-moz-border-radius-topleft: 3px;
+	-moz-border-radius-bottomleft: 3px;
+	border-top-left-radius: 3px;
+	border-bottom-left-radius: 3px;
+}
+
+.campus_table .custom-btn-group span:last-child a {
+	-webkit-border-top-right-radius: 3px;
+	-webkit-border-bottom-right-radius: 3px;
+	-moz-border-radius-topright: 3px;
+	-moz-border-radius-bottomright: 3px;
+	border-top-right-radius: 3px;
+	border-bottom-right-radius: 3px;
+}
+
+@media(max-width:1024px){
+	.currency_container {
+	    box-sizing: border-box;
+	    padding-right: 30px;
+	    position: relative;
+	}
+	.bus_currency {
+	    position: absolute;
+	    right: 0;
+	    top: 7px;
+	}
+}
+
+/* st hisotry data report */
+.chAnno-label{
+    cursor: pointer;
+}
+
+.prevPaxPercentRed,.zeroPax{
+    color: #f00;
+}
+.prevPaxPercentGreen,.nonZeroPax{
+    color: #008000;
+}
+
+.pos_rel {
+	position: relative;
+}
+.company_number {
+	position: absolute;
+	color: rgb(221, 0, 0);
+	right: 10px;
+	display: block;
+	top: 20px;
+}
+@media(max-width:767px){
+	.company_number {
+		position: static;
+	}
+}
+.payment_row .col-md-3:nth-child(4n+1){
+	clear: left;
+}
+@media(max-width:991px){
+	.payment_row .col-md-3:nth-child(4n+1){
+		clear: none;
+	}
+	.payment_row .col-md-3:nth-child(3n+1){
+		clear: left;
+	}
+}
+
+/* Super user */
+.evidence {
+    height: 50px;
+    margin-bottom: -5px;
+    color: #B00;
+}
+.evidence em {
+    font-style: normal;
+    color: #777;
+}
+.excursion_type {
+	position: absolute;
+	right: 10px;
+	display: inline-block;
+}
+#excdetail span {
+	font-weight: bold;
+}
+.refstandby {
+	color: #B00;
+}
+
+
+
+
+
+/* Date: 17-Nov-2016 Book excursion super user section */
+table.table tbody tr:nth-child(2n+1) td.n_confirmed,
+table.table tbody tr:nth-child(2n) td.n_confirmed{
+	background-color:#9c9;
+}
+
+table.table tbody tr:nth-child(2n+1) td.n_active,
+table.table tbody tr:nth-child(2n) td.n_active{
+	background-color:#ff9;
+}
+
+table.table tbody tr:nth-child(2n+1) td.n_elapsed,
+table.table tbody tr:nth-child(2n) td.n_elapsed{
+	background-color:#f96;
+}
+
+table.table tbody tr:nth-child(2n+1) td.n_tbc,
+table.table tbody tr:nth-child(2n) td.n_tbc{
+	background-color:#69f;
+}
+
+table.table tbody tr:nth-child(2n+1) td.n_rejected,
+table.table tbody tr:nth-child(2n) td.n_rejected{
+	background-color:#f99;
+}
+
+
+span.refconfirmed {
+    color: #090;
+}
+.idofbook {
+    float: left;
+    font-weight: bold;
+    min-width: 70px;
+    width: 100%;
+}
+
+td.neretto em {
+    color: #222;
+    font-style: normal;
+    font-weight: bold;
+}
+
+@media(max-width: 1220px){
+	.content-header>.breadcrumb{
+		position: static;
+		float: none;
+	}
+}
+@media(max-width: 991px){
+	.excursion_type{
+		position: static;
+		margin: 0 0 10px 0;
+		display: block;
+	}
+	.evidence{
+		margin-bottom: 0;
+		height: auto;
+	}
+}
+.booking-details-nav {
+	width: 90%;
+	display: inline-block;
+}
+.booking-details-back {
+	margin-left: 10px;
+    margin-top: -25px;
+}
+@media(max-width: 991px){
+	.booking-details-back {
+		margin-top:0;
+	}
+}
+.modal-table td, .modal-table th {
+	border: 1px solid #f4f4f4 !important;
+}
+
+.enrol_table .custom-btn-group span.span-action {
+	display: inline-block;
+}
+
+.enrol_table .custom-btn-group span.span-action a {
+	border-radius: 0;
+}
+
+.enrol_table .custom-btn-group span.span-action:first-child a{
+	-webkit-border-top-left-radius: 3px;
+	-webkit-border-bottom-left-radius: 3px;
+	-moz-border-radius-topleft: 3px;
+	-moz-border-radius-bottomleft: 3px;
+	border-top-left-radius: 3px;
+	border-bottom-left-radius: 3px;
+}
+
+.enrol_table .custom-btn-group span.span-action:last-of-type a {
+	-webkit-border-top-right-radius: 3px;
+	-webkit-border-bottom-right-radius: 3px;
+	-moz-border-radius-topright: 3px;
+	-moz-border-radius-bottomright: 3px;
+	border-top-right-radius: 3px;
+	border-bottom-right-radius: 3px;
+}
+
+.campus-image-col:nth-child(3n+1) {
+	clear: left;
+	margin-bottom: 20px;
+}
+.campus-image-col h5,
+.campus-gallery-image-col h5 {
+	color: #3c8dbc;
+	text-align: center;
+	font-weight: bold;
+}
+
+.img_outer {
+    background: #f7f7f7 none repeat scroll 0 0;
+    bottom: 0;
+    display: block;
+    height: 180px;
+    left: 0;
+    margin: auto;
+    overflow: hidden;
+    position: relative;
+    right: 0;
+    text-align: center;
+    top: 0;
+    vertical-align: middle;
+    width: 100%;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+}
+
+.img_box_main img {
+    bottom: 0;
+    left: 0;
+    margin: auto;
+    max-width: 100%;
+    position: absolute;
+    right: 0;
+    top: 0;
+}
+
+@media(max-width: 360px){
+	.btn {
+		white-space: normal;
+	}
+}
+
+.business_name{
+    min-width: 150px;
+    width: 20%;
+    display: inline-block;
+    margin-right: 10px;
+}
+
+.campus-gallery-image-col(4n+1) {
+    clear: left;
+    margin-bottom: 20px;
+}
+
+#imageModal .modal-dialog{
+	width: 750px;
+}
+
+.table > thead > tr > th {
+    vertical-align: top!important;
+}
+
+.chReplicate, .chReplicatelabel{
+    cursor: pointer;
+    float: left;
+}
+
+ul.legenda{
+	padding-left:0;
+}
+
+ul.legenda li{
+	line-height:35px;
+	list-style-type:none;
+	margin-bottom:5px;
+}
+
+ul.legenda li span{display: block;float: left;font-weight: bold;height: 35px;padding: 0 5px;text-align: center;width: 90px;border-radius:5px;-moz-border-radius:5px;-webkit-border-radius:5px;margin-right:5px;}
+
+span.li-tbc{background-color:#69f;}
+span.li-active{background-color:#ff9;}
+span.li-confirmed{background-color:#9c9;}
+span.li-elapsed{background-color:#f96;}
+span.li-rejected{background-color:#f99;}
+
+.pax_list_table td select {
+    min-width: 100%;
+}
+.pax_list_table.table-bordered thead th,
+.pax_list_table.table-bordered td {
+    min-width: 80px;
+}
+#importPaxFile{
+	display: inline-block;
+}
+
+.visa-panel .panel-title,
+.booking-panel .panel-title{
+	font-size: 12px;
+}
+
+span.infoSex {
+    background-color: #333;
+    border-radius: 15px;
+    color: #fff;
+    display: block;
+    font-size: 10px;
+    font-weight: bold;
+    height: 15px;
+    line-height: 15px;
+    padding: 0 3px;
+    text-align: center;
+    top: 5px;
+    width: 15px;
+}
+span.infoTipoPax {
+    width: auto;
+}
+.rLocked {
+    background-color: #c00;
+    border-radius: 5px;
+    color: #fff;
+    font-weight: bold;
+    margin-left: 10px;
+    padding: 4px;
+}
+.campus_box {
+	box-sizing: unset !important;
+}
+.ticket-tab-content{
+	padding-top: 10px;
+}
+
+.btn-group {
+    margin-bottom: 2px;
+}
+
+.modal-export-btn{
+    margin-bottom: -10px;
+    margin-right: 15px;
+}
+
+/* Sandip Kalbhile Date: 29-Dec-2017 */
+.highlight-dark td.success, .highlight-status span.success{
+    background-color: #9c9!important;
+}
+.highlight-dark td.warning, .highlight-status span.warning{
+    background-color: #efe85b!important;
+}
+.highlight-dark td.info, .highlight-status span.info{
+    background-color: #57b7db!important;
+}
+.highlight-dark td.danger, .highlight-status span.danger{
+    background-color: #efb6b6!important;
+}
+.highlight-dark .weekends, .highlight-status .weekends{
+    background-color: #ff8080!important;
+}
+.highlight-status{
+    text-align: right;
+}
+.highlight-dark .text-danger{
+    color: #333!important;
+}
+.highlight-dark th{
+    min-width: 40px;
+}
