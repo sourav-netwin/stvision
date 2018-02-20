@@ -1,0 +1,32 @@
+For GBP sterling payments:
+ 
+Professional Linguistic & Upper Studies Ltd
+Coutts and Co
+440 Strand
+London WC2R 0QS
+ 
+Sort Code 18-00-02 Account No 08323534
+IBAN: GB63 COUT 1800 0208 3235 34
+BIC: COUTGB22
+ 
+For US Dollar payments
+ 
+Professional Linguistic & Upper Studies Ltd
+Coutts and Co
+440 Strand
+London WC2R 0QS
+ 
+Sort Code: 18-00-91 Account No: 09467971
+IBAN: GB38 COUT 1800 9109 4679 71
+BIC: COUTGB22
+ 
+For EURO payments
+ 
+Professional Linguistic & Upper Studies Ltd
+Coutts and Co
+440 Strand
+London WC2R 0QS
+ 
+Sort Code: 18-00-91 Account No: 07467974
+IBAN GB57 COUT 1800 9107 4679 74
+BIC: GBCOUT22
