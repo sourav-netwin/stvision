@@ -1,0 +1,7 @@
+<div id="tab">
+	<div class="intab"><a href="<?php echo base_url(); ?>index.php/agenti/logged">HOME</a></div>
+	<div class="intab"><a href="<?php echo base_url(); ?>index.php/agenti/marketing">MARKETING</a></div>
+	<div class="intab"><a href="#">ENROL</a></div>
+	<div class="intab"><a href="#">YOUR BOOKING</a></div>
+	<div class="intab"><a href="<?php echo base_url(); ?>index.php/agenti/gallery">GALLERY</a></div>
+</div>

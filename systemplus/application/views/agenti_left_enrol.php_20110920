@@ -1,0 +1,6 @@
+<div style="margin:10px 0 0 20px; font-size:12px;font-weight:bold; color:#fff;	">PLUS JUNIOR</div>
+				<ul>
+				<li><a class="white" href="<?php echo base_url(); ?>index.php/agenti/enrol">Home</a></li>
+				</ul>
+</div>
+<img src="../../images/agent_news_end.png" >	

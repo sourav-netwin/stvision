@@ -1,0 +1,93 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<title><?php echo $title?></title>
+<head>
+<link rel="stylesheet" type="text/css" href="<?php echo base_url(); ?>css/agenti.css" media="screen" /> 
+<style type="text/css">
+<!--
+form, label {
+	padding:0;
+	margin:0;
+	color: #999;
+	clear:both;
+	text-align:left;;
+}
+select{
+	display:block;
+	clear:both;
+}
+
+
+-->
+</style>
+</head>
+<body>
+
+<img src="<?php echo base_url(); ?>images/agenti_header.png" style="margin:10px 0 0 0">
+<div id="container" >
+	<div id="bigbox" >	
+	<?php $this->load->view('agenti_tab');?>
+		<div id="left" >
+                    
+			<div class="left_menu" >
+				<?php $this->load->view('agenti_left_enrol');?>
+			</div>
+                    
+		<div id="middle" >
+       
+                           
+           <table cellpadding="10">
+                <tr>
+                    <th>DATE IN</th>
+                    <th>DATE OUT</th>
+                    <th>CENTER</th>
+                    <th>NUM. STUDENTS</th>
+                    <th>INFO</th>
+                </tr>
+                 <?php
+
+                   foreach($agency as $key=>$item):
+                        if(count($agency)){
+
+                                    //Formato Data
+                            
+                            $eur_date_start = $item ['data_inizio'];
+                            $eur_time_start = strtotime($eur_date_start);
+                            $date_start=date('Y-m-d',$eur_time_start);
+                   ?>
+                        <tr>
+                            <td><?php echo $date_start; ?></td>
+                            <td><?php echo $item ['data_fine']; ?></td>
+                            <td><?php echo $item ['id_centro']; ?></td>
+                            <td><?php echo $item['tot_pax']; ?></td>
+                             <td align="center">
+                                <?php
+                            
+                                 
+                                     echo "<a href=\"". base_url()."index.php/agenti/info_agency/".$date_start."/".$item ['id_centro'] ."\">";
+                                     echo "<img src=\"".base_url()."images/info.jpeg\" alt=\"info\"/>";
+                                     echo "</a>";
+
+                                 ?>
+                            </td>
+                        </tr>
+                 <?php
+                            }
+                         endforeach;
+                    ?>
+             </table>
+          
+                <ol>     
+                    <li><a class="white" href="<?php echo base_url(); ?>index.php/agenti/enrol"><font color="blue">Booking form</font></a></li>
+                    <li><a class="white" href="<?php echo base_url(); ?>index.php/agenti/logout"><font color="blue">Log-out</font></a></li>
+                 </ol>
+		</div>
+		</div>
+		
+	
+		<?php $this->load->view('agenti_footer');?>
+
+</div>
+
+</body>
+</html>

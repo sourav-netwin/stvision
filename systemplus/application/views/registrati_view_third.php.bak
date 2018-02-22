@@ -1,0 +1,61 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+<title><?=$title?></title>
+
+<link rel="stylesheet" type="text/css" href="<?php echo base_url(); ?>css/agenti.css" media="screen" /> 
+<style type="text/css">
+
+a{
+
+	font-family: Monaco, Verdana, Sans-serif;
+	font-size: 11px;
+	color: #eee;
+	text-align:center; 
+ 
+}
+
+
+</style>
+</head>
+<body>
+<img src="<?php echo base_url(); ?>images/agenti_header.png" style="margin:10px 0 0 0">
+<div id="container">
+	<div id="login">	
+		
+		<div style="margin:10px 0 0 52px; text-align:center;"><img src="<?php echo base_url(); ?>images/loginformup.png"></div>
+		<div class="login_container">
+		
+			<h2 style="margin:10px 0 0 0;">Company Overview (Step 3 - 4)</h2>
+			<div class="login_container_form">
+				<?php echo $this->validation->error_string; ?>
+					<?php echo form_open('agenti/registrazioneThird/' . $this->uri->segment(3)); ?>
+						<div class="input_form">companybased</div>
+						<div><input type="text" name="companybased" value="<?php echo $this->validation->companybased;?>" size="40" /></div>
+						<div class="input_form">companyemployed</div>
+						<div><input type="text" name="companyemployed" value="<?php echo $this->validation->companyemployed;?>" size="40" /></div>
+						<div class="input_form">companystudent</div>
+						<div><input type="text" name="companystudent" value="<?php echo $this->validation->companystudent;?>" size="40" /></div>
+						<div class="input_form">companydestinations</div>
+						<div><input type="text" name="companydestinations" value="<?php echo $this->validation->companydestinations;?>" size="40" /></div>
+						<div class="input_form">companylicensed</div>
+						<div><input type="text" name="companylicensed" value="<?php echo $this->validation->companylicensed;?>" size="40" /></div>
+						<div class="input_form">companyhear</div>
+						<div><input type="text" name="companyhear" value="<?php echo $this->validation->companyhear;?>" size="40" /></div>
+						<div class="input_form">companystart</div>
+						<div><input type="text" name="companystart" value="<?php echo $this->validation->companystart;?>" size="40" /></div>
+						<div class="input_form">companybrochure</div>
+						<div><input type="text" name="companybrochure" value="" size="40" /></div>
+
+						<div style="margin:0 0 0 0px"><input type="submit" value="Next" /></div>
+					</form>
+			</div>		
+		
+		</div>
+		<div style="margin:10px 0 10px 52px; text-align:center;"><img src="<?php echo base_url(); ?>images/loginformdown.png"></div>
+		
+				<?php $this->load->view('agenti_footer');?>			
+	 </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,259 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<title><?php echo $title?></title>
+<head>
+<link rel="stylesheet" type="text/css" href="<?php echo base_url(); ?>css/agenti.css" media="screen" /> 
+<style type="text/css">
+<!--
+form, label {
+	padding:0;
+	margin:0;
+	color: #999;
+	clear:both;
+	text-align:left;;
+}
+select{
+	display:block;
+	clear:both;
+        
+}
+.left{
+        float:left;
+}
+-->
+</style>
+
+<!-- Script -->
+<script src="http://cdn.jquerytools.org/1.2.5/full/jquery.tools.min.js"></script>
+<script type="text/javascript" src="<?php echo base_url(); ?>js/ts_picker.js"></script>
+
+<script type="text/javascript">
+
+ $(document).ready(function(){
+    
+     
+    $("#accomodation_standard").hide();
+    $("#accomodation_homestay").hide();
+    $("#accomodation_ensuite").hide(); 
+    
+
+     // Funzione retrive per accomodation //
+    $("#centri").change( function() {
+        $("#accomodation").html('searching ...');
+        $.ajax({
+            type: "POST",
+            data: "data=" + $(this).val(),
+            url: "http://localhost/plus/index.php/gestione_centri/retrieve_accomodation",
+           
+            success: function(msg){
+                if (msg != ''){                   
+                     $("#accomodation").html(msg).show();
+                     $("#update").hide();
+                }
+                else{
+                    $("#accomodation").html('<em>No item result</em>');
+                }
+            }
+        });
+    });
+ });
+</script>  
+<script type="text/javascript">
+$(document).ready(function(){
+    $("#selectionresult").hide();
+    
+    
+   // Funzione retrive // 
+   
+    $("#selection").change( function() {
+        $("#selectionresult").hide();
+        $("#result").html('cerco ...');
+        $.ajax({
+            type: "POST",
+            data: "data=" + $(this).val(),
+            url: "http://localhost/plus/index.php/gestione_centri/retrieve",
+            success: function(msg){
+                if (msg != ''){
+                   
+
+                    $("#selectionresult").html(msg).show();
+                    $("#result").html('');
+                }
+                else{
+                    $("#result").html('<em>No item result</em>');
+                }
+            }
+        });
+    });    
+});
+</script>
+
+</head>
+<body>
+
+<img src="<?php echo base_url(); ?>images/agenti_header.png" style="margin:10px 0 0 0">
+<div id="container" >
+	<div id="bigbox" >	
+	<?php $this->load->view('agenti_tab');?>
+		<div id="left" >
+			<div class="left_menu" >
+				<?php $this->load->view('agenti_left_enrol');?>
+			</div>
+		<div id="middle" >
+			<form name="formData"  action="<?php echo base_url(); ?>index.php/agenti/enrol"  method="post" >
+			<?php echo $this->validation->error_string; ?>     
+                            
+                            <h3>Welcome <font color="red"><?php echo $user; ?></font></h3>   
+                            <br>
+			<fieldset><legend>booking center </legend><br/>
+                <label>Total number of students</label>
+                    <input type="text" name="totpax" value="<?php echo $this->validation->totpax; ?>" />
+                <label>Destination</label>
+                    <select name="scuole" id="centri">
+                        <option selected=" ">None</option>
+                       <?php
+                         if (count($centri)){
+                            foreach($centri as $key=>$item){ ?>
+                        
+                            <option value="<?php echo $item['nome_centri'];?>"><?php echo $item['nome_centri'];?></option> 
+                        <?php 
+                            }
+                         }
+                        ?>
+                    </select>
+                        <div id="accomodation">&nbsp;</div>
+                
+                 <label>Agency</label>
+                 <?php if($user=='admin'){ ?>
+                        <select name="agency" id="selection">
+                            <option value="">
+                                - Choose agency -
+                            </option>
+                            <?php
+							
+                            foreach ($agency as $selregione){
+				echo "<option value=\"".$selregione['id']."\">".$selregione['login']."</option>\n"; 
+                            }
+                            ?>
+                        </select>
+                            <p>
+
+                            </p>
+                    <label>Group</label>             
+                    	<br><br>
+                        <select name="gl" id="selectionresult">
+                        	
+                        </select>
+               <?php } else { ?>
+                    <input  type="text" readonly name="agent" value="<?php echo $user; ?>" /><h4><a href="<?php echo base_url(); ?>index.php/agenti/add_group"> + GL(add new group)</a></h4><br clear="all">
+                    <input class="left" type="hidden" name="agency" value="<?php echo $id; ?>" />
+                    <br>
+                <label>Group leader</label>  
+                <select name="gl">
+                       <?php
+
+                         if (count($user_log)){
+                            foreach($user_log as $key=>$item): ?>
+                             <option value="<?php echo $item['id'];?>"><?php echo $item['name_group'];?></option>
+                        <?php endforeach;
+                         }
+                        ?>
+                </select> 
+
+                <?php } ?>
+				 <label>Number group leader</label>
+                    <select name="n_group">
+                    <option SELECTED VALUE=" ">None</option>
+                    <option value = '1' >1</option>
+                    <option value = '2' >2</option>
+                    <option value = '3' >3</option>
+                    <option value = '4' >4</option>
+                    <option value = '5' >5</option>
+                    <option value = '6' >6</option>
+                    <option value = '7' >7</option>
+                    <option value = '8' >8</option>
+                    <option value = '9' >9</option>
+                    <option value = '10' >10</option>
+                    </select>  
+            </fieldset>
+
+            <fieldset><legend>booking IN</legend>
+
+            <label for="date_start">Arrival date</label>
+                 <a href="javascript:show_calendar('document.formData.date_start', document.formData.date_start.value);"><input  type="text" name="date_start" value="<?php echo $this->validation->date_start; ?>" /></a>
+            <label for="arrival_time">Arrival time</label>
+                 <input type="text" name="arrival_time" value=""/>
+            <label>Arrival airport</label>
+                <select name="aereo_in">
+                    <option SELECTED VALUE="None">None</option>
+                       <?php
+
+                         if (count($aereo_in)){
+                            foreach($aereo_in as $key=>$item): ?>
+                             <option value="<?php echo $item['name_airport'];?>"><?php echo $item['name_airport'];?></option>
+                        <?php endforeach;
+                         }
+                        ?>
+                    </select>
+            <label for="arrival_flight">Flight details</label>
+                 <input type="text" name="arrival_flight" value=""/>
+            <label>Arrival Service</label>
+                <select name="service_in">
+                    <option SELECTED VALUE="None">None</option>
+                    <option value = 'Breakfast' >Breakfast</option>
+                    <option value = 'Lunch' >Lunch</option>
+                    <option value = 'Packet Lunch' >Packet Lunch</option>
+                    <option value = 'Dinner' >Dinner</option>
+                    <option value = 'Packet Dinner' >Packet Dinner</option>
+                  </select>  
+            </fieldset>
+
+            
+            <fieldset><legend>booking OUT </legend>
+            <label for="date_end">Departure date</label>
+                <a href="javascript:show_calendar('document.formData.date_end', document.formData.date_end.value);"><input type="text" name="date_end" value="<?php echo $this->validation->date_end; ?>"/></a>
+            <label for="departure_time">Departure time</label>
+                 <input type="text" name="departure_time" value=""/> 
+            <label>Departure airport</label>
+                <select name="aereo_out">
+                    <option value="None">None</option>
+                       <?php
+
+                         if (count($aereo_out)){
+                            foreach($aereo_out as $key=>$item): ?>
+                             <option value="<?php echo $item['name_airport_back'];?>"><?php echo $item['name_airport_back'];?></option>
+                        <?php endforeach;
+                         }
+                        ?>
+                  </select>           
+            <label for="departure_flight">Flight details</label>
+                 <input type="text" name="departure_flight" value=""/>
+           <label>Departure Service</label>
+                <select name="service_out">
+                    <option SELECTED VALUE="None">None</option>
+                    <option value = 'Breakfast' >Breakfast</option>
+                    <option value = 'Lunch' >Lunch</option>
+                    <option value = 'Packet Lunch' >Packet Lunch</option>
+                    <option value = 'Dinner' >Dinner</option>
+                    <option value = 'Packet Dinner' >Packet Dinner</option>
+                    
+                  </select>  
+                        <div class="submit_link"><input type="submit" class="alt_btn" name="inserisci" value="submit" /></div>
+	</form>
+
+                  	                    <ol>
+                        <li><a class="white" href="<?php echo base_url(); ?>index.php/agenti/logout"><font color="blue">Log-out</font></a></li>
+                    </ol>   
+                    
+		</div>
+
+ 
+		</div>
+		
+
+		<?php $this->load->view('agenti_footer');?>
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,15 @@
+<?php 
+
+	$config['protocol'] = 'smtp';
+	//$config['mailpath'] = '/usr/sbin/sendmail';
+	$config['charset'] = 'utf-8';
+	$config['wordwrap'] = TRUE;
+	$config['smtp_host']= 'mail.italiainfiera.it';
+	$config['smtp_user']= 'galasso@italiainfiera.it';
+	$config['smtp_pass']= '89311';
+	$config['mailtype'] = 'html';
+	$config['priority'] = '5';
+
+
+
+?>

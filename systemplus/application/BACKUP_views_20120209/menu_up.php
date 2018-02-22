@@ -1,0 +1,2 @@
+			<a href="http://www.plus-ed.com/">HOME PLUS</a><a href="<?php echo base_url(); ?>index.php/job">WORK WITH US</a><a href="http://www.plus-ed.com/index.php?section=contact">CONTACT US</a><a href="http://www.plus-ed.com/index.php?section=us">ABOUT PLUS</a>
+			
