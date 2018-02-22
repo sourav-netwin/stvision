@@ -619,6 +619,25 @@ $(document).ready(function(){
 		if($('#juniorMiniStay').valid())
 		{
 			$programErrorFlag = $programDetailsErrorFlag = $sectionErrorFlag = 1;
+
+			//Check for the accommodation required validations
+			if(tinyMCE.get('accommodation').getContent() == '')
+			{
+				$('#accommodationErrorMessage').text(please_enter_dynamic.replace('**field**' , 'Accommodation Content'));
+				return false;
+			}
+			else
+				$('#accommodationErrorMessage').text('');
+
+			//Check for the course required validations
+			if(tinyMCE.get('course').getContent() == '')
+			{
+				$('#courseErrorMessage').text(please_enter_dynamic.replace('**field**' , 'Course Content'));
+				return false;
+			}
+			else
+				$('#courseErrorMessage').text('');
+
 			//Check for section
 			if($('#centre_section').val() == null)
 			{

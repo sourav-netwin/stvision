@@ -65,6 +65,25 @@ $(window).ready(function(){
 		if($('#juniorCentre').valid())
 		{
 			$programErrorFlag = $programDetailsErrorFlag = 1;
+
+			//Check for the accommodation required validations
+			if(tinyMCE.get('accommodation').getContent() == '')
+			{
+				$('#accommodationErrorMessage').text(please_enter_dynamic.replace('**field**' , 'Accommodation Content'));
+				return false;
+			}
+			else
+				$('#accommodationErrorMessage').text('');
+
+			//Check for the course required validations
+			if(tinyMCE.get('course').getContent() == '')
+			{
+				$('#courseErrorMessage').text(please_enter_dynamic.replace('**field**' , 'Course Content'));
+				return false;
+			}
+			else
+				$('#courseErrorMessage').text('');
+
 			//Check for program section
 			if($('#centre_program').val() == null)
 			{

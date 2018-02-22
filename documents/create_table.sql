@@ -323,3 +323,11 @@ ALTER TABLE `frontweb_manage_adult_course` ADD `slug` VARCHAR(255) NULL AFTER `t
 /* Date: 19-Feb-2018 | Sourav Dhara */
 
 ALTER TABLE `frontweb_plus_activity` ADD `front_image` VARCHAR(255) NULL AFTER `description`;
+
+
+
+/* Date: 21-Feb-2018 | Sourav Dhara */
+
+ALTER TABLE `frontweb_junior_centre` ADD `accommodation` TEXT NULL AFTER `centre_banner`, ADD `course` TEXT NULL AFTER `accommodation`;
+
+ALTER TABLE `frontweb_junior_ministay` ADD `accommodation` TEXT NULL AFTER `course_show_flag`, ADD `course` TEXT NULL AFTER `accommodation`;
