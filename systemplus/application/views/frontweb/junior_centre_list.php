@@ -23,6 +23,14 @@
 <link rel="stylesheet" href="<?php echo LTE; ?>frontweb/bootstrap-multiselect.css" />
 <script src="<?php echo LTE; ?>frontweb/bootstrap-multiselect.js"></script>
 
+<!-------------Bootstrap select css and js---------------->
+<script src="<?php echo LTE; ?>frontweb/bootstrap-select.js"></script>
+<link rel="stylesheet" href="<?php echo LTE; ?>frontweb/bootstrap-select.min.css">
+
+<!----------Summernote CSS and JS--------->
+<link rel="stylesheet" href="<?php echo LTE; ?>frontweb/summernote.css">
+<script src="<?php echo LTE; ?>frontweb/summernote.js"></script>
+
 <!------------custom javascript for Junior centre------------>
 <script>
 	var inactive_confirmation = "<?php echo $this->lang->line("inactive_confirmation"); ?>";
@@ -43,7 +51,7 @@
 	var please_select_dynamic = "<?php echo $this->lang->line('please_select_dynamic'); ?>";
 	var enter_vimeo_url = "<?php echo $this->lang->line('enter_vimeo_url'); ?>";
 </script>
-<script src="<?php echo LTE; ?>frontweb/custom/junior_centre_list.js?v=0.3"></script>
+<script src="<?php echo LTE; ?>frontweb/custom/junior_centre_list.js?v=0.4"></script>
 
 <div class="right_col" role="main">
 	<div class="row">
@@ -435,3 +443,33 @@
 	</div>
 </div>
 <!---------------------Add extra section's content Modal End----------------->
+
+<!---------------------Add centre details Modal Start----------------->
+<div class="modal fade" id="centreDetailsModal" role="dialog">
+	<div class="modal-dialog modal-lg">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal">&times;</button>
+				<h4 class="modal-title">Centre Details</h4>
+			</div>
+<?php
+			$formAttribute = array(
+				'class' => 'form-horizontal form-label-left show-custom-error-tag',
+				'id' => 'centreDetailsForm',
+				'method' =>'post'
+			);
+			echo form_open_multipart('' , $formAttribute);
+?>
+				<input type="hidden" name="centreId" id="centreId">
+				<input type="hidden" id="globalCount" value="1" />
+				<div class="modal-body centreDetailsModalBody">
+				</div><br>
+				<div class="modal-footer">
+					<button type="submit" class="btn btn-info">Update</button>
+					<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+				</div>
+			<?php echo form_close(); ?>
+		</div>
+	</div>
+</div>
+<!---------------------Add centre details Modal End----------------->

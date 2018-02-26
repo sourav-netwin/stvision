@@ -331,3 +331,21 @@ ALTER TABLE `frontweb_plus_activity` ADD `front_image` VARCHAR(255) NULL AFTER `
 ALTER TABLE `frontweb_junior_centre` ADD `accommodation` TEXT NULL AFTER `centre_banner`, ADD `course` TEXT NULL AFTER `accommodation`;
 
 ALTER TABLE `frontweb_junior_ministay` ADD `accommodation` TEXT NULL AFTER `course_show_flag`, ADD `course` TEXT NULL AFTER `accommodation`;
+
+
+
+/* Date: 23-Feb-2018 | Sourav Dhara */
+
+CREATE TABLE `vision_plus`.`frontweb_walking_tour_centre_details` ( `walking_tour_centre_details_id` INT NOT NULL 
+AUTO_INCREMENT COMMENT 'primary key' , `centre_id` INT NULL , `icon_class` VARCHAR(255) NULL , `title` VARCHAR(255) NULL ,
+ `details` TEXT NULL , PRIMARY KEY (`walking_tour_centre_details_id`)) ENGINE = MyISAM; 
+ 
+ALTER TABLE `frontweb_walking_tour_centre_details` ADD `sequence` INT NULL AFTER `details`;
+
+
+
+/* Date: 26-Feb-2018 | Sourav Dhara */
+
+ALTER TABLE `frontweb_plus_activity` ADD `show_text` VARCHAR(255) NULL AFTER `added_date`;
+
+ALTER TABLE `frontweb_plus_activity` ADD `show_type` TINYINT(1) NOT NULL DEFAULT '1' COMMENT '1 : upload image & 2 : enter text' AFTER `added_date`; 

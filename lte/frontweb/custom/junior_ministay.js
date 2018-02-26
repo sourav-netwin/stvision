@@ -1,7 +1,7 @@
 /*
 	This file is used to manage all the customize javascript related operation for junior
 	centre module .
-	Current Version : 0.3
+	Current Version : 0.4
 */
 var pageHighlightMenu = "frontweb/junior_ministay";
 $(document).ready(function(){
@@ -878,6 +878,110 @@ $(document).ready(function(){
 	$(document).on('change' , '#file_name' , function(){
 		$(this).next('span.error').text('');
 	});
+
+	//After click on the manage centre details icon the management popup will open for that centre
+	$(document).on('click' , '.centreDeails' , function(){
+		$('#centreDetailsForm').find('#centreId').val($(this).data('centre_id'));
+		$('#centreDetailsForm').find('#globalCount').val(1);
+		$('#centreDetailsForm').find('.modal-body').empty();
+		$.ajax({
+			url : 'junior_ministay/get_centre_details',
+			type : 'POST',
+			data : {'centreId' : $(this).data('centre_id')},
+			dataType : 'json',
+			success : function(response){
+				var htmlStr = '';
+				if(response.length > 0)
+				{
+					$.each(response , function(index , value){
+						htmlStr+= getModalBody(value.icon_class , value.title , value.details , value.sequence , response.length);
+					});
+				}
+				else
+					htmlStr+= getModalBody();
+				$('#centreDetailsForm').find('.centreDetailsModalBody').append(htmlStr);
+				$('.selectpicker').selectpicker();
+				$('.summernote').summernote({height: 150});
+			}
+		});
+		$('#centreDetailsModal').modal();
+	});
+
+	//After click on the add more icon it will add new block
+	$(document).on('click' , '.addMoreIcon' , function(){
+		$(this).parent().parent().after(getModalBody('' , '' , '' , '' , ($('#centreDetailsForm').find('.add_more_wrapper').length+1)));
+		$('.selectpicker').selectpicker();
+		$('.summernote').summernote({height: 150});
+		if($(this).parent().find('i').length == 1)
+			$(this).after('<i style="margin-left: 15px;" class="fa fa-lg fa-minus-circle removeMoreIcon add_section" aria-hidden="true" data-block_no="'+$(this).data('block_no')+'"></i>');
+	});
+
+	//After click on the remove more icon it will remove the old block
+	$(document).on('click' , '.removeMoreIcon' , function(){
+		$(this).parent().parent().remove();
+		if($('.add_more_wrapper').length == 1)
+			$('.add_more_wrapper').find('.removeMoreIcon').remove();
+	});
+
+	$('#centreDetailsForm').submit(function(e){
+		var errorFlag = 1;
+		//Check validation for Title
+		$('input[name="title[]"]').each(function(){
+			if($(this).val() == '')
+			{
+				$(this).next('.error').text(please_enter_dynamic.replace('**field**' , 'Title'));
+				errorFlag = 2;
+			}
+			else
+				$(this).next('.error').text('');
+		});
+
+		//Check validation for Sequence
+		$('input[name="sequence[]"]').each(function(){
+			if($(this).val() == '')
+			{
+				$(this).next('.error').text(please_enter_dynamic.replace('**field**' , 'sequence'));
+				errorFlag = 2;
+			}
+			else
+				$(this).next('.error').text('');
+		});
+
+		//Check validation for Sequence
+		$('input[name="sequence[]"]').each(function(){
+			if($(this).val() == '')
+			{
+				$(this).next('.error').text(please_enter_dynamic.replace('**field**' , 'sequence'));
+				errorFlag = 2;
+			}
+			else
+				$(this).next('.error').text('');
+		});
+
+		//Check validation for Description
+		$('.summernote').each(function(){
+			var textareaStr = $(this).summernote('isEmpty') ? '' : $(this).summernote('code');
+			if(strip_html_tags(textareaStr) == '')
+			{
+				$(this).next('.note-editor').next('.error').text(please_enter_dynamic.replace('**field**' , 'Description'));
+				errorFlag = 2;
+			}
+			else
+				$(this).next('.note-editor').next('.error').text('');
+		});
+		e.preventDefault();
+		if(errorFlag == 1)
+		{
+			$.ajax({
+				url : 'junior_ministay/save_centre_details',
+				type : 'POST',
+				data : $('#centreDetailsForm').serialize(),
+				success : function(response){
+					$('#centreDetailsModal').modal('hide');
+				}
+			});
+		}
+	});
 });
 
 function confirm_delete()
@@ -1022,4 +1126,75 @@ function loadExtraSectionTable(juniorMinistayId)
 			$("#extraSectionTable").DataTable();
 		}
 	});
+}
+
+//This function is used to prepare the icon dropdown and return
+function getIconDropdown(iconClassVal = '')
+{
+	var htmlStr = '<select name="icon_class[]" id="icon_class[]" class="selectpicker form-control">\
+						<option value="fa-home" data-icon="glyphicon-home" '+((iconClassVal == 'fa-home') ? "selected" : "")+'></option>\
+						<option value="fa-phone" data-icon="glyphicon-earphone" '+((iconClassVal == 'fa-phone') ? "selected" : "")+'></option>\
+						<option value="fa-fax" data-icon="glyphicon-phone-alt" '+((iconClassVal == 'fa-fax') ? "selected" : "")+'></option>\
+						<option value="fa-envelope" data-icon="glyphicon-envelope" '+((iconClassVal == 'fa-envelope') ? "selected" : "")+'></option>\
+						<option value="fa-user" data-icon="glyphicon-user" '+((iconClassVal == 'fa-user') ? "selected" : "")+'></option>\
+						<option value="fa-globe" data-icon="glyphicon-globe" '+((iconClassVal == 'fa-globe') ? "selected" : "")+'></option>\
+						<option value="fa-pencil-alt" data-icon="glyphicon-pencil" '+((iconClassVal == 'fa-pencil-alt') ? "selected" : "")+'></option>\
+						<option value="fa-search" data-icon="glyphicon-search" '+((iconClassVal == 'fa-search') ? "selected" : "")+'></option>\
+						<option value="fa-star" data-icon="glyphicon-star" '+((iconClassVal == 'fa-star') ? "selected" : "")+'></option>\
+						<option value="fa-clock" data-icon="glyphicon-time" '+((iconClassVal == 'fa-clock') ? "selected" : "")+'></option>\
+						<option value="fa-lock" data-icon="glyphicon-lock" '+((iconClassVal == 'fa-lock') ? "selected" : "")+'></option>\
+						<option value="fa-flag" data-icon="glyphicon-flag" '+((iconClassVal == 'fa-flag') ? "selected" : "")+'></option>\
+						<option value="fa-map-marker-alt" data-icon="glyphicon-map-marker" '+((iconClassVal == 'fa-map-marker-alt') ? "selected" : "")+'></option>\
+						<option value="fa-exclamation-circle" data-icon="glyphicon-exclamation-sign" '+((iconClassVal == 'fa-exclamation-circle') ? "selected" : "")+'></option>\
+						<option value="fa-exclamation-triangle" data-icon="glyphicon-warning-sign" '+((iconClassVal == 'fa-exclamation-triangle') ? "selected" : "")+'></option>\
+						<option value="fa-bell" data-icon="glyphicon-bell" '+((iconClassVal == 'fa-bell') ? "selected" : "")+'></option>\
+						<option value="fa-graduation-cap" data-icon="glyphicon-education" '+((iconClassVal == 'fa-graduation-cap') ? "selected" : "")+'></option>\
+					</select>';
+	return htmlStr;
+}
+
+//This function is used to get the manage centre modal body dynamically
+function getModalBody(iconClassVal = '' , titleVal = '' , detailsVal = '' , sequenceVal = '' , totalBlock = 1)
+{
+	htmlStr = '<div id="add_more_wrapper_'+$('#centreDetailsForm').find('#globalCount').val()+'" class="add_more_wrapper"><div class="border-box">\
+					<div class="form-group">\
+						<label class="control-label custom-control-label col-md-3 col-sm-3 col-xs-12">Select Icon<span class="required">*</span></label>\
+						<div class="col-md-9 col-sm-9 col-xs-12">\
+							'+getIconDropdown(iconClassVal)+'\
+							<span class="error"></span>\
+						</div>\
+						<div class="clearfix"></div>\
+					</div>\
+					<div class="form-group">\
+						<label class="control-label custom-control-label col-md-3 col-sm-3 col-xs-12">Title<span class="required">*</span></label>\
+						<div class="col-md-9 col-sm-9 col-xs-12">\
+							<input type="text" name="title[]" id="title[]" class="form-control" value="'+titleVal+'">\
+							<span class="error"></span>\
+						</div>\
+						<div class="clearfix"></div>\
+					</div>\
+					<div class="form-group">\
+						<label class="control-label custom-control-label col-md-3 col-sm-3 col-xs-12">Details<span class="required">*</span></label>\
+						<div class="col-md-9 col-sm-9 col-xs-12">\
+							<textarea name="details[]" id="details[]" class="summernote">'+detailsVal+'</textarea>\
+							<span class="error"></span>\
+						</div>\
+						<div class="clearfix"></div>\
+					</div>\
+					<div class="form-group">\
+						<label class="control-label custom-control-label col-md-3 col-sm-3 col-xs-12">Sequence<span class="required">*</span></label>\
+						<div class="col-md-9 col-sm-9 col-xs-12">\
+							<input type="text" name="sequence[]" id="sequence[]" class="form-control" value="'+((sequenceVal != '') ? sequenceVal : $('#centreDetailsForm').find('#globalCount').val())+'">\
+							<span class="error"></span>\
+						</div>\
+						<div class="clearfix"></div>\
+					</div>\
+				</div>\
+				<div style="float: right;">\
+					<i class="fa fa-lg fa-plus-circle addMoreIcon add_section" aria-hidden="true" data-block_no="'+$('#centreDetailsForm').find('#globalCount').val()+'"></i>';
+	if(totalBlock > 1)
+		htmlStr+= '<i style="margin-left: 15px;" class="fa fa-lg fa-minus-circle removeMoreIcon add_section" aria-hidden="true" data-block_no="'+$('#centreDetailsForm').find('#globalCount').val()+'"></i>';
+	htmlStr+= '</div><br></div>';
+	$('#centreDetailsForm').find('#globalCount').val(parseInt($('#centreDetailsForm').find('#globalCount').val())+1);
+	return htmlStr;
 }

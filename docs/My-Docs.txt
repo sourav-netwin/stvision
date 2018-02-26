@@ -1,0 +1,292 @@
+===========================================Function to get the video image on pause of that video======================================================================================
+        <html>
+        <head>
+            <title>JS and HTML5 Rule</title>
+            <script type='text/javascript'>
+                window.onload = function (){
+                    var video = document.getElementById('my_video');
+                    var thecanvas = document.getElementById('thecanvas');
+					var img = document.getElementById('thumbnail_img');
+					video.addEventListener('pause', function(){
+						draw( video, thecanvas, img);
+			 
+					}, false);
+                };
+				
+                function draw( video, thecanvas, img ){
+					// get the canvas context for drawing
+					var context = thecanvas.getContext('2d');
+					// draw the video contents into the canvas x, y, width, height
+					context.drawImage( video, 0, 0, thecanvas.width, thecanvas.height);
+					// get the image data from the canvas object
+                    var dataURL = thecanvas.toDataURL();
+					// set the source of the img tag
+					img.setAttribute('src', dataURL);
+                }
+            </script>
+        </head>
+        <body>
+			The Video
+			<br />
+			<video id="my_video" controls>
+				<source src="http://localhost/stvision/vision/uploads/plus_walking_tour/miami_commercial.mp4" type="video/mp4" />
+			</video>
+			<br />
+			The Canvas
+			<br />
+			<canvas id="thecanvas" style="width: 600px;">
+			</canvas>
+			<br />
+			The Image
+			<br />
+			<img id="thumbnail_img" alt="Right click to save" />
+			<br />
+        </body>
+    </html>
+=================================================================================================================================
+
+
+
+
+
+===========================================This function is to get the video image on page load======================================================================================
+		<div class="testclass"></div>
+		<script type='text/javascript'>
+			var video = document.createElement('video');
+			var source = document.createElement('source');
+			var img = document.createElement('img');
+			var thecanvas = document.createElement('canvas');
+
+			source.setAttribute('type' , 'video/mp4');
+			source.setAttribute("src", "http://localhost/stvision/vision/uploads/plus_walking_tour/movie.mp4");
+			video.appendChild(source);
+			thecanvas.width = 430;
+			thecanvas.height = 242;
+
+			window.onload = function (){
+				var context = thecanvas.getContext('2d');
+				context.drawImage( video, 0, 0, thecanvas.width, thecanvas.height);
+				var dataURL = thecanvas.toDataURL();
+				img.setAttribute('src', dataURL);
+				$('.testclass').append(img);
+				delete video;
+				delete thecanvas;
+			};
+		</script>
+=================================================================================================================================
+
+
+
+
+
+===============================================Google Analytics / Google Map==================================================================================
+
+Documentation for GA API :
+https://developers.google.com/analytics/devguides/reporting/core/v4/quickstart/service-php
+
+Test Batchget function response :
+https://developers.google.com/analytics/devguides/reporting/core/v4/rest/v4/reports/batchGet
+
+Google Map API key : AIzaSyAxAOuX6VZ3411GsROuhn-SxYbNC0skt9M
+Email Id : sourav.netwin@gmail.com
+
+=================================================================================================================================
+
+
+
+
+================================================Github Accounts=================================================================================
+
+My Personal Account :
+User Name - sourav-netwin
+Email Id - sourav.netwin@gmail.com
+Password - souravnetwin123
+global information :-
+name - sourav
+email - sourav.dara@netwininfo.com
+
+Netwin github account(for stvision) :
+User Name - sourav-netwin-github
+Email Id - sourav.dhara@netwinindia.biz
+Password - souravnetwin123
+
+Netwin gitlab Account(PED) :
+Username: sourav.dhara
+Password: sourav@gitlab
+http://192.168.43.51/php/pluswebsite.git
+
+=================================================================================================================================
+
+
+
+
+===============================================Magento==================================================================================
+
+Magento Site Login Credential :
+Name : Sourav Dhara
+Email : sourav.netwin@gmail.com
+Password : Magento@2017
+Screen Name : sourav_netwin
+
+Admin Account :
+User Name - sourav.netwin
+password - Magento@2017
+email - sourav.netwin@gmail.com
+encryption key - 20c938a0ef8f2dcbb109a7aab9897d1e
+
+=================================================================================================================================
+
+
+
+
+=================================External Link=============================================================================================
+
+Download Country flag icon free : 
+https://www.flaticon.com
+https://www.shareicon.net
+
+Video Api documentation :
+https://developer.vimeo.com/api/start
+
+fancybox plugin :
+https://fancyapps.com/fancybox/3/docs/
+
+Download Admin panel theme free :
+https://colorlib.com/polygon/gentelella/index.html
+
+Color picker plugin :
+https://bgrins.github.io/spectrum/
+
+For free tutorial :
+https://www.javatpoint.com/
+
+Tinymce plugin :
+https://www.tinymce.com/download/
+
+responsive file manager plugin :
+http://www.responsivefilemanager.com/
+
+Check email validation using regular expression :
+https://www.regular-expressions.info/email.html
+
+W3schools Sample template :
+https://www.w3schools.com/w3css/w3css_templates.asp
+
+PHP Excel Reader :
+http://coursesweb.net/php-mysql/read-excel-file-data-php_pc
+
+==============================================================================================================================
+
+
+
+
+====================================VIMEO API=============================================================================================
+VIMEO DETAILS :-
+--------------
+
+Login Credentials :
+Name - Sourav Dhara
+Email id - sourav.netwin@gmail.com
+Password - souravnetwin123
+
+vimeo API :
+Url - https://developer.vimeo.com/apps
+Authoentication url - https://developer.vimeo.com/apps/118025#authentication
+Client identifier - 0f4f509b6fae54c629a042fea38528dd44fe9c8e
+Client Secret - RjW6My4B0KBe9vZFuA0aTGhCcyO7Hf6oqQ8ekwKXg3tpk/AwjotXj1D1IJyuVde0od1TpMYhs46E+2r+jHQ17g/fyVBevIIgeQjG45IffkOM8oJmafQCcv1Kqo4Jy1yC
+Authorize url - https://api.vimeo.com/oauth/authorize
+Access token Url - https://api.vimeo.com/oauth/access_token
+Access token - f76202db96349d44d30a111021a597b9
+
+Solutions Url :
+https://stackoverflow.com/questions/47735579/fetch-video-duration-using-the-new-vimeo-api
+https://stackoverflow.com/questions/47079078/vimeo-php-simple-request-not-working
+
+//Function is used to get the details through vimeo API
+function vimeoApi()
+{
+	require_once( APPPATH.'third_party\vimeo.php-1.3.0'.DIRECTORY_SEPARATOR.'autoload.php');
+	$client_id = '0f4f509b6fae54c629a042fea38528dd44fe9c8e'; //'Client identifier' in my app
+	$client_secret = 'RjW6My4B0KBe9vZFuA0aTGhCcyO7Hf6oqQ8ekwKXg3tpk/AwjotXj1D1IJyuVde0od1TpMYhs46E+2r+jHQ17g/fyVBevIIgeQjG45IffkOM8oJmafQCcv1Kqo4Jy1yC'; // 'Client secrets' in my app
+	$lib = new \Vimeo\Vimeo($client_id, $client_secret);
+	$lib->setToken('f76202db96349d44d30a111021a597b9');
+	$response = $lib->request('/videos/237573790', array(), 'GET');
+	echo "<pre>";print_r($response);die('popop');
+}
+
+=================================================================================================================================
+
+
+
+
+======================================Office Tiffin========================================================================================
+
+Tiffin upto 31st October , 2017 : 340/- (paid)
+Tiffin upto 31st November , 2017 : 375/-(paid) : Balance - 25/-
+Tiffin upto 31st December , 2017 : 500/-(Paid) : Balance - 50/- 
+Tiffin upto 31st January , 2018 : 425/-(Paid) : Balance - 75/-
+
+===============================================================================================================================
+
+
+
+
+====================================Plus Project Details===========================================================================================
+
+(1)Front End -
+url : http://plus-ed.com/betaweb
+
+(2)Backend -
+url : http://plus-ed.com/vision_ag/index.php/vauth/backoffice
+User Name : usercms
+Password : usercms@2061@
+
+(3)Mantis Account Details :
+url : https://webnmobidev.net/mantisbt/login_page.php
+User Name : Sourav.Dhara
+Password : S@123
+
+===============================================================================================================================
+
+
+
+
+==================================Short Task(for PMS)=============================================================================================
+
+(1)Completed centre details management for junior ministay module .
+(2)Made front end plus walking tour left section dynamic .
+(3)Added download centre details option in plus walking tour .
+(4)Completed activity changes for both student and campus manager .
+(5)Changed in the designing of show activity .
+
+===============================================================================================================================
+
+
+
+
+==================================Details Daily Task===============================================================================================
+Today I have done following tasks in Plus Education Development Project :
+
+(1)Started working on the centre details managemnt for junior minisaty module . In the listing page , action column we have added one icon to open an 
+modal popup to manage the centre details . In that management tere are select icon , title , description and the sequence . Also there are facility to
+add/remove multiple sections . There are required validation for every field . After successfully done the validation the records will save in the database .
+If there was any old record exist for the centre then delete the old one and insert the new records . Completed that functionality and tested properly .
+
+(2)In front end plus walking tour , left section there are centre logo and below that there are centre details like the address , contact number and email
+address . Before we have aplied the plus address details there statically . Now we have changed that and make that dynamic , centre wise . As of now we have
+added basic centre details for all the centres so that it will visible in front end . Later admin can can change the details centre wise .
+
+(3)In Plus walking tour centre details section , below the centre details we have added one download button . After click on that button all the centre details
+like address , contact number , email ids will download in a text file . 
+
+(4)Before in activity management , there was only upload front image option . Now we have added radio button to give option to campus manager either to upload front
+image or to enter the text related to todays activity etc . We have applied required validation for both fields . If manager will select upload front image and upload
+one image then it will show in the activity section . If manager will select to enter text then that text will visible in the activity section . Completed that changes 
+and tested properly .
+
+(5)Before in the show activity section , we have shown all the activities one in a line . Now we have changed that . Now we have shown two activity in online as per the
+discussion with Stefano .
+
+=================================================================================================================================
+
+

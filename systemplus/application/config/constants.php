@@ -201,6 +201,7 @@ define('TABLE_PLUS_SECTION_SETTING' , 'frontweb_section_setting');
 define('TABLE_PLUS_EXTRA_SECTION' , 'frontweb_extra_section');
 define('TABLE_PLUS_EXTRA_SECTION_CONTENT' , 'frontweb_extra_section_content');
 define('TABLE_PLUS_MANAGE_ADULT_COURSE' , 'frontweb_manage_adult_course');
+define('TABLE_WALKING_TOUR_CENTRE_DETAILS' , 'frontweb_walking_tour_centre_details');
 
 //Constant for create folder permission
 define('DIR_PERMISSION' , 0755);

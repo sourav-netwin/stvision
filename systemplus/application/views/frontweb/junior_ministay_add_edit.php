@@ -34,7 +34,7 @@
 	var duplicate_dynamic = "<?php echo $this->lang->line("duplicate_dynamic"); ?>";
 	var required_upload_file = "<?php echo $this->lang->line("required_upload_file"); ?>";
 </script>
-<script src="<?php echo LTE; ?>frontweb/custom/junior_ministay.js?v=0.1"></script>
+<script src="<?php echo LTE; ?>frontweb/custom/junior_ministay.js?v=0.4"></script>
 
 <div class="right_col" role="main">
 	<div class="row">

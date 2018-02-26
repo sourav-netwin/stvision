@@ -626,6 +626,43 @@
 			}
 		}
 
+		//This function is used to get the centre details and display it in the modal
+		function get_centre_details()
+		{
+			if($this->input->post('centreId'))
+			{
+				$data = $this->admin_model->commonGetData('icon_class , title , details , sequence' , 'centre_id = '.$this->input->post('centreId') , TABLE_WALKING_TOUR_CENTRE_DETAILS , 2 , 'sequence' , 'asc');
+				echo json_encode($data);
+			}
+		}
+
+		//This function is used to add/update the record for centre details
+		function save_centre_details()
+		{
+			if($this->input->post('centreId') != '')
+			{
+				$this->admin_model->commonDelete(TABLE_WALKING_TOUR_CENTRE_DETAILS , 'centre_id = '.$this->input->post('centreId'));
+				$iconClassArr = $this->input->post('icon_class');
+				if(!empty($iconClassArr))
+				{
+					$titleArr = $this->input->post('title');
+					$detailsArr = $this->input->post('details');
+					$sequenceArr = $this->input->post('sequence');
+					foreach($iconClassArr as $key => $value)
+					{
+						$data = array(
+							'centre_id' => $this->input->post('centreId'),
+							'icon_class' => $value,
+							'title' => $titleArr[$key],
+							'details' => $detailsArr[$key],
+							'sequence' => $sequenceArr[$key]
+						);
+						$this->admin_model->commonAdd(TABLE_WALKING_TOUR_CENTRE_DETAILS , $data);
+					}
+				}
+			}
+		}
+
 		/****************Image Cropping functionality Start******************/
 		public function _handleCropping($fileName = NULL , $type = NULL , $id = NULL)
 		{

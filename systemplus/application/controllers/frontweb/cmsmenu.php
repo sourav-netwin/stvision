@@ -430,7 +430,7 @@ class Cmsmenu extends Controller
                 mkdir(CAMPUS_CONTENT_PDF_FILE, 0700,true);
             }
             $file_name = $_FILES['pdffile']['name'];
-            $file_name= preg_replace('/[^a-zA-Z0-9_.]/s', '', $file_name);
+            $file_name= preg_replace('/[^a-zA-Z0-9_]/s', '', $file_name);
             $file_name = time()."_".$file_name;
 		$config =  array(
                         'upload_path'     => CAMPUS_CONTENT_PDF_FILE,

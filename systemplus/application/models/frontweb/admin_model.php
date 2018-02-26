@@ -313,7 +313,7 @@
 		function getjuniorCentreDetails($start = NULL , $length = NULL , $search_string = NULL , $order_column = NULL , $order_dir = NULL)
 		{
 			$resultData = array();
-			$colomnArr = array('a.junior_centre_id' , 'b.nome_centri as centre_name' , 'a.centre_banner' , 'a.junior_centre_status');
+			$colomnArr = array('a.junior_centre_id' , 'b.nome_centri as centre_name' , 'a.centre_banner' , 'a.junior_centre_status , a.centre_id');
 			$this->db->select(implode(',' , $colomnArr));
 			$this->db->from(TABLE_JUNIOR_CENTRE . ' a');
 			$this->db->join(TABLE_CENTRE.' b' , 'a.centre_id = b.id' , 'left');
@@ -353,6 +353,7 @@
 					$actionStr .= '<a data-toggle="tooltip" data-original-title="Manage Video gallery" class="btn btn-xs btn-success btn-wd-24 video-management-class" data-junior_centre_id = '.$value['junior_centre_id'].'><span><i class="fa fa-file-video-o" aria-hidden="true"></i></span></a>';
 					$actionStr .= '<a data-toggle="tooltip" data-original-title="Manage International Mix" class="btn btn-xs btn-warning btn-wd-24 international-mix-management-class" data-junior_centre_id = '.$value['junior_centre_id'].'><span><i class="fa fa-globe" aria-hidden="true"></i></span></a>';
 					$actionStr .= '<a data-toggle="tooltip" data-original-title="Manage Extra Section" class="btn btn-xs btn-primary btn-wd-24 extraSectionClass" data-junior_centre_id = '.$value['junior_centre_id'].'><span><i class="fa fa-th-large" aria-hidden="true"></i></span></a>';
+					$actionStr .= '<a data-toggle="tooltip" data-original-title="Manage Centre Details" class="btn btn-xs btn-success btn-wd-24 centreDeails" data-centre_id = '.$value['centre_id'].'><span><i class="fa fa-home" aria-hidden="true"></i></span></a>';
 					$actionStr .= '<a data-toggle="tooltip" data-original-title="Change Status for Junior Centre" class="btn btn-xs btn-danger btn-wd-24 global-list-status-icon"><span><i class="fa '.$statusClass.'" aria-hidden="true" data-toggle="modal" data-target="#juniorCentreStatus" data-status_type = '.$value['junior_centre_status'].' data-junior_centre_id = '.$value['junior_centre_id'].' ></i></span></a>';
 					$actionStr .="</div>";
 					$resultData[] = array(
@@ -825,7 +826,7 @@
 		function getjuniorMiniStayDetails($start = NULL , $length = NULL , $search_string = NULL , $order_column = NULL , $order_dir = NULL)
 		{
 			$resultData = array();
-			$colomnArr = array('a.junior_ministay_id' , 'b.nome_centri as centre_name' , 'a.centre_banner' , 'a.junior_ministay_status');
+			$colomnArr = array('a.junior_ministay_id' , 'b.nome_centri as centre_name' , 'a.centre_banner' , 'a.junior_ministay_status' , 'a.centre_id');
 			$this->db->select(implode(',' , $colomnArr));
 			$this->db->from(TABLE_JUNIOR_MINISTAY . ' a');
 			$this->db->join(TABLE_CENTRE.' b' , 'a.centre_id = b.id' , 'left');
@@ -864,6 +865,7 @@
 					$actionStr .= '<a data-toggle="tooltip" data-original-title="Manage Video gallery" class="btn btn-xs btn-success btn-wd-24 video-management-class" data-junior_ministay_id = '.$value['junior_ministay_id'].'><span><i class="fa fa-file-video-o" aria-hidden="true"></i></span></a>';
 					$actionStr .= '<a data-toggle="tooltip" data-original-title="Manage International Mix" class="btn btn-xs btn-warning btn-wd-24 international-mix-management-class" data-junior_ministay_id = '.$value['junior_ministay_id'].'><span><i class="fa fa-globe" aria-hidden="true"></i></span></a>';
 					$actionStr .= '<a data-toggle="tooltip" data-original-title="Manage Extra Section" class="btn btn-xs btn-primary btn-wd-24 extraSectionClass" data-junior_ministay_id = '.$value['junior_ministay_id'].'><span><i class="fa fa-th-large" aria-hidden="true"></i></span></a>';
+					$actionStr .= '<a data-toggle="tooltip" data-original-title="Manage Centre Details" class="btn btn-xs btn-success btn-wd-24 centreDeails" data-centre_id = '.$value['centre_id'].'><span><i class="fa fa-home" aria-hidden="true"></i></span></a>';
 					$statusClass = ($value['junior_ministay_status'] == 1) ? 'fa-check-square-o' : 'fa-square-o';
 					$actionStr .= '<a data-toggle="tooltip" data-original-title="Change Status for Junior Mini Stay" class="btn btn-xs btn-danger btn-wd-24 global-list-status-icon"><span><i class="fa '.$statusClass.'" aria-hidden="true" data-status_type = '.$value['junior_ministay_status'].' data-junior_ministay_id = '.$value['junior_ministay_id'].' ></i></span></a>';
 					$actionStr .="</div>";
