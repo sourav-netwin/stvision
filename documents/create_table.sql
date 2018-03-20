@@ -349,3 +349,55 @@ ALTER TABLE `frontweb_walking_tour_centre_details` ADD `sequence` INT NULL AFTER
 ALTER TABLE `frontweb_plus_activity` ADD `show_text` VARCHAR(255) NULL AFTER `added_date`;
 
 ALTER TABLE `frontweb_plus_activity` ADD `show_type` TINYINT(1) NOT NULL DEFAULT '1' COMMENT '1 : upload image & 2 : enter text' AFTER `added_date`; 
+
+
+
+/* Date: 27-Feb-2018 | Sourav Dhara */
+
+CREATE TABLE `vision_plus`.`frontweb_fixed_day_activity` ( `fixed_day_activity_id` INT NOT NULL AUTO_INCREMENT COMMENT 
+'primary key' , `centre_id` INT NULL , `date` DATE NULL , PRIMARY KEY (`fixed_day_activity_id`)) ENGINE = MyISAM;
+
+CREATE TABLE `vision_plus`.`frontweb_fixed_day_activity_details` ( `fixed_day_activity_details_id` INT NOT NULL AUTO_INCREMENT 
+COMMENT 'primary key' , `program_name` VARCHAR(255) NULL , `location` VARCHAR(255) NULL , `activity` VARCHAR(255) NULL , 
+`from_time` TIME NULL , `to_time` TIME NULL , `managed_by` INT NULL , `fixed_day_activity_id` INT NOT NULL COMMENT 
+'foreign key' , PRIMARY KEY (`fixed_day_activity_details_id`)) ENGINE = MyISAM; 
+
+
+
+/* Date: 28-Feb-2018 | Sourav Dhara */
+
+ALTER TABLE `frontweb_fixed_day_activity_details` CHANGE `managed_by` `managed_by` VARCHAR(255) NULL DEFAULT NULL; 
+
+
+/* Date: 12-Mar-2018 | Sourav Dhara */
+
+CREATE TABLE `vision_plus`.`frontweb_extra_day_activity` ( `extra_day_activity_id` INT NOT NULL AUTO_INCREMENT COMMENT 
+'primary key' , `centre_id` INT NULL , `group_name` INT NULL , `date` DATE NULL , PRIMARY KEY 
+(`extra_day_activity_id`)) ENGINE = MyISAM; 
+
+CREATE TABLE IF NOT EXISTS `frontweb_extra_day_activity_details` (
+  `extra_day_activity_details_id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'primary key',
+  `program_name` varchar(255) DEFAULT NULL,
+  `location` varchar(255) DEFAULT NULL,
+  `activity` varchar(255) DEFAULT NULL,
+  `from_time` time DEFAULT NULL,
+  `to_time` time DEFAULT NULL,
+  `managed_by` varchar(255) DEFAULT NULL,
+  `extra_day_activity_id` int(11) NOT NULL COMMENT 'foreign key',
+  PRIMARY KEY (`extra_day_activity_details_id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
+
+/* Date: 14-Mar-2018 | Sourav Dhara */
+
+ALTER TABLE `frontweb_plus_activity` ADD `sequence` INT NULL AFTER `show_text`; 
+
+/* ----------------------------Not Executed---------------------------- */
+
+/* Date: 20-Mar-2018 | Sourav Dhara */
+
+CREATE TABLE `vision_plus`.`frontweb_student_group` ( `student_group_id` INT NOT NULL AUTO_INCREMENT COMMENT 
+'primary key' , `centre_id` INT NULL , `group_name` VARCHAR(255) NULL , `group_strength` INT NULL , `status` 
+TINYINT(1) NOT NULL DEFAULT '1' COMMENT '1 : Active & 0 : Inactive' , `delete_flag` TINYINT(1) NOT NULL 
+DEFAULT '0' COMMENT '0:not delete & 1:delete' , PRIMARY KEY (`student_group_id`)) ENGINE = MyISAM;
+

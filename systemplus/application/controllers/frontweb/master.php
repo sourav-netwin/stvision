@@ -51,7 +51,7 @@
 		function add_edit($moduleName = NULL , $id = NULL)
 		{
 			$fileUploadError = array();
-			$post = array();
+			$post = $submoduleArr = $subTablePost = array();
 			$moduleArr = $this->mastermodel->getModule($moduleName);
 			if($this->input->post('flag'))
 			{
@@ -59,26 +59,39 @@
 				{
 					foreach($moduleArr['field'] as $fieldKey => $fieldValue)
 					{
-						//Save entered value in post variable
-						if($fieldValue['type'] != 'file')
-							$post[$fieldKey] = $this->input->post($fieldKey);
-
-						//Set validation rules dynamically
-						if(isset($fieldValue['validation']))
+						//Save the submodule details in the array
+						if($fieldValue['type'] == 'subtable')
+							$submoduleArr = $this->mastermodel->getModule($fieldKey);
+						else
 						{
-							if($fieldValue['type'] == 'file')
+							//Save entered value in post variable
+							if($fieldValue['type'] != 'file')
 							{
-								if((strpos($fieldValue['validation'] , 'imageRequired') !== FALSE) && $_FILES[$fieldKey]['name'] == '' && $this->input->post($fieldKey.'_oldImg') == '')
-									$fileUploadError[] = $this->lang->line("required_upload_image");
+								if($fieldValue['type'] == 'date')
+									$post[$fieldKey] = date('Y-m-d' , strtotime($this->input->post($fieldKey)));
+								else
+									$post[$fieldKey] = $this->input->post($fieldKey);
 							}
-							else
+
+							//Set validation rules dynamically
+							if(isset($fieldValue['validation']))
 							{
-								$validationRulesStr = '';
-								if(strpos($fieldValue['validation'] , 'required') !== FALSE)
-									$validationRulesStr = ($validationRulesStr != '') ? $validationRulesStr.'|required' : 'required';
-								if(strpos($fieldValue['validation'] , 'maxlength') !== FALSE)
-									$validationRulesStr = ($validationRulesStr != '') ? $validationRulesStr.'|max_length[200]' : 'max_length[200]';
-								$this->form_validation->set_rules($fieldKey , $fieldValue['fieldLabel'] , $validationRulesStr);
+								if($fieldValue['type'] == 'file')
+								{
+									if((strpos($fieldValue['validation'] , 'imageRequired') !== FALSE) && $_FILES[$fieldKey]['name'] == '' && $this->input->post($fieldKey.'_oldImg') == '')
+										$fileUploadError[] = $this->lang->line("required_upload_image");
+								}
+								else
+								{
+									$validationRulesStr = '';
+									if(strpos($fieldValue['validation'] , 'required') !== FALSE)
+										$validationRulesStr = ($validationRulesStr != '') ? $validationRulesStr.'|required' : 'required';
+									if(strpos($fieldValue['validation'] , 'numeric') !== FALSE)
+										$validationRulesStr = ($validationRulesStr != '') ? $validationRulesStr.'|numeric' : 'numeric';
+									if(strpos($fieldValue['validation'] , 'maxlength') !== FALSE)
+										$validationRulesStr = ($validationRulesStr != '') ? $validationRulesStr.'|max_length[200]' : 'max_length[200]';
+									$this->form_validation->set_rules($fieldKey , $fieldValue['fieldLabel'] , $validationRulesStr);
+								}
 							}
 						}
 					}
@@ -121,13 +134,32 @@
 					{
 						if($this->input->post('flag') == 'as')
 						{
-							$this->admin_model->commonAdd($moduleArr['dbName'] , $post);
+							$insertId = $this->admin_model->commonAdd($moduleArr['dbName'] , $post);
 							$this->session->set_flashdata('success_message', str_replace('**module**' , $moduleArr['title'] , $this->lang->line('add_success_message')));
 						}
 						elseif($this->input->post('flag') == 'es')
 						{
 							$this->admin_model->commonUpdate($moduleArr['dbName'] , $moduleArr['key'].' = '.$id , $post);
+							//Delete the subtable values for edit
+							if(!empty($submoduleArr))
+								$this->admin_model->commonDelete($submoduleArr['dbName'] , $submoduleArr['foreignKey'].' = '.$id);
 							$this->session->set_flashdata('success_message', str_replace('**module**' , $moduleArr['title'] , $this->lang->line('edit_success_message')));
+						}
+					}
+
+					//Prepare submodule post value and save in the database
+					if(!empty($submoduleArr))
+					{
+						for($i = 0 ; $i < count($this->input->post(array_shift(array_keys($submoduleArr['field'])))) ; $i++)
+						{
+							$subTablePost = array();
+							foreach($submoduleArr['field'] as $fieldKey => $fieldValue)
+							{
+								$tempPostValue = $this->input->post($fieldKey);
+								$subTablePost[$fieldKey] = $tempPostValue[$i];
+							}
+							$subTablePost[$submoduleArr['foreignKey']] = ($this->input->post('flag') == 'as') ? $insertId : $id;
+							$this->admin_model->commonAdd($submoduleArr['dbName'] , $subTablePost);
 						}
 					}
 
@@ -194,10 +226,13 @@
 			if($this->input->post('module'))
 			{
 				$moduleArr = $this->mastermodel->getModule($this->input->post('module'));
+				$dataValue = ($moduleArr['field'][$this->input->post('field')]['type'] == 'date') ? date('Y-m-d' , strtotime($this->input->post('data'))) : $this->input->post('data');
 				if($this->input->post('flag') == 'as')
-					$whereCondition = "(".$this->input->post('field').")='".$this->input->post('data')."'";
+					$whereCondition = "(".$this->input->post('field').")='".$dataValue."'";
 				elseif($this->input->post('flag') == 'es')
-					$whereCondition = "(".$this->input->post('field').")='".$this->input->post('data')."' AND (".$moduleArr['key'].") != ".$this->input->post('id');
+					$whereCondition = "(".$this->input->post('field').")='".$dataValue."' AND (".$moduleArr['key'].") != ".$this->input->post('id');
+				if($this->input->post('dependField') != '' && $this->input->post('dependValue') != '')
+					$whereCondition.= ' AND ('.$this->input->post('dependField').' = '.$this->input->post('dependValue').')';
 				$result = $this->admin_model->commonGetData('count(*) as total' , $whereCondition , $moduleArr['dbName'] , 1);
 				echo ($result['total'] > 0) ? 'false' : 'true';
 			}

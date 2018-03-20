@@ -3,6 +3,7 @@
 <link rel="stylesheet" href="<?php echo LTE; ?>frontweb/style.css">
 
 <?php
+	$subModuleArr = array();
 	if(!empty($moduleArr['field']))
 	{
 		foreach($moduleArr['field'] as $value)
@@ -23,6 +24,24 @@
 <?php
 				break;
 			}
+			if($value['type'] == 'date')
+			{
+?>
+				<!----------Datepicker CSS and JS--------->
+				<link rel="stylesheet" href="<?php echo LTE; ?>frontweb/datepicker.css">
+				<script src="<?php echo LTE; ?>frontweb/bootstrap-datepicker.js"></script>
+				<script>
+					$(document).ready(function(){
+						$('.datepicker').datepicker({
+							format: "dd-mm-yyyy",
+							autoclose: true
+						});
+					});
+				</script>
+<?php
+			}
+			if($value['type'] == 'subtable')
+				$subModuleArr =  $this->mastermodel->getModule($value['module']);
 		}
 	}
 ?>
@@ -33,6 +52,7 @@
 	var id = "<?php echo $id; ?>";
 	var moduleName = "<?php echo $moduleName; ?>";
 	var fieldArr = '<?php echo json_encode($moduleArr['field']); ?>';
+	var subModuleArr =  '<?php echo json_encode($subModuleArr); ?>';
 	var please_enter_dynamic = "<?php echo $this->lang->line("please_enter_dynamic"); ?>";
 	var required_upload_image = "<?php echo $this->lang->line("required_upload_image"); ?>";
 	var valid_data_error_msg = "<?php echo $this->lang->line("valid_data_error_msg"); ?>";
@@ -40,7 +60,7 @@
 	var minimum_image_dimension = "<?php echo $this->lang->line("minimum_image_dimension"); ?>";
 	var duplicate_dynamic = "<?php echo $this->lang->line("duplicate_dynamic"); ?>";
 </script>
-<script src="<?php echo LTE; ?>frontweb/custom/master.js?v=0.2"></script>
+<script src="<?php echo LTE; ?>frontweb/custom/master.js?v=0.3"></script>
 
 <div class="right_col" role="main">
 	<div class="row">
@@ -63,20 +83,37 @@
 								{
 									foreach($moduleArr['field'] as $fieldKey => $fieldValue)
 									{
+										if($fieldValue['type'] == 'subtable')
+										{
+											if(isset($post[$fieldKey]) && !empty($post[$fieldKey]))
+											{
+												echo '<input type = "hidden" id = "'.$fieldKey.'_gobalCount" value="'.count($post[$fieldKey]).'" >';
+												foreach($post[$fieldKey] as $subTableValue)
+													echo $this->mastermodel->createSubtable($fieldValue['module'] , $subTableValue , count($post[$fieldKey]));
+											}
+											else
+											{
+												echo '<input type = "hidden" id = "'.$fieldKey.'_gobalCount" value="1" >';
+												echo $this->mastermodel->createSubtable($fieldValue['module'] , array() , 1);
+											}
+										}
+										else
+										{
 ?>
-										<div class="form-group">
-											<label class="control-label custom-control-label col-md-3 col-sm-3 col-xs-12">
+											<div class="form-group">
+												<label class="control-label custom-control-label col-md-3 col-sm-3 col-xs-12">
 <?php
-												echo $fieldValue['fieldLabel'];
-												if(strpos($fieldValue['validation'] , 'required') !== FALSE)
-													echo '<span class="required">*</span>';
+													echo $fieldValue['fieldLabel'];
+													if(strpos($fieldValue['validation'] , 'required') !== FALSE)
+														echo '<span class="required">*</span>';
 ?>
-											</label>
-											<div class="col-md-6 col-sm-6 col-xs-12">
-												<?php echo $this->mastermodel->setFormField($fieldKey , $fieldValue , $post , $fileUploadError); ?>
+												</label>
+												<div class="col-md-6 col-sm-6 col-xs-12">
+													<?php echo $this->mastermodel->setFormField($fieldKey , $fieldValue , $post , $fileUploadError); ?>
+												</div>
 											</div>
-										</div>
 <?php
+										}
 									}
 								}
 ?>
@@ -107,3 +144,20 @@
 		</div>
 	</div>
 </div>
+
+<?php
+	if($moduleName == 'manage_fixed_activity')
+	{
+?>
+		<!----------Timepicker CSS and JS--------->
+		<link rel="stylesheet" href="<?php echo LTE; ?>frontweb/bootstrap-combined.min.css">
+		<link rel="stylesheet" href="<?php echo LTE; ?>frontweb/bootstrap-datetimepicker.min.css">
+		<script src="<?php echo LTE; ?>frontweb/bootstrap-datetimepicker.min.js"></script>
+		<script type="text/javascript">
+			$('.timepicker').datetimepicker({
+				pickDate: false
+			});
+		</script>
+<?php
+	}
+?>

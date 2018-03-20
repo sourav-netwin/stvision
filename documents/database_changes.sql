@@ -1293,3 +1293,49 @@ UPDATE `plused_role_menu` SET `mnu_url` = 'frontweb/master/add_edit/manage_adult
 UPDATE `plused_role_menu` SET `mnu_url` = 'frontweb/junior_centre/add,frontweb/junior_centre/process,frontweb/junior_centre/upload_pdf_management,frontweb/junior_centre/photo_gallery,frontweb/junior_centre/photo_gallery_add,frontweb/junior_centre/delete_photo_gallery,frontweb/junior_centre/add_edit,frontweb/junior_centre/add_video_gallery_management' WHERE `plused_role_menu`.`mnu_menuid` = 264; 
 
 UPDATE `plused_role_menu` SET `mnu_url` = 'junior_ministay/add_edit,frontweb/junior_ministay/process,frontweb/junior_ministay/photo_gallery,frontweb/junior_ministay/delete_photo_gallery,frontweb/junior_ministay/add_video_gallery_management' WHERE `plused_role_menu`.`mnu_menuid` = 269; 
+
+
+
+/* Date: 27-Feb-2018 | Sourav Dhara */
+
+INSERT INTO `plused_role_menu` (`mnu_menuid`, `mnu_parent_menu_id`, `mnu_menu_name`, `mnu_caption`, `mnu_url`, `mnu_status`, `mnu_level`, `mnu_type`, `mnu_sequence`, `mnu_icon_class`, `mnu_created_on`, `mnu_created_by`, `mnu_modified_on`, `mnu_modified_by`, `is_deleted`) VALUES (NULL, '249', 'Manage master activity', '', 'frontweb/master/index/manage_fixed_activity', '1', '2', 'Left', '12', '', '2018-02-27 00:00:00', '1', '2018-02-27 00:00:00', '1', '0'); 
+
+
+/* Date: 01-Mar-2018 | Sourav Dhara */
+
+INSERT INTO `plused_role_menu` (`mnu_menuid`, `mnu_parent_menu_id`, `mnu_menu_name`, `mnu_caption`, `mnu_url`, `mnu_status`, `mnu_level`, `mnu_type`, `mnu_sequence`, `mnu_icon_class`, `mnu_created_on`, `mnu_created_by`, `mnu_modified_on`, `mnu_modified_by`, `is_deleted`) VALUES (NULL, '249', 'Manage extra activity', '', 'frontweb/extra_activity', '1', '2', 'Left', '14', '', '2018-03-01 00:00:00', '1', '2018-03-01 00:00:00', '1', '0');
+
+
+
+/* Date: 02-Mar-2018 | Sourav Dhara */
+
+INSERT INTO `plused_role_menu` (`mnu_menuid`, `mnu_parent_menu_id`, `mnu_menu_name`, `mnu_caption`, `mnu_url`, `mnu_status`, `mnu_level`, `mnu_type`, `mnu_sequence`, `mnu_icon_class`, `mnu_created_on`, `mnu_created_by`, `mnu_modified_on`, `mnu_modified_by`, `is_deleted`) VALUES (NULL, '283', 'Update extra activity', 'Internal link', 'frontweb/extra_activity/update', '1', '3', 'Left', '1', '', '2018-03-02 00:00:00', '1', '2018-03-02 00:00:00', '1', '0'); 
+
+
+/* Date: 06-Mar-2018 | Sourav Dhara */
+
+INSERT INTO `plused_role_menu` (`mnu_menuid`, `mnu_parent_menu_id`, `mnu_menu_name`, `mnu_caption`, `mnu_url`, `mnu_status`, `mnu_level`, `mnu_type`, `mnu_sequence`, `mnu_icon_class`, `mnu_created_on`, `mnu_created_by`, `mnu_modified_on`, `mnu_modified_by`, `is_deleted`) VALUES (NULL, '281', 'Add master activity', 'Internal link', 'frontweb/master_activity/add_edit', '1', '3', 'Left', '1', '', '2018-03-06 00:00:00', '1', '2018-03-06 00:00:00', '1', '0'); 
+
+
+/* Date: 08-Mar-2018 | Sourav Dhara */
+
+INSERT INTO `plused_role_menu` (`mnu_menuid`, `mnu_parent_menu_id`, `mnu_menu_name`, `mnu_caption`, `mnu_url`, `mnu_status`, `mnu_level`, `mnu_type`, `mnu_sequence`, `mnu_icon_class`, `mnu_created_on`, `mnu_created_by`, `mnu_modified_on`, `mnu_modified_by`, `is_deleted`) VALUES (NULL, '249', 'Activity report', '', 'frontweb/master_activity/report', '1', '2', 'Left', '15', '', '2018-03-08 00:00:00', '1', '2018-03-08 00:00:00', '1', '0'); 
+
+UPDATE `plused_role_menu` SET `mnu_url` = 'frontweb/master_activity/add_edit,frontweb/master_activity/export_to_excel' WHERE `plused_role_menu`.`mnu_menuid` = 285; 
+
+
+/* Date: 16-Mar-2018 | Sourav Dhara */
+
+INSERT INTO `plused_role_menu` (`mnu_menuid`, `mnu_parent_menu_id`, `mnu_menu_name`, `mnu_caption`, `mnu_url`, `mnu_status`, `mnu_level`, `mnu_type`, `mnu_sequence`, `mnu_icon_class`, `mnu_created_on`, `mnu_created_by`, `mnu_modified_on`, `mnu_modified_by`, `is_deleted`) VALUES (NULL, '131', 'Campus videos', '', 'agents/videoGallery', '1', '2', 'Left', '4', '', '2018-03-16 00:00:00', '1', '2018-03-16 00:00:00', '1', '0'); 
+
+/* ----------------------------Not Executed---------------------------- */
+
+/* Date: 19-Mar-2018 | Sourav Dhara */
+
+UPDATE `plused_role_menu` SET `mnu_url` = 'frontweb/master_activity/add_edit,frontweb/master_activity/export_to_excel,frontweb/master_activity/copy' WHERE `plused_role_menu`.`mnu_menuid` = 285; 
+
+
+/* Date: 20-Mar-2018 | Sourav Dhara */
+
+INSERT INTO `plused_role_menu` (`mnu_menuid`, `mnu_parent_menu_id`, `mnu_menu_name`, `mnu_caption`, `mnu_url`, `mnu_status`, `mnu_level`, `mnu_type`, `mnu_sequence`, `mnu_icon_class`, `mnu_created_on`, `mnu_created_by`, `mnu_modified_on`, `mnu_modified_by`, `is_deleted`) VALUES (NULL, '249', 'Manage student group', '', 'frontweb/master/index/manage_student_group', '1', '2', 'Left', '16', '', '2018-03-20 00:00:00', '1', '2018-03-20 00:00:00', '1', '0'); 
+

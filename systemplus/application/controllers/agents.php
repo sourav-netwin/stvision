@@ -16,7 +16,7 @@ class Agents extends Controller {
     public function index() {
         $sess_username = $this->session->userdata('username');
         if (empty($sess_username)) {
-            if (APP_THEME == 'OLD') 
+            if (APP_THEME == 'OLD')
             {
                 $this->load->helper('string');
                 $data['title'] = "plus-ed.com | Login";
@@ -269,7 +269,7 @@ class Agents extends Controller {
             redirect('agents', 'refresh');
         }
     }
-    
+
     public function mkt_material_pj() {
         if ($this->session->userdata('username') && $this->session->userdata('role') != 200) {
             $data['title'] = "plus-ed.com | Marketing materials";
@@ -280,7 +280,7 @@ class Agents extends Controller {
             $data['fsIR'] = $this->gestione_centri_model->getCampusByLocation("Ireland", 1);
             $data['fsMA'] = $this->gestione_centri_model->getCampusByLocation("Malta", 1);
             $data['campusDetails'] = $this->gestione_centri_model->getCampusWithVideos();
-            
+
             $this->load->model('agents/pricelistpdfmodel','pricelistpdfmodel');
             $data['campusPriceList'] = $this->pricelistpdfmodel->getData("campus");
             $data['transferPriceList'] = $this->pricelistpdfmodel->getData("transfer");
@@ -297,7 +297,7 @@ class Agents extends Controller {
             redirect('agents', 'refresh');
         }
     }
-    
+
     public function _getCampusUploadedPdfs($campusId){
         $campusPdfs = $this->magenti->getCampusPdfForAgent($campusId);
         return $campusPdfs;
@@ -510,7 +510,7 @@ class Agents extends Controller {
                 'data' => $_POST,
                 'error' => $this->form_validation->_error_array,
             );
-            
+
             if (!empty($aDate) && !empty($dDate)) {
                 if (!$this->checkValidBookingDates($aDate, $dDate)) {
                     $form['error']['invertBookingDate'] = true;
@@ -845,7 +845,7 @@ class Agents extends Controller {
 
                 );
         $this->form_validation->set_rules($validationRule);
-        if ($this->form_validation->run() == TRUE) 
+        if ($this->form_validation->run() == TRUE)
         {
             $business_name = $this->input->post('business_name');
             $address = $this->input->post('address');
@@ -2502,6 +2502,31 @@ class Agents extends Controller {
             redirect('agents', 'refresh');
         }
     }
+
+	/**
+	*This function is used to show the video gallery in the agents area inside media gallery page
+	*
+	*@param NONE
+	*@return NONE
+	*/
+	public function videoGallery()
+	{
+		if($this->session->userdata('username') && $this->session->userdata('role') != 200)
+		{
+			$data['title'] = "plus-ed.com | Campus videos";
+			$data['breadcrumb1'] = 'Media gallery';
+			$data['breadcrumb2'] = "Campus videos";
+			$data['pageHeader'] = $data['breadcrumb2'];
+			$data['optionalDescription'] = "";
+			$data['campusDetails'] = $this->gestione_centri_model->getCampusWithVideos();
+			$this->ltelayout->view('lte/agents/video_gallery' , $data);
+		}
+		else
+		{
+			$this->session->sess_destroy();
+			redirect('agents' , 'refresh');
+		}
+	}
 }
 
 /* End of file agents.php */

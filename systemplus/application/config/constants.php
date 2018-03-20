@@ -202,6 +202,12 @@ define('TABLE_PLUS_EXTRA_SECTION' , 'frontweb_extra_section');
 define('TABLE_PLUS_EXTRA_SECTION_CONTENT' , 'frontweb_extra_section_content');
 define('TABLE_PLUS_MANAGE_ADULT_COURSE' , 'frontweb_manage_adult_course');
 define('TABLE_WALKING_TOUR_CENTRE_DETAILS' , 'frontweb_walking_tour_centre_details');
+define('TABLE_FIXED_DAY_ACTIVITY' , 'frontweb_fixed_day_activity');
+define('TABLE_FIXED_DAY_ACTIVITY_DETAILS' , 'frontweb_fixed_day_activity_details');
+define('TABLE_STUDENT_GROUP' , 'frontweb_student_group');
+define('TABLE_EXTRA_DAY_ACTIVITY' , 'frontweb_extra_day_activity');
+define('TABLE_EXTRA_DAY_ACTIVITY_DETAILS' , 'frontweb_extra_day_activity_details');
+define('TABLE_PLUS_BOOK' , 'plused_book');
 
 //Constant for create folder permission
 define('DIR_PERMISSION' , 0755);

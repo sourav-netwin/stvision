@@ -548,8 +548,10 @@
 		function commonAdd($tableName = NULL , $data = array())
 		{
 			if($tableName != '')
+			{
 				$this->db->insert($tableName , $data);
-			return $this->db->insert_id();
+				return $this->db->insert_id();
+			}
 		}
 
 		//This is a common function to delete record from database

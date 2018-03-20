@@ -82,11 +82,12 @@
 	//This function is used to get centre details from DB and use in dropdown
 	function getCentreDetails()
 	{
-		$returnArr[''] = 'Please Select';
+		$returnArr[''] = 'Please Select Centre';
 		$CI = &get_instance();
 		$result = $CI->db->select('id , nome_centri')
 						->where('attivo' , 1)
 						->or_where('(is_mini_stay = 1 and attivo = 0)')
+						->order_by('nome_centri' , 'asc')
 						->get(TABLE_CENTRE)->result_array();
 		if(!empty($result))
 		{

@@ -34,12 +34,12 @@ define("DOMPDF_LIB_DIR", DOMPDF_DIR . "/lib");
  */
 if( !isset($_SERVER['DOCUMENT_ROOT']) ) {
   $path = "";
-  
+
   if ( isset($_SERVER['SCRIPT_FILENAME']) )
     $path = $_SERVER['SCRIPT_FILENAME'];
   elseif ( isset($_SERVER['PATH_TRANSLATED']) )
     $path = str_replace('\\\\', '\\', $_SERVER['PATH_TRANSLATED']);
-    
+
   $_SERVER['DOCUMENT_ROOT'] = str_replace( '\\', '/', substr($path, 0, 0-strlen($_SERVER['PHP_SELF'])));
 }
 
@@ -88,7 +88,7 @@ def("DOMPDF_FONT_DIR", DOMPDF_DIR . "/lib/fonts/");
  *
  * This directory contains the cached font metrics for the fonts used by DOMPDF.
  * This directory can be the same as DOMPDF_FONT_DIR
- * 
+ *
  * Note: This directory must exist and be writable by the webserver process.
  */
 def("DOMPDF_FONT_CACHE", DOMPDF_FONT_DIR);

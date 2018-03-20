@@ -1,3 +1,4 @@
+
 <link href="<?php echo LTE;?>plugins/datatables/dataTables.bootstrap.css" rel="stylesheet">
 <style>
 .col-xs-3 {
@@ -86,7 +87,10 @@ em.minitit {
                             <li><a data-toggle="tab" aria-expanded="true" href="#mpj_2_2" href="javascript:void(0);"><span class="icon icon-list-alt"></span>Destination factsheet Ireland</a></li>
                             <li><a data-toggle="tab" aria-expanded="true" href="#mpj_2_3" href="javascript:void(0);"><span class="icon icon-list-alt"></span>Destination factsheet Malta</a></li>
                             <li><a data-toggle="tab" aria-expanded="true" href="#mpj_2_5" href="javascript:void(0);"><span class="icon icon-list-alt"></span>Destination factsheet USA</a></li>
-                            <li><a data-toggle="tab" aria-expanded="true" href="#mpj_2_6" href="javascript:void(0);"><span class="icon icon-list-alt"></span>Campus videos</a></li>
+
+							<!---------Changed on 16th March , 2018(Hide the panel)---------->
+							<!-- <li><a data-toggle="tab" aria-expanded="true" href="#mpj_2_6" href="javascript:void(0);"><span class="icon icon-list-alt"></span>Campus videos</a></li> -->
+
                             <?php /*
                             <li><a href="#mpj_3" href="javascript:void(0);"><span class="icon icon-list-alt"></span>Our team</a></li>
                             <li><a href="#mpj_4" href="javascript:void(0);"><span class="icon icon-list-alt"></span>Who's who on campus?</a></li>
@@ -118,7 +122,7 @@ em.minitit {
 						You can find a broad range of images of all our centres, cities, facilities, and students in our Image Library. This will be the ideal tool for choosing the best photos to prepare your own brochure and marketing material. How does it work?<br />Just click on the Categories you require and select the images you prefer. Then simply click <b>download</b> and the image will be automatically transferred to your computer.
 					</p>
 				</div>
-<?php 
+<?php
 $CI = & get_instance();
 function elencafiles($dirname,$arrayext){
 	$dirname = strtolower($dirname);
@@ -559,7 +563,7 @@ function elencafiles($dirname,$arrayext){
                     <?php }?>
                     </ul>
                 </div>
-                    
+
 
                 </div>
 		<div id="mpj_14" class="tab-pane">
@@ -592,7 +596,10 @@ function elencafiles($dirname,$arrayext){
 				<li><a data-toggle="tab" aria-expanded="true" href="#mpj_2_2" href="javascript:void(0);"><span class="icon icon-list-alt"></span>Destination Ireland</a></li>
 				<li><a data-toggle="tab" aria-expanded="true" href="#mpj_2_3" href="javascript:void(0);"><span class="icon icon-list-alt"></span>Destination Malta</a></li>
 				<li><a data-toggle="tab" aria-expanded="true" href="#mpj_2_5" href="javascript:void(0);"><span class="icon icon-list-alt"></span>Destination USA</a></li>
-                <li><a data-toggle="tab" aria-expanded="true" href="#mpj_2_6" href="javascript:void(0);"><span class="icon icon-list-alt"></span>Campus videos</a></li>
+
+				<!---------Changed on 16th March , 2018(Hide the panel)---------->
+				<!-- <li><a data-toggle="tab" aria-expanded="true" href="#mpj_2_6" href="javascript:void(0);"><span class="icon icon-list-alt"></span>Campus videos</a></li> -->
+
 				<?php /*
 				<li><a href="#mpj_3" href="javascript:void(0);"><span class="icon icon-list-alt"></span>Our team</a></li>
 				<li><a href="#mpj_4" href="javascript:void(0);"><span class="icon icon-list-alt"></span>Who's who on campus?</a></li>

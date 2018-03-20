@@ -17,6 +17,8 @@
 	var inactive_confirmation = "<?php echo $this->lang->line("inactive_confirmation"); ?>";
 	var active_confirmation = "<?php echo $this->lang->line("active_confirmation"); ?>";
 	var delete_confirmation = "<?php echo $this->lang->line("delete_confirmation"); ?>";
+	var please_enter_dynamic = "<?php echo $this->lang->line("please_enter_dynamic"); ?>";
+	var duplicate_dynamic = "<?php echo $this->lang->line("duplicate_dynamic"); ?>";
 </script>
 <script src="<?php echo LTE; ?>frontweb/custom/master.js?v=0.2"></script>
 
@@ -27,7 +29,8 @@
 				<div class="box-header col-sm-12">
 					<div class="row">
 						<div class="col-sm-6 btn-create">
-							<a class="btn btn-primary" href="<?php echo base_url(); ?>index.php/frontweb/master/add_edit/<?php echo $moduleName; ?>">
+							<?php $url = ($moduleName == 'manage_fixed_activity') ? 'master_activity/add_edit' : 'master/add_edit/'.$moduleName; ?>
+							<a class="btn btn-primary" href="<?php echo base_url(); ?>index.php/frontweb/<?php echo $url; ?>">
 								<i class="fa fa-plus" aria-hidden="true"></i> Add <?php echo strtolower($moduleArr['title']); ?>
 							</a>
 						</div>
@@ -60,3 +63,71 @@
 		</div>
 	</div>
 </div>
+
+<?php if($moduleName == 'manage_fixed_activity'){ ?>
+<link rel="stylesheet" href="<?php echo LTE; ?>frontweb/style.css">
+<!----------Datepicker CSS and JS--------->
+<link rel="stylesheet" href="<?php echo LTE; ?>frontweb/datepicker.css">
+<script src="<?php echo LTE; ?>frontweb/bootstrap-datepicker.js"></script>
+<script>
+	$(document).ready(function(){
+		$('.datepicker').datepicker({
+			format: "dd-mm-yyyy",
+			autoclose: true
+		});
+	});
+</script>
+
+<!--------------This is the copy master activity modal(Start)--------------->
+<div class="modal fade" id="copyMasterActivityModal" role="dialog">
+	<div class="modal-dialog modal-md">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal">&times;</button>
+				<h4 class="modal-title modalTitle"></h4>
+			</div>
+<?php
+			$formAttribute = array(
+				'class' => 'form-horizontal form-label-left show-custom-error-tag',
+				'id' => 'copyMasterActivityForm',
+				'method' =>'post'
+			);
+			echo form_open_multipart('frontweb/master_activity/copy' , $formAttribute);
+?>
+				<input type="hidden" name="id" id="id">
+				<input type="hidden" id="copyActivityFlag" value="1" />
+				<div class="modal-body">
+					<div class="error text-center customActivityError"></div>
+					<div class="addMoreWrapper">
+						<div class="form-group form-border-box-wrapper copyActivityMargin">
+							<label class="control-label custom-control-label col-md-3 col-sm-3 col-xs-12">
+								Select date<span class="required">*</span>
+							</label>
+							<div class="col-md-6 col-sm-6 col-xs-12">
+<?php
+								$inputFieldAttribute = array(
+									'name' => 'date[]',
+									'class' => 'form-control datepicker',
+									'placeholder' => 'dd-mm-yyyy'
+								);
+								echo form_input($inputFieldAttribute);
+?>
+								<span class="error showErrorMsg"></span>
+							</div>
+						</div>
+						<div style="float: right; margin-top:-12px;">
+							<i class="fa fa-lg fa-plus-circle add_section addMoreTable" aria-hidden="true"></i>
+						</div><br>
+					</div>
+					<div class="clearfix"></div>
+				</div>
+				<div class="modal-footer">
+					<button type="submit" class="btn btn-info">Save</button>
+					<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+				</div>
+			<?php echo form_close(); ?>
+		</div>
+	</div>
+</div>
+<!--------------This is the copy master activity modal(End)--------------->
+<?php } ?>
