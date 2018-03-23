@@ -74,8 +74,6 @@
 						$statusClass = ($value[$moduleArr['statusField']] == 1) ? 'fa-check-square-o' : 'fa-square-o';
 						$actionStr.= '<a data-module="'.$moduleName.'" data-module_title="'.$moduleArr['title'].'" data-status="'.$value[$moduleArr['statusField']].'" data-id="'.$value[$moduleArr['key']].'" data-toggle="tooltip" data-original-title="Change Status for '.$moduleArr['title'].'" class="btn btn-xs btn-danger btn-wd-24 global-list-status-icon statusIcon"><span><i class="fa '.$statusClass.'" aria-hidden="true"></i></span></a>';
 					}
-					if($moduleName == 'manage_fixed_activity')
-						$actionStr.= '<a data-id="'.$value[$moduleArr['key']].'" data-toggle="tooltip" data-original-title="Copy master activity" class="btn btn-xs btn-danger btn-wd-24 copyMasterActivity"><span><i class="fa fa-copy" aria-hidden="true"></i></span></a>';
 					$actionStr.= "</div>";
 
 					$resultData[$key][0] = $siNo++;

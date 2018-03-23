@@ -401,3 +401,12 @@ CREATE TABLE `vision_plus`.`frontweb_student_group` ( `student_group_id` INT NOT
 TINYINT(1) NOT NULL DEFAULT '1' COMMENT '1 : Active & 0 : Inactive' , `delete_flag` TINYINT(1) NOT NULL 
 DEFAULT '0' COMMENT '0:not delete & 1:delete' , PRIMARY KEY (`student_group_id`)) ENGINE = MyISAM;
 
+
+/* Date: 22-Mar-2018 | Sourav Dhara */
+
+CREATE TABLE `vision_plus`.`frontweb_master_activity` ( `master_activity_id` INT NOT NULL AUTO_INCREMENT COMMENT
+ 'primary key' , `centre_id` INT NULL , `activity_name` VARCHAR(255) NULL , `arrival_date` DATE NULL , 
+ `departure_date` DATE NULL , `student_group` INT NULL , PRIMARY KEY (`master_activity_id`)) ENGINE = MyISAM; 
+
+ALTER TABLE `frontweb_fixed_day_activity` CHANGE `centre_id` `master_activity_id` INT(11) NULL DEFAULT NULL COMMENT 'foreign key'; 
+

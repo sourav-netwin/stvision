@@ -208,6 +208,7 @@ define('TABLE_STUDENT_GROUP' , 'frontweb_student_group');
 define('TABLE_EXTRA_DAY_ACTIVITY' , 'frontweb_extra_day_activity');
 define('TABLE_EXTRA_DAY_ACTIVITY_DETAILS' , 'frontweb_extra_day_activity_details');
 define('TABLE_PLUS_BOOK' , 'plused_book');
+define('TABLE_MASTER_ACTIVITY' , 'frontweb_master_activity');
 
 //Constant for create folder permission
 define('DIR_PERMISSION' , 0755);

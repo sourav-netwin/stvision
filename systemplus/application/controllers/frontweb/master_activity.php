@@ -13,7 +13,7 @@
 		}
 
 		//This function is used to perform the add/edit operation for master activity module
-		public function add_edit($id = NULL)
+		public function add_edit_old($id = NULL)
 		{
 			$post = array();
 			if($this->input->post('flag'))
@@ -202,5 +202,137 @@
 			$this->session->set_flashdata('success_message', str_replace('**module**' , 'master activity' , $this->lang->line('add_success_message')));
 			redirect('/frontweb/master/index/manage_fixed_activity');
 		}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*************************************START****************************************/
+
+
+
+
+
+		/**
+		*This function is used to perform the add/edit operation for master activity module
+		*
+		*@param Integer $id : master activity id
+		*@return NONE
+		*/
+		public function add_edit($id = NULL)
+		{
+			$post = array();
+			$groupArr = array('' => 'Please select group');
+			if($this->input->post('flag'))
+			{
+				$studentGroup = $this->admin_model->commonGetData('student_group_id' , 'centre_id = '.$this->input->post('centre_id') , TABLE_STUDENT_GROUP , 2);
+				$studentGroup = (empty($studentGroup)) ? array(array('student_group_id' => '')) : $studentGroup;
+				foreach($studentGroup as $groupValue)
+				{
+					$insertData = array(
+						'centre_id' => $this->input->post('centre_id'),
+						'activity_name' => $this->input->post('activity_name'),
+						'arrival_date' => date('Y-m-d' , strtotime($this->input->post('arrival_date'))),
+						'departure_date' => date('Y-m-d' , strtotime($this->input->post('departure_date'))),
+						'student_group' => $groupValue['student_group_id'],
+					);
+					$masterActivityId = $this->admin_model->commonAdd(TABLE_MASTER_ACTIVITY , $insertData);
+
+					//Prepare data for subtables(activity details)
+					$programNameArr = $this->input->post('program_name');
+					$locationArr = $this->input->post('location');
+					$activityArr = $this->input->post('activity');
+					$fromTimeArr = $this->input->post('from_time');
+					$toTimeArr = $this->input->post('to_time');
+					$managedByArr = $this->input->post('managed_by');
+					if(!empty($programNameArr))
+					{
+						foreach($programNameArr as $dateValue => $detailsValue)
+						{
+							$insertData = array(
+								'master_activity_id' => $masterActivityId,
+								'date' => date('Y-m-d' , strtotime($dateValue))
+							);
+							$fixedDayActivityId = $this->admin_model->commonAdd(TABLE_FIXED_DAY_ACTIVITY , $insertData);
+							foreach($detailsValue as $key => $value)
+							{
+								$insertData = array(
+									'program_name' => $value,
+									'location' => $locationArr[$dateValue][$key],
+									'activity' => $activityArr[$dateValue][$key],
+									'from_time' => $fromTimeArr[$dateValue][$key],
+									'to_time' => $toTimeArr[$dateValue][$key],
+									'managed_by' => $managedByArr[$dateValue][$key],
+									'fixed_day_activity_id' => $fixedDayActivityId
+								);
+								$this->admin_model->commonAdd(TABLE_FIXED_DAY_ACTIVITY_DETAILS , $insertData);
+							}
+						}
+					}
+				}
+				$this->session->set_flashdata('success_message', str_replace('**module**' , 'master activity' , $this->lang->line('add_success_message')));
+				redirect('/frontweb/master/index/manage_fixed_activity');
+			}
+
+			$data['post'] = $post;
+			$data['groupArr'] = $groupArr;
+			$data['id'] = $id;
+			$data['flag'] = ($id != '') ? 'es' : 'as';
+			$data['breadcrumb1'] = 'Website managements';
+			$data['pageHeader'] = $data['breadcrumb2'] = ($id != '') ? 'Edit master activity' : 'Add master activity';
+			$data['title'] = 'plus-ed.com | '.$data['pageHeader'];
+			$this->ltelayout->view('frontweb/manage_master_activity' , $data);
+		}
+
+		/**
+		*This function is used to get the student group names acording to the centre through ajax call
+		*
+		*@param NONE
+		*@return NONE
+		*/
+		public function get_student_group()
+		{
+			$groupNames = '';
+			if($this->input->post('centre_id'))
+			{
+				$result = $this->admin_model->commonGetData("group_concat(group_name) as name" , 'centre_id = '.$this->input->post('centre_id') , TABLE_STUDENT_GROUP , 1);
+				$groupNames = str_replace(',' , ' , ' , $result['name']);
+			}
+			echo $groupNames;
+		}
+
+
+
+
+
+/*************************************END****************************************/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 	}
 ?>

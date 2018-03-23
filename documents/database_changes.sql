@@ -1328,12 +1328,14 @@ UPDATE `plused_role_menu` SET `mnu_url` = 'frontweb/master_activity/add_edit,fro
 
 INSERT INTO `plused_role_menu` (`mnu_menuid`, `mnu_parent_menu_id`, `mnu_menu_name`, `mnu_caption`, `mnu_url`, `mnu_status`, `mnu_level`, `mnu_type`, `mnu_sequence`, `mnu_icon_class`, `mnu_created_on`, `mnu_created_by`, `mnu_modified_on`, `mnu_modified_by`, `is_deleted`) VALUES (NULL, '131', 'Campus videos', '', 'agents/videoGallery', '1', '2', 'Left', '4', '', '2018-03-16 00:00:00', '1', '2018-03-16 00:00:00', '1', '0'); 
 
-/* ----------------------------Not Executed---------------------------- */
 
 /* Date: 19-Mar-2018 | Sourav Dhara */
 
 UPDATE `plused_role_menu` SET `mnu_url` = 'frontweb/master_activity/add_edit,frontweb/master_activity/export_to_excel,frontweb/master_activity/copy' WHERE `plused_role_menu`.`mnu_menuid` = 285; 
 
+
+
+/* ----------------------------Not Executed---------------------------- */
 
 /* Date: 20-Mar-2018 | Sourav Dhara */
 

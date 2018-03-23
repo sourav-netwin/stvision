@@ -161,3 +161,32 @@
 	margin-left: 10px !important;
 	margin-right: 0px !important;
 }
+
+.activityProgramTable{
+	table-layout: fixed;
+}
+
+.activityProgramTable th{
+	width: 150px;
+}
+
+.activityProgramTable .actionColumn{
+	width : 100px;
+	vertical-align: middle !important;
+}
+
+.activityProgramTable .timeColumn{
+	width: 235px;
+}
+
+.enterDetails{
+	cursor : pointer;
+}
+
+.draggableItem{
+	cursor: move;
+	border: 1px solid #d1ddd1;
+	background-color: #d1ddd1;
+	padding: 4px;
+	border-radius: 20px;
+}
