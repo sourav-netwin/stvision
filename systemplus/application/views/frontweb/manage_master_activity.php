@@ -2,10 +2,6 @@
 <link rel="stylesheet" href="<?php echo LTE; ?>frontweb/datepicker.css">
 <script src="<?php echo LTE; ?>frontweb/bootstrap-datepicker.js"></script>
 
-<!-----------------Jquery ui CSS and JS------------------->
-<!-- <script src="<?php echo LTE; ?>frontweb/jquery-ui.js"></script>
-<link rel="stylesheet" href="<?php echo LTE; ?>frontweb/jquery-ui.css"> -->
-
 <!----------Form validation js----------->
 <script src="<?php echo base_url(); ?>js/tuition/jquery_validations1.9.0.js"></script>
 <link rel="stylesheet" href="<?php echo LTE; ?>frontweb/style.css">
@@ -19,8 +15,9 @@
 	var please_select_dynamic = "<?php echo $this->lang->line("please_select_dynamic"); ?>";
 	var duplicate_dynamic = "<?php echo $this->lang->line("duplicate_dynamic"); ?>";
 	var start_end_date_validation = "<?php echo $this->lang->line("start_end_date_validation"); ?>";
+	var delete_confirmation = "<?php echo $this->lang->line("delete_confirmation"); ?>";
 </script>
-<script src="<?php echo LTE; ?>frontweb/custom/manage_master_activity.js?v=0.3"></script>
+<script src="<?php echo LTE; ?>frontweb/custom/manage_master_activity.js?v=0.7"></script>
 
 <div class="right_col" role="main">
 	<div class="row">
@@ -34,7 +31,7 @@
 			echo form_open_multipart('frontweb/master_activity/add_edit/'.$id , $formAttribute);
 ?>
 				<input type="hidden" name="flag" id="flag" value="<?php echo $flag; ?>" />
-				<input type="hidden" id="globalCount" value="1">
+				<input type="hidden" id="globalCount" value="<?php echo (isset($post['details'])) ? count($post['details']) : 1; ?>">
 				<div class="x_panel box">
 					<div class="box-header col-sm-12">
 						<div class="row">
@@ -44,7 +41,8 @@
 									<div class="col-lg-8">
 <?php
 										$centreId = (isset($post['centre_id'])) ? $post['centre_id'] : '';
-										echo form_dropdown('centre_id' , getCentreDetails() , $centreId , 'class="form-control" id="centre_id"');
+										$disabled = ($flag == 'es') ? 'disabled' : '';
+										echo form_dropdown('centre_id' , getCentreDetails() , $centreId , 'class="form-control" id="centre_id" '.$disabled);
 ?>
 										<span class="error showErrorMessage"></span>
 									</div>
@@ -60,6 +58,8 @@
 											'value' => (isset($post['activity_name'])) ? $post['activity_name'] : '',
 											'placeholder' => 'Activity Name'
 										);
+										if($flag == 'es')
+											$inputAttribute['disabled'] = 'disabled';
 										echo form_input($inputAttribute);
 ?>
 										<span class="error showErrorMessage"></span>
@@ -77,6 +77,8 @@
 											'value' => (isset($post['arrival_date'])) ? $post['arrival_date'] : '',
 											'placeholder' => 'dd-mm-yyyy'
 										);
+										if($flag == 'es')
+											$inputAttribute['disabled'] = 'disabled';
 										echo form_input($inputAttribute);
 ?>
 										<span class="error showErrorMessage"></span>
@@ -93,6 +95,8 @@
 											'value' => (isset($post['departure_date'])) ? $post['departure_date'] : '',
 											'placeholder' => 'dd-mm-yyyy'
 										);
+										if($flag == 'es')
+											$inputAttribute['disabled'] = 'disabled';
 										echo form_input($inputAttribute);
 ?>
 										<span class="error showErrorMessage"></span>
@@ -108,16 +112,24 @@
 											'class' => 'form-control',
 											'placeholder' => 'Group names',
 											'disabled' => TRUE,
-											'style' => 'color : green'
+											'style' => 'color : green',
+											'value' => (isset($post['group_name'])) ? $post['group_name'] : ''
 										);
 										echo form_input($inputAttribute);
 ?>
 									</div>
 								</div>
 								<div class="col-lg-4 form-group" style="padding-left: 20px;">
-									<button type="button" class="btn btn-info" id="generateTable">
-										<i class="fa fa-plus"></i>&nbsp;&nbsp;Generate Table
-									</button>
+<?php
+									if($flag == 'as')
+									{
+?>
+										<button type="button" class="btn btn-info" id="generateTable">
+											<i class="fa fa-plus"></i>&nbsp;&nbsp;Generate Table
+										</button>
+<?php
+									}
+?>
 								</div>
 							</div>
 						</div>
@@ -131,8 +143,115 @@
 						<div class="box box-primary">
 							<div class="box-body">
 								<div class="col-lg-12">
-									<div id="previewContainer"></div>
-									<div id="activityDetailsContainer"></div>
+									<div id="previewContainer">
+<?php
+										if(!empty($post['datesArr']) && !empty($post['details']))
+										{
+?>
+											<div style="width:100%;overflow:scroll;">
+												<table class="table table-striped table-bordered activityProgramTable">
+													<thead>
+														<tr>
+															<th class="actionColumn" rowspan="2">Action</th>
+															<th class="timeColumn" colspan="2">Date</th>
+<?php
+															foreach($post['datesArr'] as $dateValue)
+																echo "<th>".date('d-M-Y' , strtotime($dateValue['date']))."</th>";
+?>
+														</tr>
+														<tr>
+															<th>Start</th>
+															<th>Finish</th>
+<?php
+															foreach($post['datesArr'] as $dateValue)
+																echo "<th>".date('l' , strtotime($dateValue['date']))."</th>";
+?>
+														</tr>
+													</thead>
+													<tbody>
+<?php
+														$tempCount = 1;
+														foreach($post['details'] as $timeSlot => $detailsValue)
+														{
+?>
+															<tr data-reference="<?php echo $tempCount; ?>">
+																<td>
+																	<i class="fa fa-lg fa-plus-circle add_section addMoreTable" aria-hidden="true"></i>
+<?php
+																	if(count($post['details']) > 1)
+																		echo '<i class="fa fa-lg fa-minus-circle delete_section removeMoreTable" aria-hidden="true"></i>';
+?>
+																</td>
+																<td class="tdStartTime">
+<?php
+																	$tempArr = explode('-' , $timeSlot);
+																	echo createTimingDropdown($tempArr[0]);
+?>
+																</td>
+																<td class="tdFinishTime">
+<?php
+																	$tempArr = explode('-' , $timeSlot);
+																	echo createTimingDropdown($tempArr[1]);
+?>
+																</td>
+<?php
+																foreach($post['datesArr'] as $dateValue)
+																{
+?>
+																	<td class="enterDetails" data-delete_flag="" data-id="<?php echo isset($detailsValue[$dateValue['id']]['fixed_day_activity_details_id']) ? $detailsValue[$dateValue['id']]['fixed_day_activity_details_id'] : ''; ?>" data-parent_id="<?php echo $dateValue['id']; ?>" data-date="<?php echo $dateValue['date']; ?>">
+<?php
+																		if(isset($detailsValue[$dateValue['id']]))
+																		{
+?>
+																			<span class="draggableItem" data-tr_reference="<?php echo $tempCount; ?>" data-td_reference="<?php echo $dateValue['date']; ?>">
+																				<?php echo $detailsValue[$dateValue['id']]['activity']; ?>
+																			</span>
+																			<br><i class="fa fa-trash-o deleteActivityDetails" style="float: right;color: red;"></i>
+<?php
+																		}
+																		else
+																			echo '<span class="droppableItem"></span>';
+?>
+																	</td>
+<?php
+																}
+?>
+															</tr>
+<?php
+															$tempCount++;
+														}
+?>
+													</tbody>
+												</table>
+											</div>
+<?php
+										}
+?>
+									</div>
+									<div id="activityDetailsContainer">
+<?php
+										if(!empty($post['datesArr']) && !empty($post['details']))
+										{
+											$tempCount = 1;
+											foreach($post['details'] as $timeSlot => $detailsValue)
+											{
+												foreach($post['datesArr'] as $dateValue)
+												{
+													if(isset($detailsValue[$dateValue['id']]))
+													{
+														echo '<input type="hidden" name="program_name['.$dateValue['date'].'][]" value="'.$detailsValue[$dateValue['id']]['program_name'].'" id="program_name_'.$tempCount.'_'.$dateValue['date'].'">
+																<input type="hidden" name="location['.$dateValue['date'].'][]" value="'.$detailsValue[$dateValue['id']]['location'].'" id="location_'.$tempCount.'_'.$dateValue['date'].'">
+																<input type="hidden" name="activity['.$dateValue['date'].'][]" value="'.$detailsValue[$dateValue['id']]['activity'].'" id="activity_'.$tempCount.'_'.$dateValue['date'].'">
+																<input type="hidden" name="from_time['.$dateValue['date'].'][]" value="'.$detailsValue[$dateValue['id']]['from_time'].'" id="from_time_'.$tempCount.'_'.$dateValue['date'].'">
+																<input type="hidden" name="to_time['.$dateValue['date'].'][]" value="'.$detailsValue[$dateValue['id']]['to_time'].'" id="to_time_'.$tempCount.'_'.$dateValue['date'].'">
+																<input type="hidden" name="managed_by['.$dateValue['date'].'][]" value="'.$detailsValue[$dateValue['id']]['managed_by'].'" id="managed_by_'.$tempCount.'_'.$dateValue['date'].'">';
+													}
+												}
+												$tempCount++;
+											}
+										}
+?>
+									</div>
 								</div>
 								<div class="clearfix"></div><br>
 
@@ -143,7 +262,7 @@
 											'class' => 'btn btn-success',
 											'value' => ($id != '') ? 'Update' : 'Submit',
 											'id' => 'submitButton',
-											'style' => 'display:none'
+											'style' => ($flag == 'as') ? 'display:none' : ''
 										);
 										echo form_submit($inputFieldAttribute);
 
@@ -182,6 +301,8 @@
 			);
 			echo form_open_multipart('' , $formAttribute);
 ?>
+				<input type="hidden" name="activityDetailsParentId" id="activityDetailsParentId" />
+				<input type="hidden" name="activityDetailsId" id="activityDetailsId" />
 				<div class="modal-body">
 					<div class="form-group">
 						<label class="control-label custom-control-label col-md-3 col-sm-3 col-xs-12">Type of activity<span class="required">*</span></label>

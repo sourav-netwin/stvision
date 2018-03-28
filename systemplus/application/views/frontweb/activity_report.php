@@ -2,13 +2,17 @@
 <script src="<?php echo base_url(); ?>js/tuition/jquery_validations1.9.0.js"></script>
 <link rel="stylesheet" href="<?php echo LTE; ?>frontweb/style.css">
 
+<!----------Datepicker CSS and JS--------->
+<link rel="stylesheet" href="<?php echo LTE; ?>frontweb/datepicker.css">
+<script src="<?php echo LTE; ?>frontweb/bootstrap-datepicker.js"></script>
+
 <!------------custom javascript for for master modules------------>
 <script>
 	var please_enter_dynamic = "<?php echo $this->lang->line("please_enter_dynamic"); ?>";
 	var please_select_dynamic = "<?php echo $this->lang->line("please_select_dynamic"); ?>";
 	var start_end_date_validation = "<?php echo $this->lang->line("start_end_date_validation"); ?>";
 </script>
-<script src="<?php echo LTE; ?>frontweb/custom/master_activity.js?v=0.3"></script>
+<script src="<?php echo LTE; ?>frontweb/custom/master_activity.js?v=0.7"></script>
 
 <div class="right_col" role="main">
 	<div class="row">
@@ -26,38 +30,59 @@
 							echo form_open_multipart('frontweb/master_activity/report' , $formAttribute);
 ?>
 								<input type="hidden" name="flag" value="search">
-								<div class="col-lg-3 form-group">
+								<div class="col-lg-12">
+									<div class="col-lg-6 form-group">
+										<label class="control-label custom-control-label col-lg-4">Select centre<span class="required">*</span></label>
+										<div class="col-lg-8">
 <?php
-									$centreId = (isset($post['centre_id'])) ? $post['centre_id'] : '';
-									echo form_dropdown('centre_id' , getCentreDetails() , $centreId , 'class="form-control" id="centre_id"');
+											$centreId = (isset($post['centre_id'])) ? $post['centre_id'] : '';
+											echo form_dropdown('centre_id' , getCentreDetails() , $centreId , 'class="form-control" id="centre_id"');
 ?>
-								</div>
-								<div class="col-lg-3 form-group">
+										</div>
+									</div>
+									<div class="col-lg-6 form-group">
+										<label class="control-label custom-control-label col-lg-4">Select group</label>
+										<div class="col-lg-8">
 <?php
-									$inputAttribute = array(
-										'name' => 'start_date',
-										'id' => 'start_date',
-										'class' => 'form-control datepicker',
-										'placeholder' => 'Start Date',
-										'value' => (isset($post['start_date'])) ? $post['start_date'] : ''
-									);
-									echo form_input($inputAttribute);
+											$groupId = (isset($post['student_group'])) ? $post['student_group'] : '';
+											echo form_dropdown('student_group' , $groupDropdown , $groupId , 'class="form-control" id="student_group"');
 ?>
-									<span class="error showDateError"></span>
-								</div>
-								<div class="col-lg-3 form-group">
+										</div>
+									</div>
+									<div class="clearfix"></div>
+									<div class="col-lg-6 form-group">
+										<label class="control-label custom-control-label col-lg-4">Arrival date<span class="required">*</span></label>
+										<div class="col-lg-8">
 <?php
-									$inputAttribute = array(
-										'name' => 'end_date',
-										'id' => 'end_date',
-										'class' => 'form-control datepicker',
-										'placeholder' => 'End Date',
-										'value' => (isset($post['end_date'])) ? $post['end_date'] : ''
-									);
-									echo form_input($inputAttribute);
+											$inputAttribute = array(
+												'name' => 'start_date',
+												'id' => 'start_date',
+												'class' => 'form-control datepicker',
+												'placeholder' => 'dd-mm-yyyy',
+												'value' => (isset($post['start_date'])) ? $post['start_date'] : ''
+											);
+											echo form_input($inputAttribute);
 ?>
+											<span class="error showErrorMessage"></span>
+										</div>
+									</div>
+									<div class="col-lg-6 form-group">
+										<label class="control-label custom-control-label col-lg-4">Departure date<span class="required">*</span></label>
+										<div class="col-lg-8">
+<?php
+											$inputAttribute = array(
+												'name' => 'end_date',
+												'id' => 'end_date',
+												'class' => 'form-control datepicker',
+												'placeholder' => 'dd-mm-yyyy',
+												'value' => (isset($post['end_date'])) ? $post['end_date'] : ''
+											);
+											echo form_input($inputAttribute);
+?>
+										</div>
+									</div>
 								</div>
-								<div class="col-lg-3 form-group">
+								<div class="col-lg-3 col-lg-offset-5 form-group">
 									<button class="btn btn-warning" type="submit">
 										<i class="fa fa-search"></i>&nbsp;&nbsp;Search
 									</button>
@@ -204,8 +229,6 @@
 						</table>
 <?php
 					}
-					else
-						echo '<p style="font-size: 20px;" class="error text-center">No activity available</p>';
 ?>
 				</div>
 			</div>

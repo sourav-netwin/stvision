@@ -198,6 +198,9 @@ Authorize url - https://api.vimeo.com/oauth/authorize
 Access token Url - https://api.vimeo.com/oauth/access_token
 Access token - f76202db96349d44d30a111021a597b9
 
+//Test API online : 
+https://developer.vimeo.com/api/endpoints/videos(Get a video section)
+
 Solutions Url :
 https://stackoverflow.com/questions/47735579/fetch-video-duration-using-the-new-vimeo-api
 https://stackoverflow.com/questions/47079078/vimeo-php-simple-request-not-working
@@ -221,10 +224,14 @@ function vimeoApi()
 
 ======================================Office Tiffin========================================================================================
 
+Prashant : {(350+150+50+110)-(60+500)}
+Sumeet : 200/-
+
 Tiffin upto 31st October , 2017 : 340/- (paid)
 Tiffin upto 31st November , 2017 : 375/-(paid) : Balance - 25/-
 Tiffin upto 31st December , 2017 : 500/-(Paid) : Balance - 50/- 
 Tiffin upto 31st January , 2018 : 425/-(Paid) : Balance - 75/-
+Tiffin upto 28th February , 2018 : 400/-(Paid)
 
 ===============================================================================================================================
 
@@ -239,12 +246,20 @@ url : http://plus-ed.com/betaweb
 (2)Backend -
 url : http://plus-ed.com/vision_ag/index.php/vauth/backoffice
 User Name : usercms
-Password : usercms@2061@
+Password : usercms@2061@/usercms_1820_
 
-(3)Mantis Account Details :
+(3)Agent's Area -
+url : http://plus-ed.com/vision_ag/index.php/vauth/agents
+username : Int_pEaTo
+password : 75907469
+
+(4)Mantis Account Details :
 url : https://webnmobidev.net/mantisbt/login_page.php
 User Name : Sourav.Dhara
 Password : S@123
+
+(5)OS Ticket :
+http://netwinindia.net/itsupport/osticket/upload/view.php
 
 ===============================================================================================================================
 
@@ -253,11 +268,10 @@ Password : S@123
 
 ==================================Short Task(for PMS)=============================================================================================
 
-(1)Completed centre details management for junior ministay module .
-(2)Made front end plus walking tour left section dynamic .
-(3)Added download centre details option in plus walking tour .
-(4)Completed activity changes for both student and campus manager .
-(5)Changed in the designing of show activity .
+(1)Completed activity report modification .
+(2)Completed extra activity module functionality .
+(3)Upload changes related to the master and extra activity on live .
+
 
 ===============================================================================================================================
 
@@ -267,26 +281,26 @@ Password : S@123
 ==================================Details Daily Task===============================================================================================
 Today I have done following tasks in Plus Education Development Project :
 
-(1)Started working on the centre details managemnt for junior minisaty module . In the listing page , action column we have added one icon to open an 
-modal popup to manage the centre details . In that management tere are select icon , title , description and the sequence . Also there are facility to
-add/remove multiple sections . There are required validation for every field . After successfully done the validation the records will save in the database .
-If there was any old record exist for the centre then delete the old one and insert the new records . Completed that functionality and tested properly .
+(1)Before we have shown the activity report as per the centre name and the date range . Now we have shown that activity report as per centre , student group
+, arrival and departure date wise . With the change of the centre we have shown the student group of that centre . Also we have changed in the filter search
+ and export to excel functionality as per the new changes in master activity . Completed the changes and tested properly .
+ 
+(2)Started working on the extra activity functionality . In the left section we have added one option to manage the extra activity . If admin will click on that
+menu then that particular management will open . In that page there are two section . First is the search section and another one is the manage activity section .
+In the search section , there is select centre , group and group reference option . With the change of the centre dropdown the student group and the group reference
+will selected from database according to the centre id . We have applied the required validation to every field . After successfully done the validation the searched record
+will appear . We get the arrival and departure date according to the group reference number and show in the non editable format . In the second section we have shown the table
+formatted activity details . Also we have saved the activity details in the hidden so that we can retrive them easily to show the details . We have done the add more and remove more
+functionality on click of the plus and minus icon . Also on click of any table column we have opened the activity details . Admin can delete any activity by clicking on the delete
+icon from the table column . Also we have implemented drag and drop functionality . If admin will drag any activity and drop it to any another column then we have saved the details
+in the hidden field as well as in the database too . Completed all the functionality related to manage extra activity and tested properly . 
 
-(2)In front end plus walking tour , left section there are centre logo and below that there are centre details like the address , contact number and email
-address . Before we have aplied the plus address details there statically . Now we have changed that and make that dynamic , centre wise . As of now we have
-added basic centre details for all the centres so that it will visible in front end . Later admin can can change the details centre wise .
-
-(3)In Plus walking tour centre details section , below the centre details we have added one download button . After click on that button all the centre details
-like address , contact number , email ids will download in a text file . 
-
-(4)Before in activity management , there was only upload front image option . Now we have added radio button to give option to campus manager either to upload front
-image or to enter the text related to todays activity etc . We have applied required validation for both fields . If manager will select upload front image and upload
-one image then it will show in the activity section . If manager will select to enter text then that text will visible in the activity section . Completed that changes 
-and tested properly .
-
-(5)Before in the show activity section , we have shown all the activities one in a line . Now we have changed that . Now we have shown two activity in online as per the
-discussion with Stefano .
+(3)Upload changes related to the master activity and extra activity on live and tested properly .
 
 =================================================================================================================================
+
+
+
+
 
 

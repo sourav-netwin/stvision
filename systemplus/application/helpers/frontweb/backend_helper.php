@@ -158,3 +158,33 @@
 		}
 		return $returnArr;
 	}
+
+	/**
+	*This function is used to create the from and to time dropdown and return to show in the table section
+	*
+	*@param String $timeSlot : This is the time slot string
+	*@return String : Start and finish time dropdown
+	*/
+	if(!function_exists('createTimingDropdown'))
+	{
+		function createTimingDropdown($timeSlot = NULL)
+		{
+			//For hour
+			$hourArr = array('' => 'HH');
+			for($i = 0 ; $i <= 23 ; $i++)
+			{
+				$j = ($i <= 9) ? '0'.$i : $i;
+				$hourArr[$j] = $j;
+			}
+			//For minute
+			$minArr = array('' => 'MM');
+			for($i = 0 ; $i <= 59 ; $i++)
+			{
+				$j = ($i <= 9) ? '0'.$i : $i;
+				$minArr[$j] = $j;
+			}
+			$timeSlotArr = explode(':' , $timeSlot);
+			return form_dropdown('' , $hourArr , $timeSlotArr[0] , 'class="hourDropdown"')
+					.'&nbsp;&nbsp;'.form_dropdown('' , $minArr , $timeSlotArr[1] , 'class="minDropdown"');
+		}
+	}

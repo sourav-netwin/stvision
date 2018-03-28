@@ -533,7 +533,7 @@
 		function commonGetData($select = NULL , $whereCondition = NULL , $tableName = NULL , $getFlag = 1 , $orderByField = NULL , $orderByType = 'asc')
 		{
 			if($select != '')
-				$this->db->select($select);
+				$this->db->select($select , FALSE);
 			if($whereCondition != '')
 				$this->db->where($whereCondition);
 			if($orderByField != '')

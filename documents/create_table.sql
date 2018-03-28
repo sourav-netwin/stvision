@@ -410,3 +410,13 @@ CREATE TABLE `vision_plus`.`frontweb_master_activity` ( `master_activity_id` INT
 
 ALTER TABLE `frontweb_fixed_day_activity` CHANGE `centre_id` `master_activity_id` INT(11) NULL DEFAULT NULL COMMENT 'foreign key'; 
 
+
+/* Date: 28-Mar-2018 | Sourav Dhara */
+
+CREATE TABLE `vision_plus`.`frontweb_extra_master_activity` ( `extra_master_activity_id` INT NOT NULL AUTO_INCREMENT COMMENT 
+'primary key' , `centre_id` INT NULL , `student_group` INT NULL , `group_reference_id` INT NULL , PRIMARY KEY 
+(`extra_master_activity_id`)) ENGINE = MyISAM; 
+
+ALTER TABLE `frontweb_extra_day_activity` DROP `group_name`;
+
+ALTER TABLE `frontweb_extra_day_activity` CHANGE `centre_id` `extra_master_activity_id` INT(11) NULL DEFAULT NULL COMMENT 'foreign key'; 
