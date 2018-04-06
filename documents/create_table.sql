@@ -392,7 +392,6 @@ CREATE TABLE IF NOT EXISTS `frontweb_extra_day_activity_details` (
 
 ALTER TABLE `frontweb_plus_activity` ADD `sequence` INT NULL AFTER `show_text`; 
 
-/* ----------------------------Not Executed---------------------------- */
 
 /* Date: 20-Mar-2018 | Sourav Dhara */
 
@@ -420,3 +419,6 @@ CREATE TABLE `vision_plus`.`frontweb_extra_master_activity` ( `extra_master_acti
 ALTER TABLE `frontweb_extra_day_activity` DROP `group_name`;
 
 ALTER TABLE `frontweb_extra_day_activity` CHANGE `centre_id` `extra_master_activity_id` INT(11) NULL DEFAULT NULL COMMENT 'foreign key'; 
+
+
+/* ----------------------------Not Executed---------------------------- */

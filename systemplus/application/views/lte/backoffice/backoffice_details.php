@@ -37,6 +37,7 @@
             $week = $book[0]['weeks'];
             ?>
             <input type="hidden" id="bkDetBookId" value="<?php echo $storeId ?>" />
+            <input type="hidden" id="idCentro" value="<?php echo $book[0]['id_centro']; ?>" />
             <input type="hidden" id="maxNoLmDate" value="<?php echo $maxNoLmDate ?>" />
             <input type="hidden" id="maxLmDate" value="<?php echo $maxLmDate ?>" />
             <input type="hidden" id="yearId" value="<?php echo $yearId ?>" />
@@ -106,6 +107,10 @@
                                     <address>
                                         <strong><?php echo $agente[0]["mainfirstname"] ?> <?php echo $agente[0]["mainfamilyname"] ?></strong><br>
                                         <a href="mailto:<?php echo $agente[0]["email"] ?>"><?php echo $agente[0]["email"] ?></a>
+                                    </address>
+                                    <address>Account manager<br />
+                                        <strong><?php echo $agente[0]["acc_manager_firstname"] ?> <?php echo $agente[0]["acc_manager_lastname"] ?></strong><br>
+                                        <a href="mailto:<?php echo $agente[0]["acc_manager_email"] ?>"><?php echo $agente[0]["acc_manager_email"] ?></a>
                                     </address>
                                 </div>
                                 <div class="col-md-3">
@@ -240,6 +245,27 @@
                                                         <br />A payment for this booking has already been notified to backoffice!
                                                     </div>
                                                 <?php } ?>
+                                        
+                                                <!-- Elapsed flag -->
+                                                <?php if ($book[0]["flag_elapsed"] == 0) { ?>
+                                                    <div class="col-md-6 mr-top-10">
+                                                        <label class="text-danger">
+                                                        <input type="checkbox" id="chkElapsedChecked" value="1" />    
+                                                        Elapsed checked</label><br />
+                                                        <input type="text" class="form-control" id="txtElapsedNote" name="txtElapsedNote" value="" />
+                                                    </div>
+                                                    <div class="col-md-2 mr-top-10 text-center">
+                                                        <button type="button" style="margin-top:25px;" class="btn btn-primary" id="btnElapsedMarked" >Mark elapsed note</button>
+                                                    </div>
+                                                    <?php
+                                                } else {
+                                                    ?>
+                                                    <div class="col-md-10 mr-top-10">
+                                                        <label class="text-danger">Elapsed checked</label>
+                                                        <br />Elapsed note: <?php echo $book[0]["flag_elapsed_comment"];?>
+                                                    </div>
+                                                <?php } ?>
+                                                
                                                 <?php
                                             } else {
                                                 ?>
@@ -336,6 +362,7 @@
                             <h3 class="box-title width-full">
                                 Booking roster - <strong><?php echo $yearId; ?>_<?php echo $storeId; ?></strong><?php if ($isFlocked == 1) { ?><span class="rLocked">LOCKED</span><?php } ?>
                                 <span class="pull-right">
+                                    <a id="editAccModal" data-roster-lock="<?php echo $isFlocked;?>" href="javascript:void(0);" ><span class="fa fa-edit"></span> Edit accommodation</a>
                                     <a id="addRosterPax" href="javascript:void(0);" ><span class="fa fa-plus"></span> Add new pax to this booking</a>
 
                                     <?php if ($isFlocked == 1) { ?>
@@ -361,6 +388,7 @@
                                         <th class="text-center">Arrival flight Info</th>
                                         <th class="text-center">Departure flight Info</th>
                                         <th class="text-center"></th>
+                                        <th class="text-center">Remove pax</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -394,11 +422,19 @@
                                                     <a href="javascript:void(0);" class="paxRemClass btn btn-danger btn-xs" id="paxRem_<?php echo $mypax["id_prenotazione"] ?>"><i class="fa fa-trash"></i></a>
                                                 </div>
                                             </td>
+                                            <td class="text-center">
+                                                <input type="checkbox" class="chPaxRemove" id="chkDeletePax" name="chkDeletePax" value="<?php echo $mypax["id_prenotazione"];?>" />
+                                            </td>
                                         </tr>
                                         <?php
                                         $counter++;
                                     }
                                     ?>
+                                        <tr>
+                                            <td colspan="14">
+                                                <button type="button" class="btn btn-primary pull-right" disabled="disabled" id="btnSelRemovePax" name="btnSelRemovePax" >Remove pax</button>
+                                            </td> 
+                                        </tr>
                                 </tbody>
                             </table>
                         </div>
@@ -599,7 +635,9 @@
                         </div>
                         <div class="box-body">
                             <?php
+                            $isFormHeight = 0;
                             if ($this->session->userdata('ruolo') == "contabile") {
+                                $isFormHeight = 200;
                                 ?>
                                 <div class="row">
                                     <form id="addPaymentFinCon" name="addPaymentFinCon">
@@ -725,7 +763,16 @@
                                                         ?></td>
                                                     <td class="text-center"><?php echo $pay["pfp_tipo_servizio"] ?></td>
                                                     <td><?php echo $pay["pfp_metodo_pagamento"] ?></td>
-                                                    <td><?php echo $pay["pfp_note"] ?></td>
+                                                    <td><span><?php echo $pay["pfp_note"] ?></span>
+                                                        <a href="javascript:void(0);" class="editNoteLink" data-note="<?php echo htmlspecialchars($pay["pfp_note"]); ?>" data-id="<?php echo $pay["pfp_id"];?>" data-toggle="tooltip" data-title="Add / Edit note">
+                                                            <i class="fa fa-edit"></i>
+                                                        </a>
+                                                        <?php if($pay["pfp_note"]){?>
+                                                            <a href="javascript:void(0);" class="deleteNoteLink" data-id="<?php echo $pay["pfp_id"];?>" data-toggle="tooltip" data-title="Delete note">
+                                                                <i class="fa fa-trash"></i>
+                                                            </a>
+                                                        <?php }?>
+                                                    </td>
                                                 </tr>
                                                 <?php
                                                 $lastValuta = $pay["pfp_valuta"];
@@ -784,10 +831,86 @@
         </div>
     </div>
 </div>
+
+<div class="modal fade" id="inputPaxCount" tabindex="-1" role="dialog" >
+    <div class="modal-dialog modal-sm" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" onclick="$('#inputPaxCount').modal('hide');" ><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">Please confirm the number of pax to be added:</h4>
+            </div>
+            <div class="modal-body text-center">
+                <input type="text" class="form-control" maxlength="3" id="txtInputPaxCount" name="txtInputPaxCount" value="1"/>
+                <small>Please enter value between 1 to 100</small>
+            </div>
+            <div class="modal-footer">
+                <button type="button" onclick="$('#inputPaxCount').modal('hide');"  class="btn btn-default" >Close</button>
+                <button id="btnInputPaxCount" type="button" class="btn btn-primary" >Confirm</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div  class="modal fade" id="editNoteModal" tabindex="-1" role="dialog" >
+    <div class="modal-dialog" role="document" >
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" onclick="$('#editNoteModal').modal('hide');" ><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">Add / Edit note</h4>
+            </div>
+            <div class="modal-body">
+                <lable>Please add / edit note here:</lable>
+                <input type="text" class="form-control" maxlength="250" id="txtEditNote" name="txtEditNote" value=""/>
+            </div>
+            <div class="modal-footer">
+                <button type="button" onclick="$('#editNoteModal').modal('hide');"  class="btn btn-default" >Close</button>
+                <button id="btnEditNote" type="button" class="btn btn-primary" >Update</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="dialog_modal_edit_acc" class="modal fade" tabindex="-1" role="dialog" >
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" onclick="$('#dialog_modal_edit_acc').modal('hide');">
+                    <span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">Edit accommodation</h4>
+            </div>
+            <div class="modal-body" id="editAccList">
+            </div>
+            <div class="modal-footer">
+                <button onclick="$('#dialog_modal_edit_acc').modal('hide');" type="button" class="btn btn-default" >Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script src="<?php echo base_url(); ?>js/tuition/jquery_validations1.9.0.js"></script>
+<script src="<?php echo LTE; ?>plugins/iCheck/icheck.min.js"></script>
+<link href="<?php echo LTE; ?>plugins/iCheck/all.css" rel="stylesheet">
 <?php require_once 'edit_week.php'; ?>
 <script type="text/javascript">
+    function iCheckInit(){
+        $('input.chPaxRemove').iCheck('destroy');
+        $('input.chPaxRemove').iCheck({
+            checkboxClass: 'icheckbox_square-blue',
+            increaseArea: '10%' // optional
+        });
+    }
     $(document).ready(function () {
+        
+        iCheckInit();
+        
+        $('.chPaxRemove').on('ifChanged', function(event){
+            var selPax = $("input[name='chkDeletePax']:checked").map(function(){return $(this).val()});
+            if(selPax.length > 0)
+                $("#btnSelRemovePax").removeAttr('disabled');
+            else
+                $("#btnSelRemovePax").attr('disabled','disabled');
+        });
+        
         $("#date_in").datepicker({
             defaultDate: "+1w",
             changeMonth: true,
@@ -878,6 +1001,99 @@
                 }
             }, true, true);
         });
-
+        
+        
+        $('#editAccModal').click(function () {
+            $("#dialog_modal_edit_acc").modal('show');
+            var bookId = $("#bkDetBookId").val();
+            var campId = $("#idCentro").val();
+            var year = $("#yearId").val();
+            var isRosterLock = $(this).attr('data-roster-lock');
+            $.post(siteUrl + "backoffice/getPaxListOfBook",{'year':year,'bookId':bookId,'isRosterLock':isRosterLock,'campId':campId},function(data){
+                $("#editAccList").html(data);
+            });
+        });
+        //$('body').addClass('modal-open');
+        $('#dialog_modal_edit_acc').on('hidden.bs.modal', function () { 
+            $('body').addClass('modal-open');
+        });
+        $('#inputPaxCount,#editNoteModal').on('hidden.bs.modal', function () { 
+            $('body').addClass('modal-open');
+        });
+        
+        $('.editNoteLink').on('click', function(event){
+            $("#editNoteModal").modal('show');
+            var row_index = $(this).parent().parent().index();
+            $("#editNoteModal").css('padding-top',(row_index * 40));
+            var recId = $(this).attr('data-id');
+            var note = $(this).attr('data-note');
+            $("#txtEditNote").val(note);
+            $('#btnEditNote').attr('data-id',recId);
+            $('#btnEditNote').attr('data-index',row_index);
+        });
+        
+        $('.deleteNoteLink').on('click', function(event){
+            var row_index = $(this).parent().parent().index();
+            var recId = $(this).attr('data-id');
+            var editNoteText = "";
+            var delLink = $(this);
+            confirmAction("Are you sure you want to delete note text?", function (s) {
+            if (s) {
+                delLink.siblings(".editNoteLink").attr('data-note','');
+                $.post(siteUrl + "backoffice/updatePaymentHistoryNote",
+                {'editNote':editNoteText,'recId':recId},function(data){
+                    if(data.result)
+                        swal("Success","Note text removed successfully.");
+                    else
+                        swal("Error","Unable to remove note text.");
+                    rowIndex = parseInt(row_index) + 1;
+                    $('#NA_Payments tr').eq(rowIndex).find('td').eq(7).find('span').html(editNoteText);  
+                },'json');
+            }
+            }, true, true);
+        });
+        
+        $('#btnEditNote').click(function () {
+            var editNoteText = $("#txtEditNote").val();
+            var recId = $(this).attr('data-id');
+            if(editNoteText != ""){
+                $.post(siteUrl + "backoffice/updatePaymentHistoryNote",
+                    {'editNote':editNoteText,'recId':recId},function(data){
+                        if(data.result)
+                            swal("Success",data.message);
+                        else
+                            swal("Error",data.message);
+                        $("#editNoteModal").modal('hide');
+                        var rowIndex = $('#btnEditNote').attr('data-index');
+                        rowIndex = parseInt(rowIndex) + 1;
+                        $('#NA_Payments tr').eq(rowIndex).find('td').eq(7).find('span').html(editNoteText);  
+                        $('#NA_Payments tr').eq(rowIndex).find('td').eq(7).find('.editNoteLink').attr('data-note',editNoteText);
+                    },'json');
+            }else{
+                swal("Warning","Please enter note text");
+                $("#txtEditNote").focus();
+            }
+        });
+        
+        $('#btnElapsedMarked').click(function () {
+            var id = $("#bkDetBookId").val();
+            var elapsedNote = $("#txtElapsedNote").val();
+            var elapsedChecked = $("#chkElapsedChecked").prop('checked');
+            if(elapsedChecked && elapsedNote != ""){
+                $.post(siteUrl + "backoffice/updateElapsedMarkedNote",
+                    {'id':id,'elapsedNote':elapsedNote,'elapsedChecked':elapsedChecked},function(data){
+                        if(data.result){
+                            swal("Success","Booking elapsed note updated.");
+                            $("#txtElapsedNote").attr('disabled','disabled');
+                            $("#chkElapsedChecked").attr('disabled','disabled');
+                            $("#btnElapsedMarked").attr('disabled','disabled');
+                        }
+                    },'json');
+            }else{
+                swal("Warning","Please mark checkbox as checked and enter note text.");
+                $("#txtEditNote").focus();
+            }
+        });
+        
     });
 </script>

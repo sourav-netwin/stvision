@@ -4,7 +4,7 @@
 
 <!----------Form validation js----------->
 <script src="<?php echo base_url(); ?>js/tuition/jquery_validations1.9.0.js"></script>
-<link rel="stylesheet" href="<?php echo LTE; ?>frontweb/style.css">
+<link rel="stylesheet" href="<?php echo LTE; ?>frontweb/style.css?v=1.1">
 
 <!------------custom javascript for program course------------>
 <script>
@@ -19,7 +19,7 @@
 	var width2 = "<?php echo PROGRAM_FRONT_WIDTH; ?>";
 	var minimum_image_dimension = "<?php echo $this->lang->line("minimum_image_dimension"); ?>";
 </script>
-<script src="<?php echo LTE; ?>frontweb/custom/program_course.js?v=0.2"></script>
+<script src="<?php echo LTE; ?>frontweb/custom/program_course.js?v=1.1"></script>
 
 <div class="right_col" role="main">
 	<div class="row">

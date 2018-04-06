@@ -55,7 +55,7 @@
                     <tr>
                         <td >
                             <br />
-                            <span style="font-size:24px;font-weight: bold;">Agent Net Statement of Account</span>
+                            <span style="font-size:24px;font-weight: bold;">Booking Net Statement of Account</span>
                             <br/>
                             <span style="font-size:16px;font-weight: bold;"><?php echo date('Y', strtotime( $book['data_insert'] ) ) ?>_<?php echo $book['id_book']; ?></span>
                         </td>
@@ -396,6 +396,11 @@
             <div style="margin-top: 10px;">
                 <table style="font-weight: bold;">
                     <thead>
+                        <?php /*
+                         * Transfer Fee Balance &
+                         * Attraction IS NOT CALCULATED SO NOT DISPLAYED ON INVOICE
+                         * DO NOT REMOVE THIS COMMENTED CODE.
+                         * ?>
                         <tr>
                             <td style="width:40%">Transfer Fee Balance</td>
                             <td style="width:10%;text-align: right;"><?php echo $book['valuta'].number_format(0, 2, '.', ''); ?></td>
@@ -404,12 +409,24 @@
                             <td style="width:40%">Attraction</td>
                             <td style="width:10%;text-align: right;"><?php echo $book['valuta'].number_format(0, 2, '.', ''); ?></td>
                         </tr>
+                         <?php */?>
+                        <tr>
+                            <td style="width:40%">Invoice Subtotal</td>
+                            <td style="width:10%;text-align: right;">
+                            <?php echo $book['valuta'].number_format($totalInvoiceCost, 2, '.', ''); ?>
+                            </td>
+                        </tr>
+                        <?php if(!empty($paymentReceived)){?>
                         <tr>
                             <td style="width:40%">Payment Received</td>
                             <td style="width:10%;text-align: right;">
-                            <?php echo $book['valuta'].number_format(0, 2, '.', ''); ?>
+                            <?php echo $book['valuta'].number_format($paymentReceived, 2, '.', ''); 
+                                    $totalInvoiceCost = $totalInvoiceCost - $paymentReceived;
+                            ?>
                             </td>
                         </tr>
+                        <?php }?>
+                        <?php if($bookingDiscount){?>
                         <tr>
                             <td style="width:40%">Discount</td>
                             <td style="width:10%;text-align: right;">
@@ -419,6 +436,7 @@
                             ?>
                             </td>
                         </tr>
+                        <?php }?>
                         <tr>
                             <td style="width:40%">Balance Due</td>
                             <td style="width:10%;text-align: right;">

@@ -11,7 +11,7 @@
 	var please_enter_dynamic = "<?php echo $this->lang->line("please_enter_dynamic"); ?>";
 	var password_validation = "<?php echo $this->lang->line("password_validation"); ?>";
 </script>
-<script src="<?php echo LTE; ?>frontweb/custom/manage_video.js"></script>
+<script src="<?php echo LTE; ?>frontweb/custom/manage_video.js?v=1.1"></script>
 
 <div class="right_col" role="main">
 	<div class="row">

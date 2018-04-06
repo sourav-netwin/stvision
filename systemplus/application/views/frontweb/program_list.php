@@ -15,7 +15,7 @@
 	var active_confirmation = "<?php echo $this->lang->line("active_confirmation"); ?>";
 	var delete_confirmation = "<?php echo $this->lang->line("delete_confirmation"); ?>";
 </script>
-<script src="<?php echo LTE; ?>frontweb/custom/program_banner.js?v=0.2"></script>
+<script src="<?php echo LTE; ?>frontweb/custom/program_banner.js?v=1.1"></script>
 
 <div class="right_col" role="main">
 	<div class="row">

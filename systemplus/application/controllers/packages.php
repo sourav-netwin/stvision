@@ -7,8 +7,8 @@
  */
 class Packages extends Controller {
 
-    public function __construct() {
-
+    public function __construct() 
+    {
         parent::Controller();
         // check user session and menus with their access.
         authSessionMenu($this);
@@ -93,6 +93,7 @@ class Packages extends Controller {
                 'chkWeek1' => $packageInfo->pack_week_1,
                 'chkWeek2' => $packageInfo->pack_week_2,
                 'chkWeek3' => $packageInfo->pack_week_3,
+                'chkWeek4' => $packageInfo->pack_week_4,
                 //pack_for_location,pack_location_region,pack_location_country,
                 'chkValidRegion' => $packageInfo->pack_for_location,
                 'selRegion' => $packageInfo->pack_location_region,
@@ -129,6 +130,7 @@ class Packages extends Controller {
                 'chkWeek1' => '',
                 'chkWeek2' => '',
                 'chkWeek3' => '',
+                'chkWeek4' => '',
                 'chkValidRegion' => '',
                 'selRegion' => '',
                 'selCountry' => '',
@@ -221,16 +223,16 @@ class Packages extends Controller {
      * load agents for package 
      */
     function loadAgents() {
-        $regionId = $this->input->post('countryId');
+        $countryId = $this->input->post('countryId');
         $packageId = $this->input->post('packageId');
         $packageAgentsArr = array();
         $packageAgents = $this->packagesmodel->loadPackageAgents($packageId);
         if ($packageAgents != "")
             $packageAgentsArr = explode(',', $packageAgents);
-        $loadAgents = $this->packagesmodel->loadAgents($regionId);
+        $loadAgents = $this->packagesmodel->loadAgents($countryId);
         if ($loadAgents) {
             foreach ($loadAgents as $agents) {
-                ?><option <?php echo (in_array($agents['id'], $packageAgentsArr) ? "selected='selected'" : ""); ?> value="<?php echo $agents['id']; ?>"><?php echo $agents['businessname']; ?></option><?php
+                ?><option <?php echo (in_array($agents['id'], $packageAgentsArr) ? "selected='selected'" : ""); ?> value="<?php echo $agents['id']; ?>"><?php echo $agents['businesscountry'] .' - '.$agents['businessname']; ?></option><?php
             }
         } else {
             echo '';
@@ -262,6 +264,7 @@ class Packages extends Controller {
         } else {
             $chkValidRegion = 1;
             $selCountry = implode(',', $selCountry);
+            $selRegion = implode(',', $selRegion);
         }
 
         if (!empty($expiryDate) && !empty($expiryDate)) {
@@ -325,6 +328,7 @@ class Packages extends Controller {
         $insertPackage['pack_week_1'] = '';
         $insertPackage['pack_week_2'] = '';
         $insertPackage['pack_week_3'] = '';
+        $insertPackage['pack_week_4'] = '';
         if ($packageWeeks) {
             foreach ($packageWeeks as $week) {
                 $strSearch = strtolower(str_replace(' Week', '', $week));
@@ -568,6 +572,10 @@ class Packages extends Controller {
             $weekStaffCharges = 3 * $staffCharges;
             $weekOtherCharges = 3 * $otherCharges;
             $weekTotalCost = $fullPrice * 21 + $totalExcursionCost + 3 * ($staffCharges + $otherCharges);
+        } elseif ($pWeeks == "4 Week") {
+            $weekStaffCharges = 4 * $staffCharges;
+            $weekOtherCharges = 4 * $otherCharges;
+            $weekTotalCost = $fullPrice * 28 + $totalExcursionCost + 4 * ($staffCharges + $otherCharges);
         }
         $strHtml = "<tr>
                         <td>" . $copositionName . $idsHidden . "</td>
@@ -752,6 +760,8 @@ class Packages extends Controller {
                         $weekTotalCost = $addComp['pcomp_total_cost'] * 14 + $addComp['pcomp_excursion_cost'];
                     } elseif ($pWeeks == 3) {
                         $weekTotalCost = $addComp['pcomp_total_cost'] * 21 + $addComp['pcomp_excursion_cost'];
+                    } elseif ($pWeeks == 4) {
+                        $weekTotalCost = $addComp['pcomp_total_cost'] * 28 + $addComp['pcomp_excursion_cost'];
                     }
                     ?>
                             <tr>

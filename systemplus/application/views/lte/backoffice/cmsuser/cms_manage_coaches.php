@@ -22,6 +22,8 @@
                                         <tr>
                                             <th>Company name</th>
                                             <th>Contact name</th>
+                                            <th>Services
+                                                <br /><small>(Excursion/Transfer)</small></th>
                                             <th>Email</th>								
                                             <th>Phone</th>
                                             <th class="no-sort">Action</th>						
@@ -34,6 +36,7 @@
                                                     <tr>
                                                             <td><?php echo htmlspecialchars($company["tra_cp_name"])?></td>
                                                             <td><?php echo htmlspecialchars($company["tra_cp_contact_name"])?></td>
+                                                            <td><?php echo ($company["tra_cp_server_type"])?></td>
                                                             <td><?php echo $company["tra_cp_email"]?></td>
                                                             <td><?php echo $company["tra_cp_phone"]?></td>
                                                             <td class="center">

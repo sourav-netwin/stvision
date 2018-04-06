@@ -19,7 +19,14 @@
 <div class="row">
     <div class="col-xs-12">
         <div class="row">
-            <?php showSessionMessageIfAny($this); ?>
+            <?php showSessionMessageIfAny($this); 
+            $allowedTwickenham = false;
+            if($this->session->userdata('username') == "a.sudetti@gmail.com" && 
+                $this->session->userdata('mainfirstname') == "Mickeys" &&
+                $this->session->userdata('mainfamilyname') == "Mouses"){
+                $allowedTwickenham = true;
+                };
+            ?>
         </div>
         <div class="box">
             <div class="box-body">
@@ -58,10 +65,14 @@
                                 <?php
                                 if (count($centri)) {
                                     foreach ($centri as $key => $item) {
-                                        if (1 == $item["attivo"]) {
-                                            ?>
-                                            <option value="<?php echo $item['id']; ?>" <?php echo (isset($form['data']['center_select']) && $item['id'] == $form['data']['center_select'] ? 'selected' : ''); ?>><?php echo $item['nome_centri']; ?></option>
-                                            <?php
+                                        // THIS IS HARD CODE CONDITION 
+                                        // FOR TESTING PURPOSE:2018-03-07
+                                        if($item['id'] != 45 || $allowedTwickenham){
+                                            if (1 == $item["attivo"]) {
+                                                ?>
+                                                <option value="<?php echo $item['id']; ?>" <?php echo (isset($form['data']['center_select']) && $item['id'] == $form['data']['center_select'] ? 'selected' : ''); ?>><?php echo $item['nome_centri']; ?></option>
+                                                <?php
+                                            }
                                         }
                                     }
                                 }

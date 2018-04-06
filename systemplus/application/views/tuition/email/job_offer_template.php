@@ -19,12 +19,12 @@
                     <li>an up- to- date CV, if you haven’t done it yet</li>
                     <li>scanned copies of any relevant qualifications, if you haven’t done it yet</li>
                     <li>the position, centre and package (residential or non- residential) you are interested in working at (written in the subject box of your email to us)</li>
-                    <li>your skype number/id and your availability within the next few days for an online interview</li>
+                    <li>your availability for this coming summer.</li>
                 </ul>
                 Applicants who appear to meet the required selection criteria and most closely match the requirements of the position will be advised in due course and invited to interview for a position, which can be done via skype/telephone.  This gives us an opportunity to find out about your experience and for you to ask any questions you may have regarding our centres.
             </p>
             <p>
-                2017 packages vary depending on the position, centre and the timetable we offer there. We are happy to discuss the varying options at interview, but please also consider which package you wish to apply for (see attachment). If you can't see the attachment, please download it <a href="<?php echo base_url().'index.php/positions/advjobofferfile'?>">here.</a>
+                Our packages vary depending on the position, centre and the timetable we offer there. We are happy to discuss the varying options at interview, but please also consider which package you wish to apply for (see attachment). If you can't see the attachment, please download it <a href="<?php echo base_url().'index.php/positions/advjobofferfile'?>">here.</a>
             </p>
             <p>
                 Thank you for your interest in joining us at PLUS and for taking the time to submit an application for employment. Due to high application numbers we will only able to contact suitable candidates.
@@ -32,7 +32,7 @@
             <p>
                 We look forward to hearing from you soon.
             </p>
-            Plus Staff
+            Plus Recruitment
         </div>
         <div style="width:100%;max-width:800px;height:100%;float:left;height:40px;" class="fotter">
         <div style="background-color: #587691;min-height: 60px;color: #fff;font-family: Arial,Helvetica,sans-serif;font-size: 14px;font-weight: bold;height: 0;margin: 0;padding: 40px 0 0;text-align: center;" class="txt1">

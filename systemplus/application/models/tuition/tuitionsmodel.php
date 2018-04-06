@@ -102,7 +102,7 @@ Class Tuitionsmodel extends Model {
         $resultData = array();
         try {
             if (!empty($campusId) && !empty($classDate)) {
-                $this->db->select("plused_book.weeks,plused_rows.id_book,'' as class_name,'' as already_assigned,plused_rows.id_year,plused_rows.uuid,plused_rows.nome,plused_rows.cognome,plused_rows.pax_dob,plused_rows.nazionalita,lk_lang_knowledge", false);
+                $this->db->select("plused_book.weeks,plused_rows.id_book,'' as class_name,'' as already_assigned,plused_rows.id_year,plused_rows.uuid,plused_rows.nome,plused_rows.cognome,plused_rows.sesso,plused_rows.pax_dob,plused_rows.nazionalita,lk_lang_knowledge", false);
                 $this->db->where('id_centro', $campusId);
                 $this->db->where('data_arrivo_campus <= ', $classDate);
                 $this->db->where('data_partenza_campus >= ', $classDate);
@@ -168,7 +168,7 @@ Class Tuitionsmodel extends Model {
         $resultData = array();
         try {
             if (!empty($campusId) && !empty($classId)) {
-                $this->db->select("plused_book.weeks,plused_rows.id_book,cs_id,class_name,'' as already_assigned,plused_rows.id_year,plused_rows.uuid,plused_rows.nome,plused_rows.cognome,plused_rows.nazionalita,lk_lang_knowledge", false);
+                $this->db->select("plused_book.weeks,plused_rows.id_book,cs_id,class_name,'' as already_assigned,plused_rows.id_year,plused_rows.uuid,plused_rows.sesso,plused_rows.nome,plused_rows.cognome,plused_rows.pax_dob,plused_rows.nazionalita,lk_lang_knowledge", false);
                 $this->db->where('class_id', $classId);
                 $this->db->where('plused_class_students.cs_is_deleted', 0);
                 $this->db->where("(plused_book.status = 'confirmed' OR plused_book.status is null)");
@@ -201,7 +201,7 @@ Class Tuitionsmodel extends Model {
         try {
             if (!empty($uuids) && !empty($classDate) && !empty($campusId)) {
                 $uuids = explode(',', $uuids);
-                $this->db->select("plused_rows.id_book,plused_rows.id_year,plused_rows.uuid,plused_rows.nome,plused_rows.cognome,plused_rows.pax_dob,plused_rows.nazionalita,lk_lang_knowledge", false);
+                $this->db->select("plused_rows.id_book,plused_rows.id_year,plused_rows.uuid,plused_rows.nome,plused_rows.cognome,plused_rows.pax_dob,plused_rows.sesso,plused_rows.nazionalita,lk_lang_knowledge", false);
                 $this->db->where_in('plused_rows.uuid', $uuids);
                 $this->db->where('plused_book.id_centro', $campusId);
                 $this->db->where("(plused_book.status = 'confirmed' OR plused_book.status is null)");

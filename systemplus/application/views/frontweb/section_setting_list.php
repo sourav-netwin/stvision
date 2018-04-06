@@ -12,7 +12,7 @@
 	var please_enter_dynamic = "<?php echo $this->lang->line("please_enter_dynamic"); ?>";
 	var duplicate_dynamic = "<?php echo $this->lang->line("duplicate_dynamic"); ?>";
 </script>
-<script src="<?php echo LTE; ?>frontweb/custom/section_setting.js?v=0.1"></script>
+<script src="<?php echo LTE; ?>frontweb/custom/section_setting.js?v=1.1"></script>
 
 <div class="right_col" role="main">
 	<div class="row">

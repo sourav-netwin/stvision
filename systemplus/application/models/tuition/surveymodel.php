@@ -506,7 +506,7 @@ class Surveymodel extends Model {
     }
 
     public function getBookingsForLogin($userFirstName, $userSurname, $userDOB) {
-        $arrivalYear = '2017';
+        $arrivalYear = '2018';
         $this->db->select('CONCAT(plused_rows.id_year,"_",plused_rows.id_book," - ",nome_centri) as booking_id, plused_rows.id_book', false);
         $this->db->join('plused_book', 'plused_book.id_book = plused_rows.id_book');
         $this->db->join('centri', 'centri.id = plused_book.id_centro');

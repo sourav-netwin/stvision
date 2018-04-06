@@ -72,18 +72,41 @@ table tbody tr:nth-child(2n+1) td.pdf-create-payed span{
                 <?php showSessionMessageIfAny($this);?>
             </div>
             <div class="row mr-bot-10">
-                <label class="col-sm-2 control-label" for="selCampus">Campus</label>
-                <div class="col-sm-4">
-                    <select class="form-control" autocomplete="off" id="selCampus" name="selCampus"  >
-                        <option value="">Select Campus</option>
-                        <?php if($campusList){
-                                foreach ($campusList as $campus){
-                                    ?><option <?php echo ($campusId == $campus['id'] ? "selected='selected'" : '');?> value="<?php echo $campus['id'];?>"><?php echo $campus['nome_centri'] . " - " . $campus['bookings_count']." Bookings";?></option><?php 
+                <div>
+                    <label class="col-sm-1 control-label" for="selYear">Year</label>
+                    <div class="col-sm-2">
+                        <select class="form-control" autocomplete="off" id="selYear" name="selYear"  >
+                            <option value="">Select Year</option>
+                            <?php 
+                                $ddYearMax = date('Y');
+                                for($ddYear = $ddYearMax; $ddYear > 2001; $ddYear--)
+                                {
+                                    ?><option <?php echo ($ddYear == $currYear ? "selected='selected'" : '');?> value="<?php echo $ddYear;?>"><?php echo $ddYear;?></option><?php 
                                 }
-                        }
-                        ?>
-                    </select>
-                    <div class="error"><?php echo form_error('selCampus');?></div>
+                            ?>
+                        </select>
+                        <div class="error"><?php echo form_error('selYear');?></div>
+                    </div>
+                </div>
+                <div>
+                    <label class="col-sm-1 control-label" for="selCampus">Campus</label>
+                    <div class="col-sm-3">
+                        <select class="form-control" autocomplete="off" id="selCampus" name="selCampus"  >
+                            <option value="">Select Campus</option>
+                            <?php if($campusList){
+                                    foreach ($campusList as $campus){
+                                        ?><option <?php echo ($campusId == $campus['id'] ? "selected='selected'" : '');?> value="<?php echo $campus['id'];?>"><?php echo $campus['nome_centri'] . " - " . $campus['bookings_count']." Bookings";?></option><?php 
+                                    }
+                            }
+                            ?>
+                        </select>
+                        <div class="error"><?php echo form_error('selCampus');?></div>
+                    </div>
+                </div>
+                <div>
+                    <div class="col-sm-2">
+                        <input type="button" value="Click to show" name="btnShow" id="btnShow" class="btn btn-info mr-left-10">
+                    </div>
                 </div>
             </div>
             <div class="row">
@@ -377,7 +400,7 @@ table tbody tr:nth-child(2n+1) td.pdf-create-payed span{
 <script src="<?php echo LTE; ?>plugins/iCheck/icheck.min.js"></script>
 <link href="<?php echo LTE; ?>plugins/iCheck/all.css" rel="stylesheet">
 <script>
-    var pageHighlightMenu = "mapbookings";
+    var pageHighlightMenu = "mapbookings/index";
     function iCheckInit(){
         $('input.chkBookings').iCheck('destroy'); 
         $('input.chkBookings').iCheck({
@@ -390,9 +413,19 @@ table tbody tr:nth-child(2n+1) td.pdf-create-payed span{
     var SITE_PATH = "<?php echo base_url()?>index.php/";
 	$(document).ready(function() {
             iCheckInit();
-            $("#selCampus").on('change',function(){
-                var id = $(this).val();
-                window.location.href = SITE_PATH + "mapbookings/index/" + id
+            $("#btnShow").on('click',function(){
+                var id = $("#selCampus").val();
+                var year = $("#selYear").val();
+                if(id != "")
+                {
+                    if(year != "")
+                        year = "/" + year;
+                    window.location.href = SITE_PATH + "mapbookings/index/" + id + year;
+                }
+                else{
+                    swal("Warning","Please select year and campus first");
+                }
+                
             });
             
             $("#chkBookingsAll").on('ifChecked',function(){
@@ -405,6 +438,14 @@ table tbody tr:nth-child(2n+1) td.pdf-create-payed span{
                     $(this).iCheck("uncheck");
                 });
             });
+            
+             $( "body" ).on( "change", "#selYear", function(){
+                 var campId = $("#selCampus").val();
+                 var year = $("#selYear").val();
+                 $.post(SITE_PATH + "mapbookings/bookddpop",{'campId':campId,'year':year},function(data){
+                    $("#selCampus").html(data);
+                 });
+             });
             
             
              $( "body" ).on( "click", "#btnShowPackageModal", function(){

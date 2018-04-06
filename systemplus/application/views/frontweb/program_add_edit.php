@@ -12,7 +12,7 @@
 	var width1 = "<?php echo PROGRAM_WIDTH; ?>";
 	var minimum_image_dimension = "<?php echo $this->lang->line("minimum_image_dimension"); ?>";
 </script>
-<script src="<?php echo LTE; ?>frontweb/custom/program_banner.js?v=0.2"></script>
+<script src="<?php echo LTE; ?>frontweb/custom/program_banner.js?v=1.1"></script>
 
 <div class="right_col" role="main">
 	<div class="row">

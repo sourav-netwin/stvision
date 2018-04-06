@@ -188,3 +188,30 @@
 					.'&nbsp;&nbsp;'.form_dropdown('' , $minArr , $timeSlotArr[1] , 'class="minDropdown"');
 		}
 	}
+
+	/**
+	*This function is used to get the dropdown values for contact person name(used in the activity program managed by column)
+	*
+	*@param NONE
+	*@return NONE
+	*/
+	if(!function_exists('getContractPersonDropdown'))
+	{
+		function getContractPersonDropdown()
+		{
+			$returnArr = array(
+				'' => 'Please select'
+			);
+			$CI = &get_instance();
+			$result = $CI->db->select("ta_id as id , concat_ws(' ' ,  ta_firstname , ta_lastname) as name" , FALSE)
+								->where('ta_is_deleted' , 0)
+								->order_by("concat_ws(' ' ,  ta_firstname , ta_lastname)")
+								->get(TABLE_TEACHER_APPLICATION)->result_array();
+			if(!empty($result))
+			{
+				foreach($result as $value)
+					$returnArr[$value['id']] = $value['name'];
+			}
+			return $returnArr;
+		}
+	}

@@ -59,6 +59,7 @@ class Excursionexportimport extends Controller {
                 if (isset($_POST['campuses'][0])) {
                     $campuses = $this->input->post('campuses');
                     $exportRecord = $this->excursionexpimpmodel->getExportData($campuses);
+                    
                     $this->load->library('excel_180');
                     $this->load->library('zip');
 
@@ -67,6 +68,7 @@ class Excursionexportimport extends Controller {
                     $loopcount = 0;
                     $disconnect = 0;
                     $newsheet = $this->excel_180->createSheet($sheetno);
+                    //$newsheet->setAutoFilter('A1:P1');
                     $this->excel_180->setActiveSheetIndex($sheetno);
 
                     //Making certain columns hidden
@@ -86,6 +88,7 @@ class Excursionexportimport extends Controller {
                                 $sheetno = 0;
                                 $this->load->library('excel_180');
                                 $newsheet = $this->excel_180->createSheet($sheetno);
+                                //$newsheet->setAutoFilter('A1:P1');
                                 $this->excel_180->setActiveSheetIndex($sheetno);
                                 //Making certain columns hidden
                                 $newsheet->getColumnDimension('B')->setVisible(FALSE);
@@ -97,7 +100,7 @@ class Excursionexportimport extends Controller {
                             $newone = 0;
                             $column = 'A';
                             $export['jn_id'] = NULL;
-                            $export['jn_price'] = NULL;
+                            //$export['jn_price'] = NULL;
                             if ($isNewSheet == 1) {//if a new sheet then add heading
                                 $headArray = array('jn_id', 'jn_id_exc', 'jn_id_campus', 'Campus', 'full/half day', 'Where', 'Planned/extra', 'Week', 'jn_id_bus', 'Company', 'Seats', 'jn_price', 'jn_cost', 'jn_budget', 'jn_currency', 'Currency');
                                 $newsheet->fromArray($headArray, NULL, 'A1'); //heading place at first row
@@ -117,6 +120,7 @@ class Excursionexportimport extends Controller {
                             }
                             $rowCount += 1;
                             $newsheet->getStyle('A1:P1')->getFont()->setBold(true);
+                            $newsheet->getStyle('L:N')->getNumberFormat()->setFormatCode('######0.00');
                             if (isset($exportRecord[$loopcount + 1]['tra_cp_name'])) {
                                 if ($exportRecord[$loopcount + 1]['tra_cp_name'] != $exportRecord[$loopcount]['tra_cp_name']) {//if company name is differs, then create a new sheet
                                     $sheetno += 1;
@@ -141,8 +145,9 @@ class Excursionexportimport extends Controller {
                                     $newsheet->getColumnDimension('C')->setVisible(FALSE);
                                     $newsheet->getColumnDimension('I')->setVisible(FALSE);
                                     $newsheet->getColumnDimension('O')->setVisible(FALSE);
-
+                                    
                                     $newsheet = $this->excel_180->createSheet($sheetno); //creating new sheet
+                                    //$newsheet->setAutoFilter('A1:P1');
                                 }
                             } else {//if is the last sheet
                                 $newsheet->getProtection()->setPassword('G8#!H#t@2ZTVEW@');
@@ -161,13 +166,21 @@ class Excursionexportimport extends Controller {
                                 $newsheet->getColumnDimension('O')->setVisible(FALSE);
                                 $newsheet->setTitle($sheetname);
                             }
+                            $customFileName = "###Bus Coach Price";
+                            
+                            // Set Autofilters for each sheet in file.
+                            $allSheets = $this->excel_180->getAllSheets();
+                            foreach($allSheets as $thisSheet){
+                                $thisSheet->setAutoFilter('A1:P1');
+                            }
+                            
                             if (isset($exportRecord[$loopcount + 1]['id'])) {
                                 if ($exportRecord[$loopcount + 1]['id'] != $exportRecord[$loopcount]['id']) {//creating new excel file if another campus found
                                     $sheetno = 1;
                                     $newone += 1;
                                     $disconnect = 1;
                                     $rowCount = 1;
-                                    $filename = $exportRecord[$loopcount]['nome_centri'] . '.xls';
+                                    $filename = $exportRecord[$loopcount]['nome_centri'] . $customFileName .'.xls';
                                     $writeObj = PHPExcel_IOFactory::createWriter($this->excel_180, 'Excel5');
                                     $filecount += 1;
                                     $filearray[] = $filename;
@@ -188,7 +201,7 @@ class Excursionexportimport extends Controller {
                                     $writeObj->save(EXPORT_TEMP_PATH . $filename); //save file in server
                                 }
                             } else {//if is last file
-                                $filename = $filenm . '.xls';
+                                $filename = $filenm . $customFileName . '.xls';
                                 $writeObj = PHPExcel_IOFactory::createWriter($this->excel_180, 'Excel5');
                                 $filecount += 1;
                                 $filearray[] = $filename;
@@ -335,13 +348,17 @@ class Excursionexportimport extends Controller {
             if (!empty($_FILES['importFile']['name'][0])) {//if file is not empty
                 $this->db->trans_start(); //begin transaction
                 $this->_backupAllJoin(); //backup all data from exc_join table
-                $this->excursionexpimpmodel->deleteAllJoin(); //delete all record from exc_join table
+                //$this->excursionexpimpmodel->deleteAllJoin(); //delete all record from exc_join table
                 $fileCount = sizeof($_FILES['importFile']['name']); //get total file count
                 for ($i = 0; $i < $fileCount; $i++) {
                     if ($_FILES['importFile']['name'][$i] !== '') {
-                        $mimes = array('application/vnd.ms-excel', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'); //setting the file mime type(.xls, .xlsx)
+                        $mimes = array('application/octet-stream','application/vnd.ms-excel', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'); //setting the file mime type(.xls, .xlsx)
                         if (in_array($_FILES['importFile']['type'][$i], $mimes)) {//validate file mime type
                             $fileName = $_FILES['importFile']['tmp_name'][$i];
+                            $campusName = pathinfo($_FILES['importFile']['name'][$i],PATHINFO_FILENAME);
+                            $campusName = explode("###", $campusName);
+                            $campusName = $campusName[0];
+                            $this->excursionexpimpmodel->deleteCampusJoin($campusName); //delete all record from exc_join table for the selected campus
                             try {
                                 $fileType = PHPExcel_IOFactory::identify($fileName);
                                 $objReader = PHPExcel_IOFactory::createReader($fileType);
@@ -355,6 +372,7 @@ class Excursionexportimport extends Controller {
                                         $sheetVal[11] == str_replace(',', '.', $sheetVal[11]);
                                         $sheetVal[12] == str_replace(',', '.', $sheetVal[12]);
                                         $sheetVal[13] == str_replace(',', '.', $sheetVal[13]);
+                                        $ispricevalid = TRUE;
                                         $iscostvalid = TRUE;
                                         $isbudgetvalid = TRUE;
                                         if (!empty($sheetVal[12])) {
@@ -367,7 +385,18 @@ class Excursionexportimport extends Controller {
                                                 $isbudgetvalid = FALSE;
                                             }
                                         }
-                                        if (!empty($sheetVal[11]) && is_numeric($sheetVal[11]) && sizeof($sheetVal) == 16 && $iscostvalid && $isbudgetvalid) {//validating price and row count
+                                        if (!empty($sheetVal[11])) {
+                                            if (!is_numeric($sheetVal[11])) {
+                                                $ispricevalid = FALSE;
+                                            }
+                                        }else $sheetVal[11] = 0;
+                                        
+                                        $allCellEmpty = FALSE;
+                                        if(empty($sheetVal[11]) && empty($sheetVal[12]) && empty($sheetVal[13]))
+                                            $allCellEmpty = TRUE;
+                                        
+                                        IF(!$allCellEmpty)
+                                        if (sizeof($sheetVal) == 16 && $ispricevalid && $iscostvalid && $isbudgetvalid) {//validating price and row count
                                             $isCount = $this->excursionexpimpmodel->getImportCount($sheetVal[1], $sheetVal[2], $sheetVal[8], $sheetVal[14]);
                                             //if a new record
                                             if (!$isCount) {
@@ -451,49 +480,68 @@ class Excursionexportimport extends Controller {
         $filearray = array();
         $mastcount = sizeof($exportRecord);
         $filename = '';
-        foreach ($exportRecord as $export) {
-            if ($disconnect != 0) {
-                $sheetno = 0;
+        if($exportRecord)
+        {
+            foreach ($exportRecord as $export) {
+                if ($disconnect != 0) {
+                    $sheetno = 0;
 
-                $this->load->library('excel_180');
-                $newsheet = $this->excel_180->createSheet($sheetno);
-                $this->excel_180->setActiveSheetIndex($sheetno);
-                $newsheet->getColumnDimension('B')->setVisible(FALSE);
-                $newsheet->getColumnDimension('C')->setVisible(FALSE);
-                $newsheet->getColumnDimension('I')->setVisible(FALSE);
-                $newsheet->getColumnDimension('O')->setVisible(FALSE);
-                $disconnect = 0;
-            }
-            $newone = 0;
-            $column = 'A';
-            if ($isNewSheet == 1) {
-                $headArray = array('jn_id', 'jn_id_exc', 'jn_id_campus', 'Campus', 'full/half day', 'Where', 'Planned/extra', 'Week', 'jn_id_bus', 'Company', 'Seats', 'jn_price', 'jn_cost', 'jn_budget', 'jn_currency', 'Currency');
-                $newsheet->fromArray($headArray, NULL, 'A1');
-                $rowCount += 1;
-            }
-            $isNewSheet = 0;
-            if (!empty($export)) {
-                foreach ($export as $key => $val) {
-                    $export[$key] = trim($val, '=');
+                    $this->load->library('excel_180');
+                    $newsheet = $this->excel_180->createSheet($sheetno);
+                    $this->excel_180->setActiveSheetIndex($sheetno);
+                    $newsheet->getColumnDimension('B')->setVisible(FALSE);
+                    $newsheet->getColumnDimension('C')->setVisible(FALSE);
+                    $newsheet->getColumnDimension('I')->setVisible(FALSE);
+                    $newsheet->getColumnDimension('O')->setVisible(FALSE);
+                    $disconnect = 0;
                 }
-            }
-            $newsheet->fromArray($export, NULL, 'A' . $rowCount);
-            $filenm = $exportRecord[$loopcount]['nome_centri'];
-            $sheetname = $exportRecord[$loopcount]['tra_cp_name'];
-            if (strlen($exportRecord[$loopcount]['tra_cp_name']) > 31) {
-                $sheetname = substr($exportRecord[$loopcount]['tra_cp_name'], 0, 27) . "...";
-            }
-            $newsheet->getStyle('A1:P1')->getFont()->setBold(true);
-            $rowCount += 1;
-            if (isset($exportRecord[$loopcount + 1]['tra_cp_name'])) {
-                if ($exportRecord[$loopcount + 1]['tra_cp_name'] != $exportRecord[$loopcount]['tra_cp_name']) {
-                    $sheetno += 1;
-                    $newone += 1;
-                    $rowCount = 1;
+                $newone = 0;
+                $column = 'A';
+                if ($isNewSheet == 1) {
+                    $headArray = array('jn_id', 'jn_id_exc', 'jn_id_campus', 'Campus', 'full/half day', 'Where', 'Planned/extra', 'Week', 'jn_id_bus', 'Company', 'Seats', 'jn_price', 'jn_cost', 'jn_budget', 'jn_currency', 'Currency');
+                    $newsheet->fromArray($headArray, NULL, 'A1');
+                    $rowCount += 1;
+                }
+                $isNewSheet = 0;
+                if (!empty($export)) {
+                    foreach ($export as $key => $val) {
+                        $export[$key] = trim($val, '=');
+                    }
+                }
+                $newsheet->fromArray($export, NULL, 'A' . $rowCount);
+                $filenm = $exportRecord[$loopcount]['nome_centri'];
+                $sheetname = $exportRecord[$loopcount]['tra_cp_name'];
+                if (strlen($exportRecord[$loopcount]['tra_cp_name']) > 31) {
+                    $sheetname = substr($exportRecord[$loopcount]['tra_cp_name'], 0, 27) . "...";
+                }
+                $newsheet->getStyle('A1:P1')->getFont()->setBold(true);
+                $rowCount += 1;
+                if (isset($exportRecord[$loopcount + 1]['tra_cp_name'])) {
+                    if ($exportRecord[$loopcount + 1]['tra_cp_name'] != $exportRecord[$loopcount]['tra_cp_name']) {
+                        $sheetno += 1;
+                        $newone += 1;
+                        $rowCount = 1;
+                        $newsheet->getProtection()->setPassword('G8#!H#t@2ZTVEW@');
+                        $newsheet->getProtection()->setSheet(TRUE);
+                        $newsheet->getStyle('L1:N' . $newsheet->getHighestDataRow())->getProtection()->setLocked(PHPExcel_Style_Protection::PROTECTION_UNPROTECTED);
+                        $newsheet->setTitle($sheetname);
+                        for ($col = 'A'; $col <= 'P'; $col++) {
+                            if ($col == 'L' OR $col == 'M' OR $col == 'N') {
+                                $newsheet->getColumnDimension($col)->setWidth(10);
+                            } else {
+                                $newsheet->getColumnDimension($col)->setAutoSize(TRUE); //setting auto size to columns
+                            }
+                        }
+                        $newsheet->getColumnDimension('B')->setVisible(FALSE);
+                        $newsheet->getColumnDimension('C')->setVisible(FALSE);
+                        $newsheet->getColumnDimension('I')->setVisible(FALSE);
+                        $newsheet->getColumnDimension('O')->setVisible(FALSE);
+                        $newsheet = $this->excel_180->createSheet($sheetno);
+                    }
+                } else {
                     $newsheet->getProtection()->setPassword('G8#!H#t@2ZTVEW@');
                     $newsheet->getProtection()->setSheet(TRUE);
                     $newsheet->getStyle('L1:N' . $newsheet->getHighestDataRow())->getProtection()->setLocked(PHPExcel_Style_Protection::PROTECTION_UNPROTECTED);
-                    $newsheet->setTitle($sheetname);
                     for ($col = 'A'; $col <= 'P'; $col++) {
                         if ($col == 'L' OR $col == 'M' OR $col == 'N') {
                             $newsheet->getColumnDimension($col)->setWidth(10);
@@ -505,28 +553,33 @@ class Excursionexportimport extends Controller {
                     $newsheet->getColumnDimension('C')->setVisible(FALSE);
                     $newsheet->getColumnDimension('I')->setVisible(FALSE);
                     $newsheet->getColumnDimension('O')->setVisible(FALSE);
-                    $newsheet = $this->excel_180->createSheet($sheetno);
+                    $newsheet->setTitle($sheetname);
                 }
-            } else {
-                $newsheet->getProtection()->setPassword('G8#!H#t@2ZTVEW@');
-                $newsheet->getProtection()->setSheet(TRUE);
-                $newsheet->getStyle('L1:N' . $newsheet->getHighestDataRow())->getProtection()->setLocked(PHPExcel_Style_Protection::PROTECTION_UNPROTECTED);
-                for ($col = 'A'; $col <= 'P'; $col++) {
-                    if ($col == 'L' OR $col == 'M' OR $col == 'N') {
-                        $newsheet->getColumnDimension($col)->setWidth(10);
-                    } else {
-                        $newsheet->getColumnDimension($col)->setAutoSize(TRUE); //setting auto size to columns
-                    }
-                }
-                $newsheet->getColumnDimension('B')->setVisible(FALSE);
-                $newsheet->getColumnDimension('C')->setVisible(FALSE);
-                $newsheet->getColumnDimension('I')->setVisible(FALSE);
-                $newsheet->getColumnDimension('O')->setVisible(FALSE);
-                $newsheet->setTitle($sheetname);
-            }
-            if (isset($exportRecord[$loopcount + 1]['jn_id_campus'])) {
-                if ($exportRecord[$loopcount + 1]['jn_id_campus'] != $exportRecord[$loopcount]['jn_id_campus']) {
+                if (isset($exportRecord[$loopcount + 1]['jn_id_campus'])) {
+                    if ($exportRecord[$loopcount + 1]['jn_id_campus'] != $exportRecord[$loopcount]['jn_id_campus']) {
 
+                        $sheetno = 1;
+                        $newone += 1;
+                        $disconnect = 1;
+                        $rowCount = 1;
+                        $filename = $exportRecord[$loopcount]['nome_centri'] . '.xls';
+                        $writeObj = PHPExcel_IOFactory::createWriter($this->excel_180, 'Excel5');
+                        $filecount += 1;
+                        $filearray[] = $filename;
+                        //Remove unwanted empty worksheet generating in each workbook 
+                        $workSheetArray = $this->excel_180->getSheetNames();
+                        $removeNum = 0;
+                        foreach ($workSheetArray as $key => $val) {
+                            if (strpos(trim($val), "Worksheet") === 0) {
+                                $this->excel_180->removeSheetByIndex($key - $removeNum);
+                                $removeNum += 1;
+                            }
+                        }
+                        header('Content-Type: application/application/vnd.ms-excel');
+                        header('Cache-Control: max-age=0');
+                        $writeObj->save(EXPORT_BACKUP_PATH . $filename);
+                    }
+                } else {
                     $sheetno = 1;
                     $newone += 1;
                     $disconnect = 1;
@@ -548,65 +601,44 @@ class Excursionexportimport extends Controller {
                     header('Cache-Control: max-age=0');
                     $writeObj->save(EXPORT_BACKUP_PATH . $filename);
                 }
-            } else {
-                $sheetno = 1;
-                $newone += 1;
-                $disconnect = 1;
-                $rowCount = 1;
-                $filename = $exportRecord[$loopcount]['nome_centri'] . '.xls';
-                $writeObj = PHPExcel_IOFactory::createWriter($this->excel_180, 'Excel5');
-                $filecount += 1;
-                $filearray[] = $filename;
-                //Remove unwanted empty worksheet generating in each workbook 
-                $workSheetArray = $this->excel_180->getSheetNames();
-                $removeNum = 0;
-                foreach ($workSheetArray as $key => $val) {
-                    if (strpos(trim($val), "Worksheet") === 0) {
-                        $this->excel_180->removeSheetByIndex($key - $removeNum);
-                        $removeNum += 1;
+
+                if ($newone > 0) {
+
+                    $isNewSheet = 1;
+                    if ($disconnect != 0) {
+                        $this->excel_180->__destruct();
                     }
                 }
-                header('Content-Type: application/application/vnd.ms-excel');
-                header('Cache-Control: max-age=0');
-                $writeObj->save(EXPORT_BACKUP_PATH . $filename);
+                $loopcount += 1;
+            }
+            $downloadedFileCount = sizeof($filearray);
+            for ($i = 0; $i < $downloadedFileCount; $i++) {
+                $this->zip->read_file(EXPORT_BACKUP_PATH . $filearray[$i]);
             }
 
-            if ($newone > 0) {
-
-                $isNewSheet = 1;
-                if ($disconnect != 0) {
-                    $this->excel_180->__destruct();
+            if ($this->zip->archive(EXPORT_BACKUP_PATH . 'excursion_files_backup_' . date('d-m-Y His') . '.zip')) {
+                for ($i = 0; $i < $downloadedFileCount; $i++) {
+                    unlink(EXPORT_BACKUP_PATH . $filearray[$i]);
                 }
             }
-            $loopcount += 1;
-        }
-        $downloadedFileCount = sizeof($filearray);
-        for ($i = 0; $i < $downloadedFileCount; $i++) {
-            $this->zip->read_file(EXPORT_BACKUP_PATH . $filearray[$i]);
-        }
-
-        if ($this->zip->archive(EXPORT_BACKUP_PATH . 'excursion_files_backup_' . date('d-m-Y His') . '.zip')) {
-            for ($i = 0; $i < $downloadedFileCount; $i++) {
-                unlink(EXPORT_BACKUP_PATH . $filearray[$i]);
+            //delete old backup files. 
+            $files = array();
+            $folder = EXPORT_BACKUP_PATH;
+            foreach (scandir($folder) as $node) {
+                $nodePath = $folder . $node;
+                if (is_dir($nodePath))
+                    continue;
+                $dateValue = trim(str_replace('excursion_files_backup_', '', str_replace('.zip', '', $node)));
+                $nodetime = strtotime($dateValue);
+                $files[$nodePath] = $nodetime;
             }
-        }
-        //delete old backup files. 
-        $files = array();
-        $folder = EXPORT_BACKUP_PATH;
-        foreach (scandir($folder) as $node) {
-            $nodePath = $folder . $node;
-            if (is_dir($nodePath))
-                continue;
-            $dateValue = trim(str_replace('excursion_files_backup_', '', str_replace('.zip', '', $node)));
-            $nodetime = strtotime($dateValue);
-            $files[$nodePath] = $nodetime;
-        }
-        arsort($files);
-        $oldfiles = array_slice($files, 10);
-        if (!empty($files) && !empty($oldfiles)) {
-            foreach ($files as $path => $time) {
-                if (in_array($time, $oldfiles)) {
-                    unlink($path);
+            arsort($files);
+            $oldfiles = array_slice($files, 10);
+            if (!empty($files) && !empty($oldfiles)) {
+                foreach ($files as $path => $time) {
+                    if (in_array($time, $oldfiles)) {
+                        unlink($path);
+                    }
                 }
             }
         }

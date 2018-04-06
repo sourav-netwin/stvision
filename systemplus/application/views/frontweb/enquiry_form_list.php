@@ -3,7 +3,7 @@
 <script src="<?php echo LTE; ?>plugins/datatables/jquery.dataTables.min.js"></script>
 <script src="<?php echo LTE; ?>plugins/datatables/dataTables.bootstrap.min.js"></script>
 
-<link rel="stylesheet" href="<?php echo LTE; ?>frontweb/style.css">
+<link rel="stylesheet" href="<?php echo LTE; ?>frontweb/style.css?v=1.1">
 
 <div class="right_col" role="main">
 	<div class="row">

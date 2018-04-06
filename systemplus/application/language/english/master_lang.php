@@ -96,9 +96,23 @@
 	);
 	$lang['manage_fixed_activity']['list']['actionColumn'] = array(
 		'columnNo' => 6,
-		'actionType' => array('edit')
+		'actionType' => array('edit' , 'delete')
 	);
+	$lang['manage_fixed_activity']['deleteCheck'] = 'manage_master_activity_dates';
 /*---------------For manage fixed activity module(End)---------------*/
+
+/*---------------For manage master activity dates(Start)---------------*/
+	$lang['manage_master_activity_dates']['dbName'] = TABLE_FIXED_DAY_ACTIVITY;
+	$lang['manage_master_activity_dates']['key'] = 'fixed_day_activity_id';
+	$lang['manage_master_activity_dates']['foreignKey'] = 'master_activity_id';
+	$lang['manage_master_activity_dates']['deleteCheck'] = 'manage_master_activity_details';
+/*---------------For manage master activity dates(End)---------------*/
+
+/*---------------For manage master activity details(Start)---------------*/
+	$lang['manage_master_activity_details']['dbName'] = TABLE_FIXED_DAY_ACTIVITY_DETAILS;
+	$lang['manage_master_activity_details']['key'] = 'fixed_day_activity_details_id';
+	$lang['manage_master_activity_details']['foreignKey'] = 'fixed_day_activity_id';
+/*---------------For manage master activity details(End)---------------*/
 
 /*---------------For manage Centre(Start)---------------*/
 	$lang['centre']['dbName'] = TABLE_CENTRE;

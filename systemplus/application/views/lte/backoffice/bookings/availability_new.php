@@ -73,13 +73,20 @@
                     </div>
                     <div class="col-lg-3 col-md-4 col-sm-6">
                             <div class="mr-bot-10 mr-top-10">
-                                <label>Date of interest</label>
+                                <label>From date</label>
                             </div>
                             <div class="mr-bot-10">
-                                <input type="text" class="form-control" readonly id="dateStart" name="dateStart" value="" style="cursor:pointer;" />
+                                <input type="text" readonly style="cursor: pointer;" class="form-control" id="txtCalFromDate" name="fd" value="<?php echo $calFromDate;?>" />
                             </div>
                     </div>
-                    
+                    <div class="col-lg-3 col-md-4 col-sm-6">
+                            <div class="mr-bot-10 mr-top-10">
+                                <label>To date</label>
+                            </div>
+                            <div class="mr-bot-10">
+                                <input type="text" readonly style="cursor: pointer;" class="form-control col-xs-4" id="txtCalToDate" name="td" value="<?php echo $calToDate;?>" />
+                            </div>
+                    </div>
                 </div>
             </div>
             <div class="box-footer">
@@ -276,14 +283,50 @@ function aggiornaAcco(campusId){
         	
         
         
-        $( "#dateStart" ).datepicker({
-            changeMonth: true,
-            changeYear: true,		  
-            dateFormat: "dd/mm/yy",
-            maxDate: "+1Y"
-        }).datepicker("setDate", new Date());
+//        $( "#txtCalFromDate" ).datepicker({
+//            changeMonth: true,
+//            changeYear: true,		  
+//            dateFormat: "dd/mm/yy",
+//            maxDate: "+1Y"
+//        });
+//
+//        $( "#txtCalToDate" ).datepicker({
+//            changeMonth: true,
+//            changeYear: true,		  
+//            dateFormat: "dd/mm/yy",
+//            maxDate: "+1Y"
+//        });
+        $( "#txtCalFromDate" ).datepicker({
+                defaultDate: "+1w",
+                changeMonth: true,
+                changeYear: true,		  
+                dateFormat: "dd/mm/yy",		
+                numberOfMonths: 1,
+                onClose: function( selectedDate ) {
+                    $(".txtCalFromDate").val(selectedDate);
+                    $( "#txtCalToDate" ).datepicker( "option", "minDate", selectedDate );
+                    //$( "#txtCalToDate" ).datepicker( "option", "maxDate", "+1M" );
+                    //maxDate: "+1M +10D"
+                    var from = selectedDate.split("/");
+                    var f = new Date(from[2], from[1] - 1, from[0]);
+                    var sDate = new Date(f);
+                    sDate.setMonth(sDate.getMonth() + 1);
+                    sDate.setDate(sDate.getDate() - 9);
+                    $( "#txtCalToDate" ).datepicker( "option", "maxDate", sDate );
+                }
+            });
 
-        
+            $( "#txtCalToDate" ).datepicker({
+                    defaultDate: "+1w",
+                    changeMonth: true,
+                    changeYear: true,		  
+                    dateFormat: "dd/mm/yy",		
+                    numberOfMonths: 1,
+                    onClose: function( selectedDate ) {
+                            $(".txtCalToDate").val(selectedDate);
+                            $( "#txtCalFromDate" ).datepicker( "option", "maxDate", selectedDate );
+                    }
+            });
         
         // REPORTS - BY FILTERS
         $('#inviaO').on('click', function(e){

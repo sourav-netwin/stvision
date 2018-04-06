@@ -60,6 +60,8 @@
                                     <th>Booking id</th>
                                     <th>Total questions</th>
                                     <th>Correct answers</th>
+                                    <th>Attempt</th>
+                                    <th>Status</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -70,9 +72,6 @@
 
                 </div>
             </div>
-
-
-
             <div class="row"></div>
         </div><!-- End of .box -->
     </div><!-- End of .col-md-12 -->
@@ -117,6 +116,21 @@
                 }
             });
         });
+        
+        $('#testListDiv').on('click', '.btnResetAtt', function () {
+            var sid = $(this).attr('data-id');
+            $.post(siteUrl + "studentsreport/resetAttempt",
+                {'sid':sid},function(data){
+                    if(data.result)
+                    {
+                        $('#span_'+sid).html(0);
+                        swal("Success",data.message);
+                    }
+                    else
+                        swal("Error",data.message);
+                },'json');
+        });
+        
     });
     function datatable(test = '', studentName = '') {
         table = $('#reportTable').DataTable({
@@ -147,7 +161,9 @@
                 {"data": "nome_centri", "name": "nome_centri"},
                 {"data": "id_book", "name": "id_book"},
                 {"data": "total_questions", "name": "total_questions"},
-                {"data": "correct_answers", "name": "correct_answers"}
+                {"data": "correct_answers", "name": "correct_answers"},
+                {"data": "attempt_count", "name": "attempt_count"},
+                {"data": "test_status", "name": "test_status"}
             ],
         });
     }

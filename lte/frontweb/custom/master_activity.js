@@ -1,7 +1,7 @@
 /*
 	Description : This js file is used to manage all the javascript related operations
 					for the master activity module
-	Version : 0.7
+	Version : 1.1
 */
 $(document).ready(function(){
 	//For datepicker
@@ -101,14 +101,21 @@ $(document).ready(function(){
 					$('.activityreportBody').empty();
 					var htmlStr = '';
 					$.each(response.details , function(index , value){
+						var programName = (value.program_name != null) ? value.program_name : '';
+						var locationName = (value.location != null) ? value.location : '';
+						var activityName = (value.activity != null) ? value.activity : '';
+						var fromTime = (value.from_time != null) ? value.from_time : '';
+						var toTime = (value.to_time != null) ? value.to_time : '';
+						var managedBy = (value.managed_by != null) ? value.managed_by : '';
+
 						htmlStr+= '<tr>\
 										<td>'+value.date+'</td>\
-										<td>'+value.program_name+'</td>\
-										<td>'+value.location+'</td>\
-										<td>'+value.activity+'</td>\
-										<td>'+value.from_time+'</td>\
-										<td>'+value.to_time+'</td>\
-										<td>'+value.managed_by+'</td>\
+										<td>'+programName+'</td>\
+										<td>'+locationName+'</td>\
+										<td>'+activityName+'</td>\
+										<td>'+fromTime+'</td>\
+										<td>'+toTime+'</td>\
+										<td>'+managedBy+'</td>\
 									</tr>'
 					});
 					$('.activityreportBody').append(htmlStr);

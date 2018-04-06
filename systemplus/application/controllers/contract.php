@@ -280,29 +280,31 @@ class Contract extends Controller {
                                                 ); 
                                                 $this->contractmodel->operations('update', $updateContract,$result);
                                             // END OF FILE(ATTACHMENT)
-                                            
-                                            $senderEmail = PLUS_SENDER_EMAIL_ADDRESS;
-                                            $receiverEmail = $emailAddress;
-                                            $messageBody = "";
-                                            $data['teacherName'] = $applicantData->ta_firstname ." ". $applicantData->ta_lastname ;
-                                            $data['teacherEmail'] = $applicantData->ta_email;
-                                            $data['loginUrl'] = base_url().'index.php/users';
+                                            // REMOVED STATIC FILE TEMPLATE
+                                            //tuition/email/job_contract_template
+                                            //$senderEmail = PLUS_SENDER_EMAIL_ADDRESS;
+
+                                            $teacherName = $applicantData->ta_firstname ." ". $applicantData->ta_lastname ;
+                                            $teacherEmail = $applicantData->ta_email;
+                                            $loginUrl = base_url().'index.php/users';
                                             $randomPassword = random_string();
-                                            $data['randomPassword'] = $randomPassword;
-                                            ob_start(); // start output buffer
-                                            $this->load->view('tuition/email/job_contract_template', $data);
-                                            $messageBody = ob_get_contents(); // get contents of buffer
-                                            ob_end_clean();
+                                            $randomPassword = $randomPassword;
+
                                             $this->load->library('email');
+                                            $emailTemplate = getEmailTemplate(3);
                                             $this->email->set_newline("\r\n");
-                                            $this->email->from($senderEmail, 'plus-ed.com');
-                                            $this->email->to($receiverEmail);
-                                            $this->email->subject("plus-ed.com | Contract");
-                                            $this->email->message($messageBody);
-                                            //$attachFile = FCPATH . 'pdf/job_contract.pdf';
-                                            //$this->email->attach($attachFile);
+                                            $this->email->from($emailTemplate->emt_from_email, "Plus-ed.com");
+                                            $this->email->to($teacherEmail);
+                                            $this->email->subject($emailTemplate->emt_title);
+                                            $strParam = array(
+                                                '{TEACHER_NAME}' => $teacherName,
+                                                '{TEACHER_EMAIL}' => $teacherEmail,
+                                                '{TEACHER_PASSWORD}' => $randomPassword,
+                                                '{LOGIN_URL}' => $loginUrl
+                                            );
+                                            $txtMessageStr = mergeContent($strParam,$emailTemplate->emt_text);
+                                            $this->email->message($txtMessageStr);
                                             $this->email->send();
-                                            
                                             // store users password in application table
                                             $updateArr = array(
                                                 'ta_password' => md5($randomPassword)

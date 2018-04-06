@@ -65,13 +65,14 @@ class Studentsmodel extends Model {
 
             $this->db->select("test_id,test_title,tque_id,tque_test_id,tque_question,tque_section,group_concat(opt_id,'#',opt_text ORDER BY opt_id SEPARATOR '||') as que_options,
                 tans_opt_id as std_marked_option", false);
-
+            //case opt_correct_answer when 1 then '(CORRECT)' else '' end
             $this->db->join('plused_test_question', 'test_id = tque_test_id');
             $this->db->join('plused_test_options', 'tque_id = opt_que_id');
             $this->db->join('plused_test_answers', "tque_id = tans_ques_id AND tans_uuid = '" . $userUUID . "'", 'LEFT');
             $this->db->group_by('tque_id');
             // $this->db->order_by('tque_id,opt_id','DESC');
             $result = $this->db->get('plused_test_student');
+            //echo $this->db->last_query();die;
             if ($result->num_rows()) {
                 return $result->result_array();
             }
@@ -115,6 +116,50 @@ class Studentsmodel extends Model {
             return 1;
         }
     }
+    
+    public function testStarted($testId, $userUUID,$remainingTime) {
+        $testSubmitId = 0;
+        if (!empty($testId) && !empty($userUUID)) {
+            $whereArr = array(
+                'ts_uuid' => $userUUID,
+                'ts_test_id' => $testId
+            );
+            $this->db->where($whereArr);
+            $result = $this->db->get('plused_test_submited');
+            if ($result->num_rows()) {
+                $testRow = $result->row();
+                $testSubmitId = $testRow->ts_id;
+                // update time remaining
+                $updateArray = array(
+                    'ts_remaining_time' => $remainingTime,
+                    'ts_test_status' => 'Running'
+                );
+                $this->db->flush_cache();
+                $this->db->set('ts_attempt_count', 'ts_attempt_count+1', FALSE);
+                $this->db->where('ts_id',$testSubmitId);
+                $this->db->update("plused_test_submited",$updateArray);
+            } else {
+                $insertData = array(
+                    'ts_uuid' => $userUUID,
+                    'ts_test_id' => $testId,
+                    'ts_remaining_time' => $remainingTime,
+                    'ts_attempt_count' => 1,
+                    'ts_test_status' => 'Running'
+                );
+                $this->db->insert('plused_test_submited', $insertData);
+                $testSubmitId = $this->db->insert_id();
+            }
+        }
+        return $testSubmitId;
+    }
+    
+    function upatetimer($runningTestId, $remainingTime){
+        $updateArray = array(
+            'ts_remaining_time' => $remainingTime
+        );
+        $this->db->where('ts_id',$runningTestId);
+        $this->db->update("plused_test_submited",$updateArray);
+    }
 
     /**
      * submitTest
@@ -126,12 +171,6 @@ class Studentsmodel extends Model {
      */
     public function submitTest($testId, $userUUID, $testSubmittedDate) {
         if (!empty($testId) && !empty($userUUID) && !empty($testSubmittedDate)) {
-            $insertData = array(
-                'ts_uuid' => $userUUID,
-                'ts_test_id' => $testId,
-                'ts_submitted_on' => $testSubmittedDate,
-            );
-
             $whereArr = array(
                 'ts_uuid' => $userUUID,
                 'ts_test_id' => $testId
@@ -139,8 +178,25 @@ class Studentsmodel extends Model {
             $this->db->where($whereArr);
             $result = $this->db->get('plused_test_submited');
             if ($result->num_rows()) {
-                return -1;
+                $testRow = $result->row();
+                $testSubmitId = $testRow->ts_id;
+                // update time remaining
+                $updateArray = array(
+                    'ts_submitted_on' => $testSubmittedDate,
+                    'ts_test_status' => 'Completed'
+                );
+                $this->db->flush_cache();
+                $this->db->where('ts_id',$testSubmitId);
+                $this->db->update("plused_test_submited",$updateArray);
+                return 1;
             } else {
+                $this->db->flush_cache();
+                $insertData = array(
+                    'ts_uuid' => $userUUID,
+                    'ts_test_id' => $testId,
+                    'ts_submitted_on' => $testSubmittedDate,
+                    'ts_test_status' => 'Completed'
+                );
                 $this->db->insert('plused_test_submited', $insertData);
                 return $this->db->insert_id();
             }
@@ -161,7 +217,7 @@ class Studentsmodel extends Model {
             $this->db->where('ts_test_id', $testId);
             $result = $this->db->get('plused_test_submited');
             if ($result->num_rows())
-                return 1;
+                return $result->row();
             else
                 return 0;
         }
@@ -182,7 +238,8 @@ class Studentsmodel extends Model {
     public function getStudentTestData($testId = 0, $keyword = "", $params = array()) {
         $this->db->select("ts_submitted_on,test_title,
             COUNT(tque_id) AS total_questions,SUM(CASE WHEN opt_correct_answer = 1 AND opt_id = tans_opt_id THEN 1 ELSE 0 END) AS correct_answers,
-            cognome,nome,plused_rows.id_book,plused_rows.id_year,nome_centri", false);
+            cognome,nome,plused_rows.id_book,plused_rows.id_year,nome_centri,
+            ts_attempt_count as attempt_count,ts_test_status as test_status,ts_id as tsid", false);//,ts_test_status
         $this->db->join('plused_test_student', 'ts_test_id = test_id');
         $this->db->join('plused_test_question', 'test_id = tque_test_id');
         $this->db->join('plused_test_options', 'tque_id = opt_que_id');
@@ -261,6 +318,15 @@ class Studentsmodel extends Model {
             return $result->result_array();
         }
         return 0;
+    }
+    
+    public function resetAttempt($test_sub_id){
+         $updateArray = array(
+             'ts_attempt_count' => 0
+         );
+         $this->db->where('ts_id', $test_sub_id);
+         $this->db->update("plused_test_submited",$updateArray);
+         return 1;
     }
 
     /**

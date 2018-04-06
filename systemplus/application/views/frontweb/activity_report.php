@@ -1,6 +1,6 @@
 <!----------Form validation js----------->
 <script src="<?php echo base_url(); ?>js/tuition/jquery_validations1.9.0.js"></script>
-<link rel="stylesheet" href="<?php echo LTE; ?>frontweb/style.css">
+<link rel="stylesheet" href="<?php echo LTE; ?>frontweb/style.css?v=1.1">
 
 <!----------Datepicker CSS and JS--------->
 <link rel="stylesheet" href="<?php echo LTE; ?>frontweb/datepicker.css">
@@ -12,7 +12,7 @@
 	var please_select_dynamic = "<?php echo $this->lang->line("please_select_dynamic"); ?>";
 	var start_end_date_validation = "<?php echo $this->lang->line("start_end_date_validation"); ?>";
 </script>
-<script src="<?php echo LTE; ?>frontweb/custom/master_activity.js?v=0.7"></script>
+<script src="<?php echo LTE; ?>frontweb/custom/master_activity.js?v=1.1"></script>
 
 <div class="right_col" role="main">
 	<div class="row">
@@ -126,7 +126,10 @@
 											if(!empty($post['dropdownArr']['dateValue']))
 											{
 												foreach($post['dropdownArr']['dateValue'] as $value)
-													echo '<option value="'.$value.'">'.date('d-M-Y' , strtotime($value)).'</option>';
+												{
+													if(trim($value))
+														echo '<option value="'.$value.'">'.date('d-M-Y' , strtotime($value)).'</option>';
+												}
 											}
 ?>
 										</select>
@@ -138,7 +141,10 @@
 											if(!empty($post['dropdownArr']['proramName']))
 											{
 												foreach($post['dropdownArr']['proramName'] as $value)
-													echo '<option value="'.$value.'">'.$value.'</option>';
+												{
+													if(trim($value))
+														echo '<option value="'.$value.'">'.$value.'</option>';
+												}
 											}
 ?>
 										</select>
@@ -150,7 +156,10 @@
 											if(!empty($post['dropdownArr']['location']))
 											{
 												foreach($post['dropdownArr']['location'] as $value)
-													echo '<option value="'.$value.'">'.$value.'</option>';
+												{
+													if(trim($value))
+														echo '<option value="'.$value.'">'.$value.'</option>';
+												}
 											}
 ?>
 										</select>
@@ -162,7 +171,10 @@
 											if(!empty($post['dropdownArr']['activity']))
 											{
 												foreach($post['dropdownArr']['activity'] as $value)
-													echo '<option value="'.$value.'">'.$value.'</option>';
+												{
+													if(trim($value))
+														echo '<option value="'.$value.'">'.$value.'</option>';
+												}
 											}
 ?>
 										</select>
@@ -174,7 +186,10 @@
 											if(!empty($post['dropdownArr']['fromTime']))
 											{
 												foreach($post['dropdownArr']['fromTime'] as $value)
-													echo '<option value="'.$value.'">'.date('H:i' , strtotime($value)).'</option>';
+												{
+													if(trim($value))
+														echo '<option value="'.$value.'">'.date('H:i' , strtotime($value)).'</option>';
+												}
 											}
 ?>
 										</select>
@@ -186,7 +201,10 @@
 											if(!empty($post['dropdownArr']['toTime']))
 											{
 												foreach($post['dropdownArr']['toTime'] as $value)
-													echo '<option value="'.$value.'">'.date('H:i' , strtotime($value)).'</option>';
+												{
+													if(trim($value))
+														echo '<option value="'.$value.'">'.date('H:i' , strtotime($value)).'</option>';
+												}
 											}
 ?>
 										</select>
@@ -197,8 +215,11 @@
 <?php
 											if(!empty($post['dropdownArr']['managedBy']))
 											{
-												foreach($post['dropdownArr']['managedBy'] as $value)
-													echo '<option value="'.$value.'">'.$value.'</option>';
+												foreach($post['dropdownArr']['managedBy'] as $key => $value)
+												{
+													if(trim($value))
+														echo '<option value="'.$key.'">'.$value.'</option>';
+												}
 											}
 ?>
 										</select>

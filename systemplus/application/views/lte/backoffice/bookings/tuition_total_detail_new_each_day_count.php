@@ -2,10 +2,19 @@
     var arraycontabkgs = new Array();
 </script>
 <div class="box">
-    <div class="box-header with-border text-center">
-        <ul class="nav nav-pills" role="tablist">
-            <li role="presentation" class="active"><a href="#d" data-toggle="pill"><span class="glyphicon glyphicon-calendar"></span> Multi Campus tuition from <?php echo date("d/m/Y", strtotime($datein)) ?> to <?php echo date("d/m/Y", strtotime($dateout)) ?></a></li>
-        </ul>
+    <div class="box-header with-border text-center row">
+        <div class="col-sm-8">
+            <ul class="nav nav-pills" role="tablist">
+                <li role="presentation" class="active"><a href="#d" data-toggle="pill"><span class="glyphicon glyphicon-calendar"></span> Multi Campus tuition from <?php echo date("d/m/Y", strtotime($datein)) ?> to <?php echo date("d/m/Y", strtotime($dateout)) ?></a></li>
+            </ul>
+        </div>
+        <div class="pull-right col-sm-4 highlight-status">
+            <span class="label weekends">Weekend</span> | 
+            <span class="label success">Confirmed</span>
+            <span class="label warning">Active</span>
+            <span class="label info">To Be Confirmed</span>
+            <span class="label danger">Elapsed</span>
+        </div>
     </div>
     <!-- /.box-header -->
     <div class="box-body test-head">
@@ -24,7 +33,7 @@
                 </div>
             </div>
             <div class="row">
-                <div style="overflow-x: auto;" id="tabAvail_<?php echo $a ?>" class="collapse in  col-sm-12">
+                <div style="overflow-x: auto;" id="tabAvail_<?php echo $a ?>" class="collapse in  col-sm-12 highlight-dark">
                     <table class="table table-bordered table-condensed table-striped tabAvail" style="font-size:9px;">
                         <thead>
                             <tr>
@@ -37,7 +46,7 @@
                                         $festivo = 1;
                                     }
                                     ?>
-                                    <th  <?php if (in_array(strtotime($datecycle), $dateArr) or $festivo == 1) { ?>class="text-info info<?php if ($festivo == 1) { ?> text-danger danger<?php } ?>"<?php } ?>><span><?php echo date("d/m", strtotime($datecycle)) ?></span></th>
+                                    <th  <?php if (in_array(strtotime($datecycle), $dateArr) or $festivo == 1) { ?>class="text-info info<?php if ($festivo == 1) { ?> weekends text-danger danger<?php } ?>"<?php } ?>><span><?php echo substr(date("D", strtotime($datecycle)), 0,1). " " .date("d/m", strtotime($datecycle)) ?></span></th>
                                     <?php
                                     $datecycle = date("Y-m-d", strtotime("+1 day", strtotime($datecycle)));
                                 }
@@ -74,14 +83,18 @@
                                         $dayCount = 0;
                                         if(isset($book['bookings_on_days']))
                                             $dayCount = ($book['bookings_on_days'][$datecycle]);
-                                        
+                                        $weekends = "";
+                                        $weekEndDays = array("Sat","Sun");
+                                        $weekDay = date("D", strtotime($datecycle));
+                                            if(in_array($weekDay, $weekEndDays))
+                                            $weekends = "weekends ";
                                         if ($dayCount) {
                                             ?>
-                                            <td  class="text-center <?php echo $statusBTS ?>"><input class="contapax nobbg form-control" id="pax_<?php echo $contarighe ?>_<?php echo strtotime($datecycle) ?>" type="text" readonly value="<?php echo $dayCount; ?>"></td>
+                                            <td  class="text-center <?php echo $weekends;?> <?php echo $statusBTS ?>"><input class="contapax nobbg form-control" id="pax_<?php echo $contarighe ?>_<?php echo strtotime($datecycle) ?>" type="text" readonly value="<?php echo $dayCount; ?>"></td>
                                             <?php
                                         } else {
                                             ?>
-                                            <td  class="text-center"><input class="contapax nobbg form-control" id="pax_<?php echo $contarighe ?>_<?php echo strtotime($datecycle) ?>" type="text" readonly value="0"></td>
+                                            <td  class="text-center <?php echo $weekends;?>"><input class="contapax nobbg form-control" id="pax_<?php echo $contarighe ?>_<?php echo strtotime($datecycle) ?>" type="text" readonly value="0"></td>
                                             <?php
                                         }
                                         $datecycle = date("Y-m-d", strtotime("+1 day", strtotime($datecycle)));
@@ -102,7 +115,7 @@
                                         $festivo = 1;
                                     }
                                     ?>
-                                    <td <?php if ($festivo == 1) { ?>class="text-danger danger"<?php } ?>><input id="totava_<?php echo strtotime($datecycle) ?>" type="text" class="nobbg form-control" readonly value="<?php echo $cAva["booked"] ?>"></td>
+                                    <td <?php if ($festivo == 1) { ?>class="weekends text-danger danger"<?php } ?>><input id="totava_<?php echo strtotime($datecycle) ?>" type="text" class="nobbg form-control" readonly value="<?php echo $cAva["booked"] ?>"></td>
                                     <?php
                                     $datecycle = date("Y-m-d", strtotime("+1 day", strtotime($datecycle)));
                                 }
@@ -118,12 +131,12 @@
                                         $festivo = 1;
                                     }
                                     ?>
-                                    <td <?php if ($festivo == 1) { ?>class="text-danger danger"<?php } ?>><input id="totava_<?php echo strtotime($datecycle) ?>" type="text" class="nobbg form-control" readonly value="<?php echo ceil($cAva["booked"] * 1 / 15) ?>"></td>
+                                    <td <?php if ($festivo == 1) { ?>class="weekends text-danger danger"<?php } ?>><input id="totava_<?php echo strtotime($datecycle) ?>" type="text" class="nobbg form-control" readonly value="<?php echo ceil($cAva["booked"] * 1 / 15) ?>"></td>
                                         <?php
                                         $datecycle = date("Y-m-d", strtotime("+1 day", strtotime($datecycle)));
                                     }
-                                    ?>	
-                            </tr>									
+                                    ?>
+                            </tr>								
                         </tbody>
                     </table>
                 </div>

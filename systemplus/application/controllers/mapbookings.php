@@ -25,11 +25,21 @@ class Mapbookings extends Controller {
      * Landing page for booking mapping
      * @param type $campusId 
      */
-    function index($campusId = 0)
+    function index($campusId = 0, $strYear = "")
     {
-        $data["all_books"] = $this->mapbookmodel->getBookingsByAgent($campusId);
-        $data["campusList"] = $this->mapbookmodel->getCampusList(1); // $this->session->userdata('id')
+        $data = array();
+        if($strYear == "")
+            $strYear = date("Y");
+        if(is_numeric($campusId) && is_numeric($strYear) && strlen($strYear) == 4)
+        {
+            $data["all_books"] = $this->mapbookmodel->getBookingsByAgent($campusId,"all",$strYear);
+        }
+        else{
+            $data["all_books"] = array();
+        }
+        $data["campusList"] = $this->mapbookmodel->getCampusList(1,$strYear); // $this->session->userdata('id')
         $data['campusId']= $campusId;
+        $data['currYear']= $strYear;
         $data['campusName']= $this->mapbookmodel->centerNameById($campusId);
         $data['title']='plus-ed.com | Map bookings & packages';
         $data['breadcrumb1']='Bookings review';
@@ -37,6 +47,24 @@ class Mapbookings extends Controller {
         $data['pageHeader'] = $data['breadcrumb2'];
         $data['optionalDescription'] = "";
         $this->ltelayout->view('lte/agents/map_bookings', $data);
+    }
+    
+    function bookddpop(){
+        $year = $this->input->post('year');
+        $campusId = $this->input->post('campId');
+        if(is_numeric($year)){
+            $campusList = $this->mapbookmodel->getCampusList(1,$year); 
+            if($campusList){
+                ?><option value="">Select Campus</option><?php 
+                foreach ($campusList as $campus){
+                    ?><option <?php echo ($campusId == $campus['id'] ? "selected='selected'" : '');?> value="<?php echo $campus['id'];?>"><?php echo $campus['nome_centri'] . " - " . $campus['bookings_count']." Bookings";?></option><?php 
+                }
+            }
+            else
+                echo "<option value=''> - No record - </option>";
+        }
+        else
+            echo "<option value=''> - No record - </option>";
     }
     
     /**
@@ -137,7 +165,7 @@ class Mapbookings extends Controller {
                         
             $bookingExtraCharges = $this->mapbookmodel->getExtraNightCharges($enrollId,$bookingWeeks,$freeGLsIds);
             $bookingDiscount = $this->mapbookmodel->getBookingDiscount($enrollId);
-            
+            $paymentReceived = $this->mapbookmodel->getBookingReciept($enrollId);
             $templateData = array(
                 'book' => $booking,
                 'booking_composition' => $booking_composition,
@@ -147,7 +175,8 @@ class Mapbookings extends Controller {
                 'bookingExtraTuitionDay' => $bookingExtraCharges['extra_tuition_day'],
                 "perExtraNight" => $bookingExtraCharges['per_extra_night'],
                 "perExtraTuitionDay" => $bookingExtraCharges['per_extra_tuition_day'],
-                "bookingDiscount" => $bookingDiscount
+                "bookingDiscount" => $bookingDiscount,
+                "paymentReceived" => $paymentReceived
                 //'booking_accomodation' => $booking_accomodation
             );
             //$templateData['invoiceFileName'] = $fileName;

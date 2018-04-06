@@ -7,10 +7,14 @@
  */
 class Mapbookmodel extends Model {
 
-    function getBookingsByAgent($campusId = 0, $status = 'all', $sort = "id_book", $sorttype = "desc") {
+    function getBookingsByAgent($campusId = 0, $status = 'all', $strYear = "") {
         $data = array();
         $this->db->where('id_centro', $campusId);
-        $this->db->where('YEAR(arrival_date)', 2017);
+        if(!empty($strYear))
+            $this->db->where('YEAR(arrival_date)', $strYear);
+        else
+            $this->db->where('YEAR(arrival_date)', date('Y'));
+        
         if ($status != "all") {
             $this->db->where('status', $status);
         }
@@ -20,6 +24,7 @@ class Mapbookmodel extends Model {
         $this->db->join('agnt_map_packbooking','plused_book.id_book = agnt_map_packbooking.pbmap_book_id','left');
         $this->db->join('agnt_packages','agnt_map_packbooking.pbmap_package_id = agnt_packages.pack_package_id','left');
         $Q = $this->db->get('plused_book');
+        //echo $this->db->last_query();die;
         if ($Q->num_rows() > 0) {
             foreach ($Q->result_array() as $row) {
                 $row['centro'] = $this->centerNameById($row["id_centro"]);
@@ -78,16 +83,18 @@ class Mapbookmodel extends Model {
      * @return array
      * @throws Exception 
      */
-    public function getCampusList($attivi = 1) 
+    public function getCampusList($attivi = 1, $strYear = "") 
     {
         $result = null;
+        if($strYear == "")
+            $strYear = date("Y");
         $this->db->select('id,nome_centri,valuta_fattura,count(id_book) as bookings_count');
         $this->db->order_by('nome_centri');
         $this->db->group_by('id_centro');
         if ($attivi == 1) {
             $this->db->where('attivo', $attivi);
         }
-        $this->db->where('YEAR(plused_book.arrival_date)', date("Y"));
+        $this->db->where('YEAR(plused_book.arrival_date)', $strYear);
         $this->db->join('plused_book','centri.id = plused_book.id_centro');
         $res = $this->db->get('centri');
         if ($res->num_rows()) {
@@ -172,18 +179,29 @@ class Mapbookmodel extends Model {
     
     function getBookingsDetails( $enroll_id )
     {
+        /*$this->db->select("a.*, map.*, p.*, c.nome_centri,c.valuta,c.valuta_fattura,c.school_name,c.id as centri_id, c.address, c.located_in, c.post_code,
+                0 as  free_gl_count,
+                (SELECT count( tipo_pax ) AS STD 
+                FROM plused_rows 
+                WHERE id_book = ".$enroll_id." AND cognome != '' and nome != '' 
+                AND tipo_pax = 'STD') as students_count, 
+                (SELECT count( tipo_pax ) AS STD 
+                FROM plused_rows 
+                WHERE id_book = ".$enroll_id." AND cognome != '' and nome != '' 
+                AND (tipo_pax = 'GL' OR tipo_pax = 'ADT')) as gl_count 
+                ",FALSE);*/
         $this->db->select("a.*, map.*, p.*, c.nome_centri,c.valuta,c.valuta_fattura,c.school_name,c.id as centri_id, c.address, c.located_in, c.post_code,
                 0 as  free_gl_count,
                 (SELECT count( tipo_pax ) AS STD 
                 FROM plused_rows 
-                WHERE id_book = ".$enroll_id." 
+                WHERE id_book = ".$enroll_id."  
                 AND tipo_pax = 'STD') as students_count, 
                 (SELECT count( tipo_pax ) AS STD 
                 FROM plused_rows 
-                WHERE id_book = ".$enroll_id." 
-                AND tipo_pax = 'GL') as gl_count 
+                WHERE id_book = ".$enroll_id."  
+                AND (tipo_pax = 'GL' OR tipo_pax = 'ADT')) as gl_count 
                 ",FALSE);
-        
+        // tipo_pax = 'ADT' hack for "STUDYTOURS bookings"
         $this->db->from("plused_book a");
         $this->db->join("agnt_map_packbooking map","a.id_book = map.pbmap_book_id");
         $this->db->join("agnt_packages p","map.pbmap_package_id = p.pack_package_id");
@@ -196,7 +214,13 @@ class Mapbookmodel extends Model {
     
     function getBookingComposition( $enroll_id )
     {
-            $this->db->select("COUNT(rw.uuid) AS cnt, rw.tipo_pax,b.tot_pax,p.pack_free_gl_per_pax,p.pack_extra_gl_price, accM.accom_name, '' as courses_type, '' as act_activity_name, c.pcomp_week, c.pcomp_full_price, c.pcomp_price_a, c.pcomp_price_b, c.pcomp_price_c, cent.valuta ",false);
+            $this->db->select("COUNT(rw.uuid) AS cnt, 
+                CASE WHEN rw.tipo_pax = 'ADT' THEN 'GL' ELSE rw.tipo_pax END AS tipo_pax,
+                b.tot_pax,
+                p.pack_free_gl_per_pax,p.pack_extra_gl_price, accM.accom_name,
+                '' as courses_type, '' as act_activity_name, c.pcomp_week, 
+                c.pcomp_full_price, c.pcomp_price_a, c.pcomp_price_b, 
+                c.pcomp_price_c, cent.valuta ",false);
             $this->db->from("plused_rows rw");
             $this->db->join("plused_book b","rw.id_book = b.id_book");
             $this->db->join("agnt_map_packbooking map","b.id_book = map.pbmap_book_id");
@@ -209,9 +233,31 @@ class Mapbookmodel extends Model {
 //		$this->db->join("agnt_activities act", "act.act_id = c.pcomp_activity_id", "left");
             $this->db->join("centri cent", "p.pack_campus_id = cent.id");
             $this->db->where('b.id_book',$enroll_id);
+            
+            /* ref. condition is on line number for count of pax: 186 */
+            /*$this->db->where('rw.cognome !=','');
+            $this->db->where('rw.nome !=','');*/
+            
             $this->db->group_by('c.pcomp_id, rw.tipo_pax');
             $this->db->order_by('rw.tipo_pax');
-            $query = $this->db->get();
+            // tipo_pax = 'ADT' hack for "STUDYTOURS bookings"
+            $terminalSQL = $this->db->_compile_select();
+            $this->db->flush_cache();
+            $this->db->_reset_select();
+            $finalSQL = "
+                SELECT 
+                    SUM(cnt) AS cnt, tipo_pax, tot_pax, pack_free_gl_per_pax,
+                    pack_extra_gl_price, accom_name, courses_type, act_activity_name, 
+                    pcomp_week, pcomp_full_price, pcomp_price_a, pcomp_price_b, 
+                    pcomp_price_c, valuta 
+                    FROM (
+                    ".$terminalSQL."
+                    ) AS TEMP_TABLE 
+                GROUP BY tipo_pax, accom_name
+            ";
+            $query = $this->db->query($finalSQL);
+            //echo $this->db->last_query();die;
+            //$query = $this->db->get();
             return ( $query->num_rows() > 0 ) ? $query->result_array() : array();
     }
 
@@ -231,7 +277,6 @@ class Mapbookmodel extends Model {
             $this->db->group_by('accM.accom_name');
             $this->db->order_by('s.serv_cost');
             $query = $this->db->get();
-
             return ( $query->num_rows() > 0 ) ? $query->result_array() : array();
     }
     
@@ -321,6 +366,18 @@ class Mapbookmodel extends Model {
             return $result->row()->discountAdded;
         }
         return 0;            
+    }
+    
+    function getBookingReciept($enrollId){
+        $this->db->select("sum(pfp_importo) as recieptAdded");
+        $this->db->where("pfp_bk_id",$enrollId);
+        $this->db->where("(pfp_tipo_servizio = 'Full Deposit' OR pfp_tipo_servizio = 'Partial Deposit')");
+        $result = $this->db->get('plused_fincon_payments');
+        if($result->num_rows())
+        {
+            return $result->row()->recieptAdded;
+        }
+        return 0;
     }
     
     

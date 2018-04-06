@@ -1,7 +1,7 @@
 /*
 	Description : This js file is used to manage all the javascript related operations
 					for the extra activity module
-	Version : 0.7
+	Version : 1.3
 */
 $(document).ready(function(){
 	var $globalTdSelector;
@@ -80,13 +80,17 @@ $(document).ready(function(){
 
 	//After click on the plus icon it clone the current record and append with the table record
 	$(document).on('click' , '.addMoreTable' , function(){
-		$('#globalCount').val(parseInt($('#globalCount').val())+1);
 		if($(this).parent().find('i').length == 1)
 			$(this).parent().append('<i class="fa fa-lg fa-minus-circle delete_section removeMoreTable" aria-hidden="true"></i>');
 		var $tempSelector = $(this).parent().parent().clone().insertAfter($(this).parent().parent());
-		$tempSelector.attr('data-reference' , $('#globalCount').val()).find('.enterDetails').html('<span class="droppableItem"></span>');
+		//$tempSelector.attr('data-reference' , $('#globalCount').val()).find('.enterDetails').html('<span class="droppableItem"></span>');
+		$tempSelector.find('.enterDetails , .multipleDetails').attr('class' , 'enterDetails').html('<span class="droppableItem"></span>');
 		$tempSelector.find('.hourDropdown').val('');
 		$tempSelector.find('.minDropdown').val('');
+
+		$('#globalCount').val((parseInt($('#globalCount').val())+1));
+		$tempSelector.attr('data-reference' , $('#globalCount').val());
+
 		//Initialize drag and drop functionality
 		initDrag();
 	});
@@ -103,37 +107,48 @@ $(document).ready(function(){
 		}
 	});
 
-	//After click on the table td it will open an modal popup to manage the activity details
+	//After click on the table td it will open an modal popup to add the activity details
 	$(document).on('click' , '.enterDetails' , function(){
-		//During delete activity details , this should not be executed
-		if($(this).data('delete_flag') == 1)
-		{
-			$(this).data('delete_flag' , '');
-			return false;
-		}
+		$globalTdSelector = $(this);
+		openAddActivityPopup($(this));
+	});
 
+	//After click on any activity it will get the value from database and show in the modal popup
+	$(document).on('click' , '.draggableItem' , function(){
+		//Reset the form data and error message
 		$globalTdSelector = $(this);
 		$('#activityDetailsForm')[0].reset();
 		$('#activityDetailsForm').find('span.error').remove();
-		$('#activityDetailsModal').find('.modalTitle').text('Activity Details ('+formattedDate($(this).data('date'))+')');
-		$('#activityDetailsModal').find('#activityDetailsParentId').val($(this).data('parent_id'));
+		$('#activityDetailsModal').find('.modalTitle').text('Activity Details ('+formattedDate($(this).parent().parent().data('date'))+')');
+		$('#activityDetailsModal').find('#activityDetailsParentId').val($(this).parent().parent().data('parent_id'));
 		$('#activityDetailsModal').find('#activityDetailsId').val($(this).data('id'));
-		if($(this).parent().find('td:eq(1)').find('.hourDropdown').val() != '' && $(this).parent().find('td:eq(1)').find('.minDropdown').val() != '')
-			$('#activityDetailsModal').find('#from_time').val($(this).parent().find('td:eq(1)').find('.hourDropdown').val()+':'+$(this).parent().find('td:eq(1)').find('.minDropdown').val());
-		if($(this).parent().find('td:eq(2)').find('.hourDropdown').val() != '' && $(this).parent().find('td:eq(2)').find('.minDropdown').val() != '')
-			$('#activityDetailsModal').find('#to_time').val($(this).parent().find('td:eq(2)').find('.hourDropdown').val()+':'+$(this).parent().find('td:eq(2)').find('.minDropdown').val());
+		$('#activityDetailsModal').find('#activityDetailsFlag').val('es');
 
-		//Set the form data if already save the form
-		if($('#program_name_'+$(this).parent().data('reference')+'_'+$(this).data('date')).val() != 'undefined')
-			$('#activityDetailsForm').find('#program_name').val($('#program_name_'+$(this).parent().data('reference')+'_'+$(this).data('date')).val());
-		if($('#location_'+$(this).parent().data('reference')+'_'+$(this).data('date')).val() != 'undefined')
-			$('#activityDetailsForm').find('#location').val($('#location_'+$(this).parent().data('reference')+'_'+$(this).data('date')).val());
-		if($('#activity_'+$(this).parent().data('reference')+'_'+$(this).data('date')).val() != 'undefined')
-			$('#activityDetailsForm').find('#activity').val($('#activity_'+$(this).parent().data('reference')+'_'+$(this).data('date')).val());
-		if($('#managed_by_'+$(this).parent().data('reference')+'_'+$(this).data('date')).val() != 'undefined')
-			$('#activityDetailsForm').find('#managed_by').val($('#managed_by_'+$(this).parent().data('reference')+'_'+$(this).data('date')).val());
+		//Get the activity details from database and show accordingly
+		$.ajax({
+			url : baseUrl+'index.php/frontweb/extra_activity/get_activity_details',
+			type : 'POST',
+			dataType : 'JSON',
+			data : {'id' : $(this).data('id')},
+			success : function(response){
+				if(response)
+				{
+					$('#activityDetailsModal').find('#program_name').val(response.program_name);
+					$('#activityDetailsModal').find('#location').val(response.location);
+					$('#activityDetailsModal').find('#activity').val(response.activity);
+					$('#activityDetailsModal').find('#from_time').val(response.from_time);
+					$('#activityDetailsModal').find('#to_time').val(response.to_time);
+					$('#activityDetailsModal').find('#managed_by').val(response.managed_by);
+					$('#activityDetailsModal').modal();
+				}
+			}
+		});
+	});
 
-		$('#activityDetailsModal').modal();
+	//After click on the add icon it will open an modal popup to add the activity details
+	$(document).on('click' , '.addMoreActivityDetails' , function(){
+		$globalTdSelector = $(this);
+		openAddActivityPopup($(this).parent());
 	});
 
 	//Check validation for activity details form through jquery validator
@@ -163,37 +178,32 @@ $(document).ready(function(){
 		if($(this).valid())
 		{
 			e.preventDefault();
-			if($('#program_name_'+$globalTdSelector.parent().data('reference')+'_'+$globalTdSelector.data('date')).length)
-			{
-				var activityDetailsFormFlag = 'es';
-				$('#program_name_'+$globalTdSelector.parent().data('reference')+'_'+$globalTdSelector.data('date')).val($('#activityDetailsForm').find('#program_name').val());
-				$('#location_'+$globalTdSelector.parent().data('reference')+'_'+$globalTdSelector.data('date')).val($('#activityDetailsForm').find('#location').val());
-				$('#activity_'+$globalTdSelector.parent().data('reference')+'_'+$globalTdSelector.data('date')).val($('#activityDetailsForm').find('#activity').val());
-				$('#from_time_'+$globalTdSelector.parent().data('reference')+'_'+$globalTdSelector.data('date')).val($('#activityDetailsForm').find('#from_time').val());
-				$('#to_time_'+$globalTdSelector.parent().data('reference')+'_'+$globalTdSelector.data('date')).val($('#activityDetailsForm').find('#to_time').val());
-				$('#managed_by_'+$globalTdSelector.parent().data('reference')+'_'+$globalTdSelector.data('date')).val($('#activityDetailsForm').find('#managed_by').val());
-			}
-			else
-			{
-				var activityDetailsFormFlag = 'as';
-				var htmlStr = '<input type="hidden" name="program_name['+$globalTdSelector.data('date')+'][]" value="'+$('#activityDetailsForm').find('#program_name').val()+'" id="program_name_'+$globalTdSelector.parent().data('reference')+'_'+$globalTdSelector.data('date')+'">\
-								<input type="hidden" name="location['+$globalTdSelector.data('date')+'][]" value="'+$('#activityDetailsForm').find('#location').val()+'" id="location_'+$globalTdSelector.parent().data('reference')+'_'+$globalTdSelector.data('date')+'">\
-								<input type="hidden" name="activity['+$globalTdSelector.data('date')+'][]" value="'+$('#activityDetailsForm').find('#activity').val()+'" id="activity_'+$globalTdSelector.parent().data('reference')+'_'+$globalTdSelector.data('date')+'">\
-								<input type="hidden" name="from_time['+$globalTdSelector.data('date')+'][]" value="'+$('#activityDetailsForm').find('#from_time').val()+'" id="from_time_'+$globalTdSelector.parent().data('reference')+'_'+$globalTdSelector.data('date')+'">\
-								<input type="hidden" name="to_time['+$globalTdSelector.data('date')+'][]" value="'+$('#activityDetailsForm').find('#to_time').val()+'" id="to_time_'+$globalTdSelector.parent().data('reference')+'_'+$globalTdSelector.data('date')+'">\
-								<input type="hidden" name="managed_by['+$globalTdSelector.data('date')+'][]" value="'+$('#activityDetailsForm').find('#managed_by').val()+'" id="managed_by_'+$globalTdSelector.parent().data('reference')+'_'+$globalTdSelector.data('date')+'">';
-				$('#activityDetailsContainer').append(htmlStr);
-			}
-			//Save activity details in the database
+			//Save activity details in the database through ajax call
 			$.ajax({
 				url : baseUrl+'index.php/frontweb/extra_activity/activity_details_add_edit',
 				type : 'POST',
-				data : $('#activityDetailsForm').serialize()+' &flag='+activityDetailsFormFlag,
+				data : $('#activityDetailsForm').serialize(),
 				success : function(response){
-					var tdText = '<span class="draggableItem" data-tr_reference="'+$globalTdSelector.parent().data('reference')+'" data-td_reference="'+$globalTdSelector.data('date')+'">'+$('#activityDetailsForm').find('#activity').val()+'</span>\
-									<br><i class="fa fa-trash-o deleteActivityDetails" style="float: right;color: red;"></i>';
-					$globalTdSelector.data('id' , response);
-					$globalTdSelector.html(tdText);
+					//For the first time insert activity details
+					if($globalTdSelector.attr('class').indexOf('enterDetails') != '-1')
+					{
+						var tdText = '<span class="droppableItem"></span>\
+									<div><span class="draggableItem" data-id="'+response+'">'+$('#activityDetailsForm').find('#activity').val()+'</span>\
+									<br><i class="fa fa-trash-o deleteActivityDetails"></i></div><hr>\
+									<i class="fa fa-plus-square addMoreActivityDetails"></i>';
+						$globalTdSelector.attr('class' , 'multipleDetails');
+						$globalTdSelector.html(tdText);
+					}
+					//After edit any activity details
+					else if($globalTdSelector.attr('class').indexOf('draggableItem') != '-1')
+						$globalTdSelector.text($('#activityDetailsForm').find('#activity').val());
+					//After add multiple activity details in same time slot
+					else if($globalTdSelector.attr('class').indexOf('addMoreActivityDetails') != '-1')
+					{
+						var tdText = '<div><span class="draggableItem" data-id="'+response+'">'+$('#activityDetailsForm').find('#activity').val()+'</span>\
+									<br><i class="fa fa-trash-o deleteActivityDetails"></i></div><hr>';
+						$globalTdSelector.before(tdText);
+					}
 
 					//The value of the table row can be dragable and drop to any other td to copy same activity
 					initDrag();
@@ -204,26 +214,18 @@ $(document).ready(function(){
 	});
 
 	//On click of the delete activity icon , delete the hidden fields for the activity details
-	$(document).on('click' , '.deleteActivityDetails' , function(){
-		var $tdSelector = $(this).parent();
-		$tdSelector.data('delete_flag' , 1);
+	$(document).on('click' , ' .deleteActivityDetails' , function(){
 		if(confirm(delete_confirmation.replace('**module**' , 'activity details')))
 		{
-			//Delete the hidden field values
-			$('#activityDetailsContainer').find('#program_name_'+$tdSelector.find('.draggableItem').data('tr_reference')+'_'+$tdSelector.find('.draggableItem').data('td_reference')).remove();
-			$('#activityDetailsContainer').find('#location_'+$tdSelector.find('.draggableItem').data('tr_reference')+'_'+$tdSelector.find('.draggableItem').data('td_reference')).remove();
-			$('#activityDetailsContainer').find('#activity_'+$tdSelector.find('.draggableItem').data('tr_reference')+'_'+$tdSelector.find('.draggableItem').data('td_reference')).remove();
-			$('#activityDetailsContainer').find('#from_time_'+$tdSelector.find('.draggableItem').data('tr_reference')+'_'+$tdSelector.find('.draggableItem').data('td_reference')).remove();
-			$('#activityDetailsContainer').find('#to_time_'+$tdSelector.find('.draggableItem').data('tr_reference')+'_'+$tdSelector.find('.draggableItem').data('td_reference')).remove();
-			$('#activityDetailsContainer').find('#managed_by_'+$tdSelector.find('.draggableItem').data('tr_reference')+'_'+$tdSelector.find('.draggableItem').data('td_reference')).remove();
-
+			var $tempSelector = $(this);
 			//Delete from database through ajax
 			$.ajax({
 				url : baseUrl+'index.php/frontweb/extra_activity/delete_activity_details',
 				type : 'POST',
-				data : {'id' : $tdSelector.data('id')},
+				data : {'id' : $tempSelector.parent().find('.draggableItem').data('id')},
 				success : function(response){
-					$tdSelector.html('<span class="droppableItem"></span>');
+					$tempSelector.parent().next('hr').remove();
+					$tempSelector.parent().remove();
 					initDrag();
 				}
 			});
@@ -243,8 +245,7 @@ $(document).ready(function(){
 			{
 				var activityIdArr = [];
 				$(this).parent().parent().find('.draggableItem').each(function(){
-					$('#'+fieledName+'_'+$(this).data('tr_reference')+'_'+$(this).data('td_reference')).val($tdSelector.find('.hourDropdown').val()+':'+$tdSelector.find('.minDropdown').val());
-					activityIdArr.push($(this).parent().data('id'));
+					activityIdArr.push($(this).data('id'));
 				});
 				//Update the timing in database
 				$.ajax({
@@ -257,9 +258,24 @@ $(document).ready(function(){
 			else
 			{
 				$(this).parent().parent().find('.draggableItem').each(function(){
-					var tempArr = $('#'+fieledName+'_'+$(this).data('tr_reference')+'_'+$(this).data('td_reference')).val().split(':');
-					$tdSelector.find('.hourDropdown').val(tempArr[0]);
-					$tdSelector.find('.minDropdown').val(tempArr[1]);
+					var tempId = $(this).data('id');
+					$.ajax({
+						url : baseUrl+'index.php/frontweb/extra_activity/get_activity_details',
+						type : 'POST',
+						dataType : 'JSON',
+						data : {'id' : tempId},
+						success : function(response){
+							if(response)
+							{
+								if(fieledName == 'from_time')
+									var tempArr = response.from_time.split(':');
+								else if(fieledName == 'to_time')
+									var tempArr = response.to_time.split(':');
+								$tdSelector.find('.hourDropdown').val(tempArr[0]);
+								$tdSelector.find('.minDropdown').val(tempArr[1]);
+							}
+						}
+					});
 					return false;
 				});
 			}
@@ -303,51 +319,73 @@ function initDrop()
 		accept : ".draggableItem",
 		greedy: true,
 		drop : function(event , ui){
-			if($(this).find('.droppableItem').length > 0)
+			if(($(this).data('parent_id') != ui.helper.parent().parent().data('parent_id'))
+				||
+				($(this).parent().data('reference') != ui.helper.parent().parent().parent().data('reference'))
+			)
 			{
 				if($(this).parent().find('td:eq(1)').find('.hourDropdown').val() != '' &&
 					$(this).parent().find('td:eq(1)').find('.minDropdown').val() != '' &&
 					$(this).parent().find('td:eq(2)').find('.hourDropdown').val() != '' &&
 					$(this).parent().find('td:eq(2)').find('.minDropdown').val() != '')
 				{
-					//Set the hidden field values for dropped activity
-					var htmlStr = '<input type="hidden" name="program_name['+$(this).data('date')+'][]" value="'+$('#activityDetailsContainer').find('#program_name_'+ui.helper.data('tr_reference')+'_'+ui.helper.data('td_reference')).val()+'" id="program_name_'+$(this).parent().data('reference')+'_'+$(this).data('date')+'">\
-									<input type="hidden" name="location['+$(this).data('date')+'][]" value="'+$('#activityDetailsContainer').find('#location_'+ui.helper.data('tr_reference')+'_'+ui.helper.data('td_reference')).val()+'" id="location_'+$(this).parent().data('reference')+'_'+$(this).data('date')+'">\
-									<input type="hidden" name="activity['+$(this).data('date')+'][]" value="'+$('#activityDetailsContainer').find('#activity_'+ui.helper.data('tr_reference')+'_'+ui.helper.data('td_reference')).val()+'" id="activity_'+$(this).parent().data('reference')+'_'+$(this).data('date')+'">\
-									<input type="hidden" name="from_time['+$(this).data('date')+'][]" value="'+$(this).parent().find('td:eq(1)').find('.hourDropdown').val()+':'+$(this).parent().find('td:eq(1)').find('.minDropdown').val()+'" id="from_time_'+$(this).parent().data('reference')+'_'+$(this).data('date')+'">\
-									<input type="hidden" name="to_time['+$(this).data('date')+'][]" value="'+$(this).parent().find('td:eq(2)').find('.hourDropdown').val()+':'+$(this).parent().find('td:eq(2)').find('.minDropdown').val()+'" id="to_time_'+$(this).parent().data('reference')+'_'+$(this).data('date')+'">\
-									<input type="hidden" name="managed_by['+$(this).data('date')+'][]" value="'+$('#activityDetailsContainer').find('#managed_by_'+ui.helper.data('tr_reference')+'_'+ui.helper.data('td_reference')).val()+'" id="managed_by_'+$(this).parent().data('reference')+'_'+$(this).data('date')+'">';
-					$('#activityDetailsContainer').append(htmlStr);
-					$(this).html(ui.helper.clone().removeAttr('style')).attr('class' , 'enterDetails');
-					$(this).find('.draggableItem').attr('data-tr_reference' , $(this).parent().data('reference'))
-												.attr('data-td_reference' , $(this).data('date'));
-					$(this).append('<br><i class="fa fa-trash-o deleteActivityDetails" style="float: right;color: red;"></i>');
 					$tdSelector = $(this);
-
-					//Insert the activity details in the database
+					//Insert the activity details in the database by copying the existing one
 					$.ajax({
-						url : baseUrl+'index.php/frontweb/extra_activity/activity_details_add_edit',
+						url : baseUrl+'index.php/frontweb/extra_activity/copy_activity_details',
 						type : 'POST',
 						data : {
-							'activity' : $('#activityDetailsContainer').find('#activity_'+ui.helper.data('tr_reference')+'_'+ui.helper.data('td_reference')).val(),
-							'activityDetailsId' : '',
-							'activityDetailsParentId' : $tdSelector.data('parent_id'),
-							'flag' : 'as',
+							'id' : ui.helper.data('id'),
 							'from_time' : $(this).parent().find('td:eq(1)').find('.hourDropdown').val()+':'+$(this).parent().find('td:eq(1)').find('.minDropdown').val(),
-							'location' : $('#activityDetailsContainer').find('#location_'+ui.helper.data('tr_reference')+'_'+ui.helper.data('td_reference')).val(),
-							'managed_by' : $('#activityDetailsContainer').find('#managed_by_'+ui.helper.data('tr_reference')+'_'+ui.helper.data('td_reference')).val(),
-							'program_name' : $('#activityDetailsContainer').find('#program_name_'+ui.helper.data('tr_reference')+'_'+ui.helper.data('td_reference')).val(),
-							'to_time' : $(this).parent().find('td:eq(2)').find('.hourDropdown').val()+':'+$(this).parent().find('td:eq(2)').find('.minDropdown').val()
+							'to_time' : $(this).parent().find('td:eq(2)').find('.hourDropdown').val()+':'+$(this).parent().find('td:eq(2)').find('.minDropdown').val(),
+							'extra_day_activity_id' : $(this).data('parent_id')
 						},
+						dataType : 'JSON',
 						success : function(response){
-							$tdSelector.data('id' , response);
+							if(response)
+							{
+								if($tdSelector.attr('class').indexOf('enterDetails') != '-1')
+								{
+									var tdText = '<span class="droppableItem"></span>\
+												<div><span class="draggableItem" data-id="'+response.id+'">'+response.name+'</span>\
+												<br><i class="fa fa-trash-o deleteActivityDetails"></i></div><hr>\
+												<i class="fa fa-plus-square addMoreActivityDetails"></i>';
+									$tdSelector.attr('class' , 'multipleDetails');
+									$tdSelector.html(tdText);
+								}
+								else
+								{
+									var tdText = '<div><span class="draggableItem" data-id="'+response.id+'">'+response.name+'</span>\
+												<br><i class="fa fa-trash-o deleteActivityDetails"></i></div><hr>';
+									$tdSelector.find('.addMoreActivityDetails').before(tdText);
+								}
+								initDrag();
+							}
 						}
 					});
-					initDrag();
 				}
 				else
 					swal('Sorry!' , 'Please select start and finish time first' , 'warning');
 			}
 		}
 	});
+}
+
+//This function is used to open modal popup to add new activity details
+function openAddActivityPopup($tempSelector)
+{
+	//Reset the form data and error message
+	$('#activityDetailsForm')[0].reset();
+	$('#activityDetailsForm').find('span.error').remove();
+	$('#activityDetailsModal').find('.modalTitle').text('Activity Details ('+formattedDate($tempSelector.data('date'))+')');
+	$('#activityDetailsModal').find('#activityDetailsParentId').val($tempSelector.data('parent_id'));
+	$('#activityDetailsModal').find('#activityDetailsFlag').val('as');
+
+	//Set the from and to time field as per the time slot
+	if($tempSelector.parent().find('td:eq(1)').find('.hourDropdown').val() != '' && $tempSelector.parent().find('td:eq(1)').find('.minDropdown').val() != '')
+		$('#activityDetailsModal').find('#from_time').val($tempSelector.parent().find('td:eq(1)').find('.hourDropdown').val()+':'+$tempSelector.parent().find('td:eq(1)').find('.minDropdown').val());
+	if($tempSelector.parent().find('td:eq(2)').find('.hourDropdown').val() != '' && $tempSelector.parent().find('td:eq(2)').find('.minDropdown').val() != '')
+		$('#activityDetailsModal').find('#to_time').val($tempSelector.parent().find('td:eq(2)').find('.hourDropdown').val()+':'+$tempSelector.parent().find('td:eq(2)').find('.minDropdown').val());
+
+	$('#activityDetailsModal').modal();
 }

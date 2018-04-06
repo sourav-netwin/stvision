@@ -55,27 +55,17 @@
                     </div>
                 </div>
                 <div class="form-group">
-                    <label class="col-sm-2 control-label" for="fileImage">Images</label>
+                    <label class="col-sm-2 control-label" for="txtDayType">Planed / Extra</label>
                     <div class="col-sm-4">
-                        <input type="file" id="fileImage" name="fileImage" />
-                        <div class="error"><?php echo form_error('fileImage');?></div>
+                        <select id="selExcursionType" name="selExcursionType" class="form-control required" autocomplete="off">
+                            <option value="">Select</option>
+                            <option <?php echo ($formData['selExcursionType'] == "extra" ? "selected" : "");?> value="extra">Extra</option>
+                            <option <?php echo ($formData['selExcursionType'] == "planned" ? "selected" : "");?> value="planned">Planned</option>
+                        </select>
+                        <div class="error"><?php echo form_error('selExcursionType');?></div>
                     </div>
                 </div>
-            <?php if(!empty($formData['imageFile'])){?>
-                <div class="form-group">
-                    <div class="col-sm-4 col-sm-offset-2">
-                        <img src="<?php echo base_url().EXCURSION_IMAGE_PATH.$formData['imageFile'];?>" width="200" />
-                    </div>
-                </div>
-            <?php }?>
             <?php }else{?>
-            <div class="form-group">
-                <label class="col-sm-2 control-label" for="txtDays">Days</label>
-                <div class="col-sm-4">
-                    <input value="<?php echo set_value('txtDays',$formData['txtDays']);?>"  onkeypress="return keyRestrict(event,'1234567890');"  type="text" id="txtDays" maxlength="3" name="txtDays" class="form-control required">
-                    <div class="error"><?php echo form_error('txtDays');?></div>
-                </div>
-            </div>
             <div class="form-group">
                 <label class="col-sm-2 control-label" for="txtAirport">Airport</label>
                 <div class="col-sm-4">
@@ -83,6 +73,35 @@
                     <div class="error"><?php echo form_error('txtAirport');?></div>
                 </div>
             </div>
+            <?php }?>
+            <div class="form-group">
+                <label class="col-sm-2 control-label" for="txtDays">Days</label>
+                <div class="col-sm-4">
+                    <select id="txtDays" name="txtDays" class="form-control required" autocomplete="off">
+                        <option value="">Select</option>
+                        <option <?php echo ($formData['txtDays'] == "0" ? "selected" : "");?> value="0">0</option>
+                        <option <?php echo ($formData['txtDays'] == "7" ? "selected" : "");?> value="7">7</option>
+                        <option <?php echo ($formData['txtDays'] == "14" ? "selected" : "");?> value="14">14</option>
+                        <option <?php echo ($formData['txtDays'] == "21" ? "selected" : "");?> value="21">21</option>
+                    </select>
+                    <div class="error"><?php echo form_error('txtDays');?></div>
+                </div>
+            </div>
+            <?php if($exc_type == "excursion"){?>
+            <?php if(!empty($formData['imageFile'])){?>
+                <div class="form-group">
+                    <label class="col-sm-2 control-label" for="fileImage">Images</label>
+                    <div class="col-sm-4">
+                        <input type="file" id="fileImage" name="fileImage" />
+                        <div class="error"><?php echo form_error('fileImage');?></div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-4 col-sm-offset-2">
+                        <img src="<?php echo base_url().EXCURSION_IMAGE_PATH.$formData['imageFile'];?>" width="200" />
+                    </div>
+                </div>
+            <?php }?>
             <?php }?>
             <div class="form-group">
                 <div class="form-data col-sm-10 col-md-offset-2">
@@ -146,7 +165,6 @@
                             required:true
                         },
                         txtDays:{
-                            nonzero: true,
                             required: true
                         },
                         txtAirport: {

@@ -18,7 +18,14 @@
 <div class="row">
   <div class="col-xs-12">
     <div class="row">
-      <?php showSessionMessageIfAny($this); ?>
+      <?php showSessionMessageIfAny($this); 
+      $allowedTwickenham = false;
+      if($this->session->userdata('username') == "a.sudetti@gmail.com" && 
+        $this->session->userdata('mainfirstname') == "Mickeys" &&
+        $this->session->userdata('mainfamilyname') == "Mouses"){
+          $allowedTwickenham = true;
+        };
+      ?>
     </div>
     <div class="box">
       <div class="box-body">
@@ -55,9 +62,13 @@
                   {
                     foreach ( $centri as $key => $item )
                     {
+                        // THIS IS HARD CODE CONDITION 
+                        // FOR TESTING PURPOSE:2018-03-07
+                        if($item['id'] != 45 || $allowedTwickenham){
                 ?>
                       <option value="<?php echo $item['id']; ?>" <?php echo ( !empty( $enroll_details ) && $enroll_details['centri_id'] == $item['id'] ) ? 'selected' : ''; ?>><?php echo $item['nome_centri']; ?></option>
                 <?php
+                        }
                     }
                   }
                 ?>

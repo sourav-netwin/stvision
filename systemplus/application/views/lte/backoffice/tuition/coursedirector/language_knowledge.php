@@ -1,7 +1,6 @@
 <link href="<?php echo LTE; ?>plugins/datatables/dataTables.bootstrap.css" rel="stylesheet">  
 <section class="">
     <div class="row">
-
         <div class="col-xs-12">
             <div class="box">
                 <div class="box-header col-sm-12">
@@ -20,6 +19,21 @@
                     </div>
                     <div class="row">
                         <div class="col-sm-3 form-group">
+                            <label for="selCampus">Campus:</label>
+                            <select <?php echo ($campusId ? "disabled='disabled'" : "");?> class="form-control" id="selCampus" autocomplete="off" name="selCampus"  >
+                                <option value="">Select Campus</option>
+                                <?php
+                                if (!empty($campuses)) {
+                                    foreach ($campuses as $campus) {
+                                        ?>
+                                <option <?php echo ($campusId == $campus['id'] ? "selected='selected'" : "");?> value="<?php echo $campus['id']; ?>"><?php echo $campus['nome_centri'] ?></option>
+                                        <?php
+                                    }
+                                }
+                                ?>
+                            </select>
+                        </div>
+                        <div class="col-sm-3 form-group">
                             <label for="txtSearchText" class="control-label">Search</label>
                             <input type="text" class="form-control" id="txtSearchText" name="txtSearchText" value="" />
                         </div>
@@ -31,7 +45,7 @@
                             <label for="txtCalToDate" class="control-label">To date</label>
                             <input type="text" class="form-control" readonly id="txtCalToDate" name="td" value="" /> 
                         </div>
-                        <div class="col-sm-3 form-group mr-top-25">
+                        <div class="col-sm-3 form-group">
                             <input id="btnSearch" class="btn btn-primary" type="submit" value="Search" >
                             <input id="btnClear" class="btn btn-danger" type="reset" value="Clear" >
                         </div>
@@ -55,8 +69,8 @@
                                             <th>Campus departure</th>
                                             <th class="col-text-numeric">Listening &<br/> comprehension<br /><small>a (0-10)</small></th>
                                             <th style="width:43px!important;" class="col-text-numeric">Oral&nbsp;test<br /><small>b (0-40)</small></th>
-                                            <th class="col-text-numeric">Student <br />test score<br /><small>c (0-50)</small></th>
-                                            <th class="col-text-numeric">Language knowledge<br /><small>(a + b + c)</small></th>
+                                            <th class="col-text-numeric">Online <br />test score<br /><small>c (0-50)</small></th>
+                                            <th class="col-text-numeric">Overall test score<br /><small>(a + b + c)</small></th>
 <!--                                            <th id="sortLK" >Language knowledge</th>
                                             <th style="display: none;"></th>-->
                                         </tr>
@@ -187,16 +201,21 @@
                                                                     $('#txtSearchText').val('');
                                                                     $('#txtCalFromDate').val('');
                                                                     $('#txtCalToDate').val('');
+                                                                    <?php if(!$campusId){?> 
+                                                                        $('#selCampus').val('');
+                                                                    <?php }?>
                                                                     $("#btnSearch").trigger('click');
                                                                 });
                                                                 $("body").on("click", "#btnSearch", function () {
                                                                     var keyword = $('#txtSearchText').val();
                                                                     var campfrom = $('#txtCalFromDate').val();
                                                                     var campto = $('#txtCalToDate').val();
+                                                                    var campusId = $('#selCampus').val();
                                                                     $.post("<?php echo base_url(); ?>index.php/tuitions/searchlangknowledgeajax", {
                                                                         'keyword': keyword,
                                                                         'campfrom': campfrom,
-                                                                        'campto': campto
+                                                                        'campto': campto,
+                                                                        'campusId':campusId
                                                                     }, function (data) {
                                                                         $("#langStudentsList").html(data);
                                                                         initDataTable();

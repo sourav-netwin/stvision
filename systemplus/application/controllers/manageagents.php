@@ -9,6 +9,7 @@ class Manageagents extends Controller {
         $this->load->helper('csv');
         $this->load->model('mbackoffice');
         $this->load->model('magenti');
+        $this->load->model('agents/accountmanagermodel','accountmanagermodel');
         $this->load->library(array('session', 'email', 'ltelayout'));
     }
 
@@ -33,6 +34,7 @@ class Manageagents extends Controller {
         $request = $_REQUEST;
         $searchData = array(
             'agentName' => $request['agentname'],
+            'businessName' => $request['businessname'],
             'accountManager' => $request['accountmanagername'],
             'selCountry' => $request['selCountry'],
             'search' => $request['search']['value'],
@@ -80,6 +82,16 @@ class Manageagents extends Controller {
             die("ERROR");
         }
     }
+    
+    function getBusinessNameAutoComplete() {
+        if ($this->session->userdata('role') == 100) {
+            $name = $this->input->post('name');
+            $agentNames = $this->magenti->getBusinessNameAutoComplete($name);
+            echo $agentNames;
+        } else {
+            die("ERROR");
+        }
+    }
 
     function getAccountManagerNameAutoComplete() {
         if ($this->session->userdata('role') == 100) {
@@ -108,6 +120,7 @@ class Manageagents extends Controller {
             'txt_businesspostalcode' => '',
             'txt_businesscountry' => '',
             'txt_businesstelephone' => '',
+            'selAccountMngr' => '',
             'txt_accountmanagerfirstname' => '',
             'txt_accountmanagerfamilyname' => '',
             'txt_accountmanagerposition' => ''
@@ -131,6 +144,7 @@ class Manageagents extends Controller {
                         'txt_businesspostalcode' => $editData[0]['businesspostalcode'],
                         'txt_businesscountry' => $editData[0]['businesscountry'],
                         'txt_businesstelephone' => $editData[0]['businesstelephone'],
+                        'selAccountMngr' => $editData[0]['account'],
                         'txt_accountmanagerfirstname' => $editData[0]['firstname'],
                         'txt_accountmanagerfamilyname' => $editData[0]['familyname'],
                         'txt_accountmanagerposition' => $editData[0]['position']
@@ -138,6 +152,7 @@ class Manageagents extends Controller {
                 }
             }
             $data['formData'] = $formData;
+            $data['accountManagers'] = $this->accountmanagermodel->getData(0,1);// get active account managers
             $data['countries'] = $this->magenti->getCountryList();  //print_r($data['countries']);die;
             $this->ltelayout->view('lte/backoffice/agents/addeditagent', $data); //$this -> ltelayout -> view('lte/backoffice/excursion/addedit', $data);
         } else {
@@ -152,6 +167,7 @@ class Manageagents extends Controller {
                     'businesscountry' => trim($this->input->post('txt_businesscountry')),
                     'businesspostalcode' => trim($this->input->post('txt_businesspostalcode')),
                     'businesstelephone' => trim($this->input->post('txt_businesstelephone')),
+                    'account' => $this->input->post('selAccountMngr'),
                 );
 
                 $result = $this->magenti->Agentaction('update', $update_data, $edit_id);
@@ -162,7 +178,7 @@ class Manageagents extends Controller {
                     $this->session->set_flashdata('error_message', 'Unable to update record.');
                 }
             } else {
-                $insert_data = array(
+                /*$insert_data = array(
                     'mainfirstname' => trim($this->input->post('txt_mainfirstname')),
                     'mainfamilyname' => trim($this->input->post('txt_mainfamilyname')),
                     'businessname' => trim($this->input->post('txt_businessname')),
@@ -171,7 +187,8 @@ class Manageagents extends Controller {
                     'businesscountry' => trim($this->input->post('txt_businesscountry')),
                     'businesspostalcode' => trim($this->input->post('txt_businesspostalcode')),
                     'businesstelephone' => trim($this->input->post('txt_businesstelephone')),
-                );
+                    'account' => $this->input->post('selAccountMngr'),
+                );*/
                 //$result = $this->magenti->Agentaction('insert',$insert_data);
                 //if($result){
                 redirect('manageagents');

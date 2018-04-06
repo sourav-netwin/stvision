@@ -55,6 +55,7 @@
                                 <tr>
                                     <th>Campus</th>
                                 <?php 
+                                    $campusId = 0;
                                     $monthDates=array();
                                     $date1 = new DateTime($calFromDate);
                                     $date2 = new DateTime($calToDate);
@@ -76,6 +77,7 @@
                                     //error_reporting(E_ALL);
                                     $campus = $campusList[0];
                                         foreach ($campusList as $campus){
+                                            $campusId = $campus['id'];
                                             ?>
                                                 <tr>
                                                     <td>STUDENTS ON CAMPUS</td>
@@ -98,8 +100,8 @@
                                                 </tr>
                                             <?php 
                                         }
-
-                                        $testedStudents = "";
+                                        
+                                        /*$testedStudents = "";
                                         $studentsToBeTested = "";
                                         $studentsLeavingTomorrow = "";
                                         foreach($monthDates as $dates){
@@ -152,8 +154,10 @@
                                         echo "<tr><td style='text-transform: uppercase;'>Tested Students</td>".$testedStudents."</tr>";
                                         echo "<tr><td style='text-transform: uppercase;'>Students to be tested</td>".$studentsToBeTested."</tr>";
                                         echo "<tr><td style='text-transform: uppercase;'>Students leaving tomorrow</td>".$studentsLeavingTomorrow."</tr>";
+                                        */
                                 }
                                 ?>
+                                <!-- day stat's goes here. -->
                             </table>
                         </div>
                 </div>
@@ -176,13 +180,7 @@
                         <h4 class="modal-title"><span class="statTitle">Students list</span>
                         <button aria-label="Close" onclick="$('#dialog_modal_std_showlist').modal('hide');$('body').addClass('modal-open')" class="close" type="button">
                         <span aria-hidden="true">×</span></button>
-                        <div class="studentlist-legents pull-right">
-                            <div class="studentlist-elmentary">Elementary  1 – 33</div>
-                            <div class="studentlist-pre-int">Pre-intermediate  34 – 50</div>
-                            <div class="studentlist-intermediate">Intermediate  51 – 66</div>
-                            <div class="studentlist-upper-int">Upper-intermediate  67 – 83</div>
-                            <div class="studentlist-advanced">Advanced  84 - 100</div>
-                        </div>
+                        <?php echo $this->load->view('lte/backoffice/tuition/schedule_ajax/studentlist_legents');?>
                         </h4>
                     </div>
                     <div class="modal-body">
@@ -213,5 +211,18 @@
             $("#dialog_modal_std_showlist").modal("show");
             $("#dialog_modal_std_showlist .statTitle").html(dataTitle);
         });
+        getstatistics();
     });
+    function getstatistics(){
+        var campusId = "<?php echo $campusId;?>";
+        var monthDates = '<?php echo json_encode($monthDates);?>';
+        $.post( SITE_PATH + "tuitions/getStatisticsHtml",
+        {
+            'monthDates':monthDates,
+            'campusId':campusId
+        }, 
+        function( data ) {
+            $("#tuitionCalTable").append(data);
+        });
+    }
 </script>

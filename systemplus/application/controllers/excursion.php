@@ -87,6 +87,7 @@ class Excursion extends Controller{
                     'txtDays' => '',
                     'txtAirport' => '',
                     'txtDayType' => '',
+                    'selExcursionType' => '',
                     'selCampus' => array(),
                     'imageFile' => ''
                 );
@@ -124,12 +125,22 @@ class Excursion extends Controller{
                         $edit_id = $this->input->post('edit_id');
                         $campus_id = $this->input->post('selCampus');
                         $exc_type = $this->input->post('exc_type');
+                        $plannedOrExtra = $this->input->post('selExcursionType');
                         
                         $excursion = $this->input->post('txtExcursion');
                         $description = $this->input->post('txtDescription');
                         $numberOfDays = $this->input->post('txtDays');
                         $airport = $this->input->post('txtAirport');
                         $dayType = $this->input->post('txtDayType');
+                        $weeks = 0;
+                        if($numberOfDays == 7)
+                            $weeks = 1;
+                        else if($numberOfDays == 14)
+                            $weeks = 2;
+                        else if($numberOfDays == 21)
+                            $weeks = 3;
+                        else if($numberOfDays == 28)
+                            $weeks = 4;
                         
                         if (!file_exists(EXCURSION_IMAGE_PATH)) {
                             mkdir(EXCURSION_IMAGE_PATH, 0755, true);
@@ -157,13 +168,16 @@ class Excursion extends Controller{
                                 $update_data = array(
                                     'exc_excursion_name'=> $excursion,
                                     'exc_brief_description'=> $description,
-                                    'exc_day_type'=> $dayType
+                                    'exc_day_type'=> $dayType,
+                                    'exc_weeks'=> $weeks,
+                                    'exc_old_type'=> $plannedOrExtra,
+                                    'exc_days' => $numberOfDays
                                 );
                                 
                                 if($exc_type == 'transfer')
                                 {
-                                    $update_data['exc_days'] = $numberOfDays;
                                     $update_data['exc_airport'] = $airport;
+                                    $update_data['exc_old_type'] = 'transfer';
                                 }
                                 if(!empty($fileName))
                                     $update_data['exc_image'] = $fileName;
@@ -188,17 +202,22 @@ class Excursion extends Controller{
                                     'exc_brief_description'=> $description,
                                     'exc_type'=> $exc_type,
                                     'exc_day_type'=> $dayType,
+                                    'exc_weeks'=> $weeks,
+                                    'exc_days'=> $numberOfDays,
                                     'exc_created_by'=> $this->session->userdata('id'),
                                     'exc_is_active'=> 1,
                                     'exc_is_deleted'=> 0
                                 );
                                 if($exc_type == 'transfer')
                                 {
-                                    $update_data['exc_days'] = $numberOfDays;
-                                    $update_data['exc_airport'] = $airport;
+                                    $insert_data['exc_old_type'] = 'transfer';
+                                    $insert_data['exc_airport'] = $airport;
                                 }
+                                else
+                                    $insert_data['exc_old_type'] = $plannedOrExtra;
+                                
                                 if(!empty($fileName))
-                                    $update_data['exc_image'] = $fileName;
+                                    $insert_data['exc_image'] = $fileName;
 
                                 $result = $this->excursions_model->operations('insert',$insert_data);
                                 if($result){
@@ -222,6 +241,7 @@ class Excursion extends Controller{
                                 'txtExcursion' => trim($this->input->post('txtExcursion')),
                                 'txtDescription' => trim($this->input->post('txtDescription')),
                                 'txtDays' => trim($this->input->post('txtDays')),
+                                'selExcursionType' => trim($this->input->post('selExcursionType')),
                                 'txtDayType' => trim($this->input->post('txtDayType')),
                                 'txtAirport' => trim($this->input->post('txtAirport')),
                                 'error_message' => $uploadFileError['error']
@@ -236,6 +256,7 @@ class Excursion extends Controller{
                             'txtExcursion' => trim($this->input->post('txtExcursion')),
                             'txtDescription' => trim($this->input->post('txtDescription')),
                             'txtDays' => trim($this->input->post('txtDays')),
+                            'selExcursionType' => trim($this->input->post('selExcursionType')),
                             'txtDayType' => trim($this->input->post('txtDayType')),
                             'txtAirport' => trim($this->input->post('txtAirport'))
                         );
@@ -260,6 +281,7 @@ class Excursion extends Controller{
                                 'txtExcursion' => $excursionDetails['exc_excursion_name'],
                                 'txtDescription' => $excursionDetails['exc_brief_description'],
                                 'txtDays' => $excursionDetails['exc_days'],
+                                'selExcursionType' => $excursionDetails['exc_old_type'],
                                 'txtAirport' => $excursionDetails['exc_airport'],
                                 'exc_type' => $excursionDetails['exc_type'],
                                 'txtDayType' => $excursionDetails['exc_day_type'],

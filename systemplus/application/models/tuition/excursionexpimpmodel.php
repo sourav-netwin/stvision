@@ -17,12 +17,21 @@ class Excursionexpimpmodel extends Model {
 	function getExportData($campuses) {
 		$this -> db -> _protect_identifiers = FALSE;
 		$mapData = $this -> getCampusCompanyMap($campuses);
-		$this -> db -> select('"" as jn_id, c.exc_id, b.id,b.nome_centri, c.exc_length,c.exc_excursion,c.exc_type,c.exc_weeks, e.tra_bus_id, d.tra_cp_name, e.tra_bus_name,"" as jn_price,"" as Cost,"" as Budget,f.cur_id as jn_currency, b.valuta_fattura')
+		//$this -> db -> select('"" as jn_id, c.exc_id, b.id,b.nome_centri, c.exc_length,c.exc_excursion,c.exc_type,c.exc_weeks, e.tra_bus_id, d.tra_cp_name, e.tra_bus_name,"" as jn_price,"" as Cost,"" as Budget,f.cur_id as jn_currency, b.valuta_fattura')
+		$this -> db -> select('"" as jn_id, ce.excm_exc_id, b.id,b.nome_centri, 
+                                exc.exc_day_type as exc_length, exc.exc_excursion_name,
+                                concat_ws(" ",exc.exc_type,exc.exc_old_type) as exc_type,exc.exc_weeks,
+                                e.tra_bus_id,d.tra_cp_name, e.tra_bus_name,
+                                jn_price, jn_cost as Cost, jn_budget as Budget,
+                                f.cur_id as jn_currency, b.valuta_fattura')
 				-> from('centri as b')
-				-> join('plused_exc_all as c', 'c.exc_id_centro=b.id')
-				-> join('plused_tra_companies as d', '1')
+				//-> join('plused_exc_all as c', 'c.exc_id_centro=b.id')
+                                -> join('agnt_campus_excursion as ce', 'ce.excm_campus_id = b.id')
+                                -> join('agnt_excursions as exc', 'ce.excm_exc_id = exc.exc_id')
+				-> join('plused_tra_companies as d', "d.tra_cp_server_type = exc.exc_type OR d.tra_cp_server_type = 'Both'")
 				-> join('plused_tra_bus as e', 'e.tra_bus_cp_id=d.tra_cp_id')
-				-> join('plused_tb_currency as f', 'f.cur_codice=b.valuta_fattura');
+				-> join('plused_tb_currency as f', 'f.cur_codice=b.valuta_fattura')
+				-> join('plused_exc_join as ej', "ej.jn_id_exc = exc.exc_id AND ej.jn_id_campus = b.id AND ej.jn_id_bus = e.tra_bus_id",'left');
 		$loop = 0;
 		if (!empty($mapData)) {
 			foreach ($mapData as $map) {
@@ -35,9 +44,11 @@ class Excursionexpimpmodel extends Model {
 				$loop += 1;
 			}
 		}
-		$this -> db -> order_by('b.id, d.tra_cp_id,c.exc_length,c.exc_excursion, c.exc_type, c.exc_weeks, e.tra_bus_name');
+		//$this -> db -> order_by('b.id, d.tra_cp_id,c.exc_length,c.exc_excursion, c.exc_type, c.exc_weeks, e.tra_bus_name');
+		$this -> db -> order_by('b.nome_centri,d.tra_cp_name,exc.exc_excursion_name, e.tra_bus_name');
 
 		$result = $this -> db -> get();
+                //echo $this->db->last_query();die;
 		if ($result -> num_rows()) {
 			return $result -> result_array();
 		}
@@ -78,15 +89,21 @@ class Excursionexpimpmodel extends Model {
 	 * Function to get export result as xls file
 	 */
 	function getExportResultData() {
-		$this -> db -> _protect_identifiers = FALSE;
-		$this -> db -> select('a.jn_id, a.jn_id_exc, a.jn_id_campus,b.nome_centri, c.exc_length,c.exc_excursion,c.exc_type,c.exc_weeks, a.jn_id_bus, d.tra_cp_name, e.tra_bus_name,a.jn_price,a.jn_cost, a.jn_budget, a.jn_currency')
+		$this -> db -> _protect_identifiers = FALSE;//c.exc_length,c.exc_excursion,c.exc_type,c.exc_weeks, 
+		$this -> db -> select('a.jn_id, a.jn_id_exc, a.jn_id_campus,b.nome_centri, 
+                                exc.exc_day_type as exc_length, exc.exc_excursion_name,
+                                concat_ws(" ",exc.exc_type,exc.exc_old_type) as exc_type,
+                                exc.exc_weeks, 
+                                a.jn_id_bus, d.tra_cp_name, e.tra_bus_name,a.jn_price,a.jn_cost, a.jn_budget, a.jn_currency')
 				-> from('plused_exc_join as a')
 				-> join('centri as b', 'a.jn_id_campus=b.id')
-				-> join('plused_exc_all as c', 'c.exc_id=a.jn_id_exc')
+                                //-> join('plused_exc_all as c', 'c.exc_id=a.jn_id_exc')
+                                -> join('agnt_excursions as exc', 'a.jn_id_exc = exc.exc_id')
 				-> join('plused_tra_bus as e', 'e.tra_bus_id=jn_id_bus')
 				-> join('plused_tra_companies as d', 'd.tra_cp_id=e.tra_bus_cp_id')
 				-> order_by('b.nome_centri, d.tra_cp_name');
 		$result = $this -> db -> get();
+                //echo $this->db->last_query();die;
 		if ($result -> num_rows()) {
 			return $result -> result_array();
 		}
@@ -175,7 +192,7 @@ class Excursionexpimpmodel extends Model {
 		else {
 			return FALSE;
 		}
-	}	
+	}
 
 	/**
 	 * getCampusList
@@ -239,6 +256,28 @@ class Excursionexpimpmodel extends Model {
 	public function deleteAllJoin() {
 		$this -> db -> empty_table('plused_exc_join');
 	}
+        
+        public function deleteCampusJoin($campusName){
+            if(!empty($campusName)){
+                $this->db->flush_cache();
+                $campusName = strtolower($campusName);
+                // get campus id by name
+                $this->db->where('LOWER(nome_centri)',$campusName);
+                $result = $this->db->get("centri");
+                if($result->num_rows())
+                {
+                    $campusId = $result->row()->id;
+                    $this->db->flush_cache();
+                    if($campusId)
+                    {
+                        $this->db->where('jn_id_campus',$campusId);
+                        $this->db->delete('plused_exc_join');
+                    }
+                }
+                else
+                    return 0;
+            }
+        }
 }
 
 /* End of file excursionexportimport.php */

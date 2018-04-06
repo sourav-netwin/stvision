@@ -3,9 +3,9 @@
 </script>
 <div class="box">
     <div class="box-header with-border text-center">
-        <ul class="nav nav-pills" role="tablist">
-            <li role="presentation" class="active"><a href="#d" data-toggle="pill"><span class="glyphicon glyphicon-calendar"></span> Multi Campus tuition from <?php echo date("d/m/Y", strtotime($datein)) ?> to <?php echo date("d/m/Y", strtotime($dateout)) ?></a></li>
-        </ul>
+            <ul class="nav nav-pills" role="tablist">
+                <li role="presentation" class="active"><a href="#d" data-toggle="pill"><span class="glyphicon glyphicon-calendar"></span> Multi Campus tuition from <?php echo date("d/m/Y", strtotime($datein)) ?> to <?php echo date("d/m/Y", strtotime($dateout)) ?></a></li>
+            </ul>
     </div>
     <!-- /.box-header -->
     <div class="box-body test-head">
@@ -37,7 +37,7 @@
                                         $festivo = 1;
                                     }
                                     ?>
-                                    <th  <?php if (in_array(strtotime($datecycle), $dateArr) or $festivo == 1) { ?>class="text-info info<?php if ($festivo == 1) { ?> text-danger danger<?php } ?>"<?php } ?>><span><?php echo date("d/m", strtotime($datecycle)) ?></span></th>
+                                    <th class="<?php if (in_array(strtotime($datecycle), $dateArr) or $festivo == 1) { ?>text-info info<?php if ($festivo == 1) { ?> text-danger danger<?php } } ?>"><span><?php echo date("d/m", strtotime($datecycle)) ?></span></th>
                                     <?php
                                     $datecycle = date("Y-m-d", strtotime("+1 day", strtotime($datecycle)));
                                 }

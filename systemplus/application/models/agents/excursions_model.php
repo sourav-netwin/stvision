@@ -33,7 +33,7 @@ class Excursions_model extends Model {
                 $this->db->where('exc_type !=', 'transfer');
             
             $this->db->where('exc_is_deleted',0);
-            $this->db->select('exc_id,exc_excursion_name,exc_brief_description,exc_old_exc_id,exc_type,exc_days,exc_weeks,
+            $this->db->select('exc_id,exc_excursion_name,exc_brief_description,exc_old_exc_id,exc_type,exc_old_type,exc_days,exc_weeks,
                             exc_airport,exc_day_type,exc_image,exc_created_on,exc_created_by,exc_is_active,
                             group_concat(c.nome_centri) as campus_name');
             $this->db->order_by('exc_id','DESC');
@@ -237,6 +237,7 @@ class Excursions_model extends Model {
      */
     function getMappedExcursions($excType,$campusId){
         $this->db->from("agnt_campus_excursion ce");
+        $this->db->where('exc_is_deleted',0);
         $this->db->join("agnt_excursions e","ce.excm_exc_id = e.exc_id and exc_is_deleted = 0 and exc_type = '".$excType."'");
         $this->db->join("centri c","ce.excm_campus_id = c.id");
         $this->db->select("group_concat(excm_exc_id) as excm_exc_id");

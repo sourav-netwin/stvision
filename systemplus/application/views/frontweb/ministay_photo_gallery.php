@@ -2,7 +2,7 @@
 <link href="<?php echo LTE; ?>plugins/datatables/dataTables.bootstrap.css" rel="stylesheet">
 <script src="<?php echo LTE; ?>plugins/datatables/jquery.dataTables.min.js"></script>
 <script src="<?php echo LTE; ?>plugins/datatables/dataTables.bootstrap.min.js"></script>
-<link rel="stylesheet" href="<?php echo LTE; ?>frontweb/style.css">
+<link rel="stylesheet" href="<?php echo LTE; ?>frontweb/style.css?v=1.1">
 
 <!----------Form validation js----------->
 <script src="<?php echo base_url(); ?>js/tuition/jquery_validations1.9.0.js"></script>

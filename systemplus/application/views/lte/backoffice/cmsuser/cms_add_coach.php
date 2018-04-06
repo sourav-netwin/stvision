@@ -27,6 +27,17 @@
                 </div>
             </div>
             <div class="row form-group">
+                <div class="col-sm-3 col-md-3 col-lg-2">Service:</div>
+                <div class="form-data col-sm-9 col-md-9 col-lg-4">
+                    <select id="tra_cp_server_type" name="tra_cp_server_type" class="form-control required" autocomplete="off">
+                        <option value="">Select</option>
+                        <option value="Excursion">Excursion</option>
+                        <option value="Transfer">Transfer</option>
+                        <option value="Both">Both</option>
+                    </select>
+                </div>
+            </div>
+            <div class="row form-group">
                 <div class="col-sm-3 col-md-3 col-lg-2">Address:</div>
                 <div class="col-sm-9 col-md-9 col-lg-4">
                     <textarea class="required form-control"  name="tra_cp_address" id="tra_cp_address" ></textarea>
@@ -97,6 +108,7 @@
             ignore: "",
             rules: {
                 tra_cp_name: "required",
+                tra_cp_server_type: "required",
                 tra_cp_address: "required",
                 tra_cp_contact_name: "required",
                 tra_cp_website: {
@@ -112,6 +124,7 @@
             },
             messages: {
                 tra_cp_name: "Please enter company name",
+                tra_cp_server_type: "Please select service",
                 tra_cp_address: "Please enter address",
                 tra_cp_contact_name: "Please enter contact name",
                 tra_cp_email: "Please enter email",

@@ -371,18 +371,31 @@ $('body').on('click','#unlockBookingRoster',function(){
 	},false,true);
 });
 $('body').on('click','#addRosterPax',function(){
-	confirmAction("Are you sure you want to add a pax to the booking?", function(s){
-		if(s){
-			var bookId = $('#bkDetBookId').val();
-			$.ajax({
-				url: siteUrl + "backoffice/addRosterPax/"+bookId,
-				success: function(html){
-					loadBookingDetail(bookId,'b');
-                                        generateNewInvoiceForBooking(siteUrl,bookId);
-				}
-			});
-		}
-	},true,true);
+    //confirmAction("Are you sure you want to add a pax to the booking?", function(s){
+    $("#inputPaxCount").modal('show');
+    //},true,true);
+});
+$('body').on('click','#input_count_close',function(){
+    $("#txtInputPaxCount").val(1);
+    $("#inputPaxCount").modal('hide');
+});
+
+$('body').on('click','#btnInputPaxCount',function(){
+    var qnt = $("#txtInputPaxCount").val();
+    if(parseInt(qnt) && qnt > 0 && qnt < 101)
+    {
+        var bookId = $('#bkDetBookId').val();
+        $.ajax({
+                url: siteUrl + "backoffice/addRosterPax/"+bookId+"/"+qnt,
+                success: function(html){
+                        loadBookingDetail(bookId,'b');
+                        generateNewInvoiceForBooking(siteUrl,bookId);
+                }
+        });
+        $("#input_count_close").trigger('click');
+    }
+    else
+        swal("Error","Please enter valid pax count");
 });
 
 $('body').on('click','.paxModClass',function(){
@@ -615,7 +628,72 @@ $('body').on('click','.paxRemClass',function(){
 		}
 	},true,true);
 });
+
+$('body').on('click','#btnSelRemovePax', function() {
+    var selPax = $("input[name='chkDeletePax']:checked").map(function(){return $(this).val()});
+    if(selPax.length > 0){
+        var bookId = $('#bkDetBookId').val();
+	confirmAction("Are you sure you want to delete selected pax from the booking?", function(s){
+            if(s){
+                $.post( siteUrl + "backoffice/delRosterPaxMultiple",
+                {   
+                    'paxIds':$.makeArray(selPax),
+                    'bookId':bookId
+                }, 
+                function( data ) {    
+                    loadBookingDetail(bookId,'b');
+                    generateNewInvoiceForBooking(siteUrl,bookId);
+                });
+            }
+	},true,true);
+    }
+});
 /*End: For tab e*/
+
+/* DATE: ROSTER AMENDMENT , UPDATE ACCOMMODATION 2018-02-13 */
+$('body').on('click','#btnUpdateAccAll', function () { 
+    var accSelected = $("#selAccAll").val();
+    var bookId = $("#bkDetBookId").val();
+    $("#hiddBookId").val(bookId);
+    if(accSelected != '')
+    {
+        confirmAction("Are you sure to update selected accommodation for all pax?", function(s){
+        if(s){
+                $("#markAll").val(1);
+                var formData = $("#frmEditAccmodation").serialize();
+                $.post(siteUrl + "backoffice/updateAllPaxAcc",formData,function(data){
+                    swal("Success","Accommodation udpated successfully");
+                    loadBookingDetail(bookId,'b');
+                    generateNewInvoiceForBooking(siteUrl,bookId);
+                });
+            }
+        },true,true);
+    }
+    else
+    {
+        $("#selAccAll").focus();
+        swal("Error","Please select accommodation");
+    }
+});
+
+$('body').on('click','.btnUpdateAccMulitiple', function () { 
+    confirmAction("Are you sure to update pax accommodation as selected?", function(s){
+    if(s){
+            $("#markAll").val(0);
+            var bookId = $("#bkDetBookId").val();
+            $("#hiddBookId").val(bookId);
+            var formData = $("#frmEditAccmodation").serialize();
+            $.post(siteUrl + "backoffice/updateAllPaxAcc",formData,function(data){
+                swal("Success","Accommodation udpated successfully");
+                loadBookingDetail(bookId,'b');
+                generateNewInvoiceForBooking(siteUrl,bookId);
+            });
+        }
+    },true,true);
+});
+/* END OF ROSTER AMENDMENT */
+
+
 
 /**
  * This will generate booking for any old booking by giving it's id.
@@ -655,4 +733,3 @@ $('body').on('change','#andata_data_arrivo', function(){
 	var dateval = $('#andata_data_arrivo').val()
 	$( ".chooseDateTime2" ).datepicker( "option", "minDate", dateval);
 });
-	

@@ -1,7 +1,7 @@
 /*
 	This JS file is to manage custom javascript functionality(for both add/edit/list)
 	related to the program course module
-	Current Version : 0.2
+	Current Version : 1.1
 */
 
 var pageHighlightMenu = "frontweb/program_course";

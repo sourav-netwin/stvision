@@ -70,6 +70,17 @@ class Tuitions extends Controller {
             redirect('backoffice', 'refresh');
         }
     }
+    
+    function getStatisticsHtml(){
+        $campusId = $this->input->post('campusId');
+        $monthDates = $this->input->post('monthDates');
+        $monthDates = json_decode($monthDates);
+        $data = array(
+                'campusId'=>$campusId,
+                'monthDates'=>$monthDates
+            );
+        $this->load->view('lte/backoffice/tuition/coursedirector/schedule_statistics',$data);
+    }
 
     /**
      * plan
@@ -492,7 +503,8 @@ class Tuitions extends Controller {
                                 <th>Select</th>
                                 <th>Student name</th>
                                 <th>Hours assigned</th>
-                                <th>Language knowledge</th>
+                                <th>Online test score</th>
+                                <th>Gender</th>
                                 <th>Age</th>
                                 <th>Nationality</th>
                                 <th>Booking Id</th>
@@ -551,6 +563,7 @@ class Tuitions extends Controller {
                                     <td style="background-color: <?php echo getStudentListColor($student['lk_lang_knowledge']); ?>"><?php echo $student['nome'] . ' ' . $student['cognome']; ?></td>
                                     <td style="background-color: <?php echo getStudentListColor($student['lk_lang_knowledge']); ?>"><?php echo round($student['assigned_course_hours']) . '/' . round($courseHoursForWeeks); ?></td>
                                     <td style="background-color: <?php echo getStudentListColor($student['lk_lang_knowledge']); ?>"><?php echo $student['lk_lang_knowledge']; ?></td>
+                                    <td style="background-color: <?php echo getStudentListColor($student['lk_lang_knowledge']); ?>"><?php echo ($student['sesso'] == 'M' ? 'Male' : 'Female'); ?></td>
                                     <td style="background-color: <?php echo getStudentListColor($student['lk_lang_knowledge']); ?>"><?php echo $stdAge; ?></td>
                                     <td style="background-color: <?php echo getStudentListColor($student['lk_lang_knowledge']); ?>"><?php echo ucwords($student['nazionalita']); ?></td>
                                     <td style="background-color: <?php echo getStudentListColor($student['lk_lang_knowledge']); ?>"><?php echo $student['id_year'] . '_' . $student['id_book']; ?></td>
@@ -619,7 +632,9 @@ class Tuitions extends Controller {
                             <tr>
                                 <th>Student name</th>
                                 <th>Hours assigned</th>
-                                <th>Language knowledge</th>
+                                <th>Online test score</th>
+                                <th>Gender</th>
+                                <th>Age</th>
                                 <th>Nationality</th>
                                 <th>Booking Id</th>
                             </tr>
@@ -627,6 +642,10 @@ class Tuitions extends Controller {
                         <tbody>
                             <?php
                             foreach ($studentsList as $student) {
+                                $studentsDateOfBirth = $student['pax_dob'];
+                                $stdAge = "--";
+                                if ($studentsDateOfBirth != "00-00-00 00:00:00" && $studentsDateOfBirth != '')
+                                    $stdAge = date_diff(date_create($studentsDateOfBirth), date_create('today'))->y;
                                 $alreadyAssigned = $student['already_assigned'];
                                 $courseHoursForWeeks = $student['weeks'] * $courseHours;
                                 ?>
@@ -634,6 +653,8 @@ class Tuitions extends Controller {
                                     <td><?php echo $student['nome'] . ' ' . $student['cognome']; ?></td>
                                     <td><?php echo round($student['assigned_course_hours']) . '/' . round($courseHoursForWeeks); ?></td>
                                     <td><?php echo $student['lk_lang_knowledge']; ?></td>
+                                    <td><?php echo ($student['sesso'] == 'M' ? 'Male' : 'Female'); ?></td>
+                                    <td><?php echo $stdAge; ?></td>
                                     <td><?php echo ucwords($student['nazionalita']); ?></td>
                                     <td><?php echo $student['id_year'] . '_' . $student['id_book']; ?></td>
                                 </tr>
@@ -689,19 +710,27 @@ class Tuitions extends Controller {
 
                     $objPHPExcel->getActiveSheet()->SetCellValue('A5', 'Student name');
                     $objPHPExcel->getActiveSheet()->SetCellValue('B5', 'Hours assigned');
-                    $objPHPExcel->getActiveSheet()->SetCellValue('C5', 'Language knowledge');
-                    $objPHPExcel->getActiveSheet()->SetCellValue('D5', 'Nationality');
-                    $objPHPExcel->getActiveSheet()->SetCellValue('E5', 'Booking Id');
+                    $objPHPExcel->getActiveSheet()->SetCellValue('C5', 'Online test score');
+                    $objPHPExcel->getActiveSheet()->SetCellValue('D5', 'Gender');
+                    $objPHPExcel->getActiveSheet()->SetCellValue('E5', 'Age');
+                    $objPHPExcel->getActiveSheet()->SetCellValue('F5', 'Nationality');
+                    $objPHPExcel->getActiveSheet()->SetCellValue('G5', 'Booking Id');
 
                     $rowCount = 6;
 
                     foreach ($studentsList as $student) {
+                        $studentsDateOfBirth = $student['pax_dob'];
+                        $stdAge = "--";
+                        if ($studentsDateOfBirth != "00-00-00 00:00:00" && $studentsDateOfBirth != '')
+                            $stdAge = date_diff(date_create($studentsDateOfBirth), date_create('today'))->y;
                         $courseHoursForWeeks = $student['weeks'] * $courseHours;
                         $objPHPExcel->getActiveSheet()->SetCellValue('A' . $rowCount, $student['nome'] . ' ' . $student['cognome']);
                         $objPHPExcel->getActiveSheet()->SetCellValue('B' . $rowCount, round($student['assigned_course_hours']) . '/' . round($courseHoursForWeeks));
                         $objPHPExcel->getActiveSheet()->SetCellValue('C' . $rowCount, $student['lk_lang_knowledge']);
-                        $objPHPExcel->getActiveSheet()->SetCellValue('D' . $rowCount, ucwords($student['nazionalita']));
-                        $objPHPExcel->getActiveSheet()->SetCellValue('E' . $rowCount, $student['id_year'] . '_' . $student['id_book']);
+                        $objPHPExcel->getActiveSheet()->SetCellValue('D' . $rowCount, $student['sesso'] == 'M' ? 'Male' : 'Female');
+                        $objPHPExcel->getActiveSheet()->SetCellValue('E' . $rowCount, $stdAge);
+                        $objPHPExcel->getActiveSheet()->SetCellValue('F' . $rowCount, ucwords($student['nazionalita']));
+                        $objPHPExcel->getActiveSheet()->SetCellValue('G' . $rowCount, $student['id_year'] . '_' . $student['id_book']);
                         $rowCount++;
                     }
 
@@ -718,6 +747,8 @@ class Tuitions extends Controller {
                     $objPHPExcel->getActiveSheet()->getStyle('C5')->applyFromArray($styleArray);
                     $objPHPExcel->getActiveSheet()->getStyle('D5')->applyFromArray($styleArray);
                     $objPHPExcel->getActiveSheet()->getStyle('E5')->applyFromArray($styleArray);
+                    $objPHPExcel->getActiveSheet()->getStyle('F5')->applyFromArray($styleArray);
+                    $objPHPExcel->getActiveSheet()->getStyle('G5')->applyFromArray($styleArray);
                 } else {
                     $objPHPExcel->getActiveSheet()->SetCellValue('A1', 'No students available for selected date');
                     $objPHPExcel->getActiveSheet()->getStyle('A1')->applyFromArray($styleArray);
@@ -1734,12 +1765,19 @@ class Tuitions extends Controller {
         function updatelang() {
             if ($this->session->userdata('username') && $this->session->userdata('role') != 200) {
                 if (empty($_POST)) {
+                    $this->load->model("tuition/contractmodel", "contractmodel");
                     $campusId = $this->session->userdata('sess_campus_id'); // GET THE CAMPUS ID IF AVAILABLE.
                     $studentsList = $this->tuitionsmodel->getAllStudents($campusId);
+                    $data['campuses'] = $this->contractmodel->getCampusData();
                     $data['studentsList'] = $studentsList;
                     $data['title'] = "plus-ed.com | Language knowledge";
                     $data['breadcrumb1'] = 'Tuition';
                     $data['breadcrumb2'] = 'Language knowledge';
+                    $campusId = $this->session->userdata('sess_campus_id'); // GET THE CAMPUS ID IF AVAILABLE.
+                    if($campusId)
+                        $data['campusId'] = $campusId;
+                    else
+                        $data['campusId'] = 0;
                     if (APP_THEME == "OLD")
                         $this->load->view('tuition/plused_language_knowledge', $data);
                     else { // if(APP_THEME == "LTE")
@@ -1768,21 +1806,19 @@ class Tuitions extends Controller {
             $keyword = $this->input->post('keyword');
             $txtCalFromDate = $this->input->post('campfrom');
             $txtCalToDate = $this->input->post('campto');
-
             if (!empty($txtCalFromDate) && !empty($txtCalToDate)) {
                 $txtCalFromDate = explode('/', $txtCalFromDate);
                 $txtCalToDate = explode('/', $txtCalToDate);
 
                 if (array_key_exists(2, $txtCalFromDate))
-                    ;
-                $txtCalFromDate = $txtCalFromDate[2] . '-' . $txtCalFromDate[1] . '-' . $txtCalFromDate[0];
+                    $txtCalFromDate = $txtCalFromDate[2] . '-' . $txtCalFromDate[1] . '-' . $txtCalFromDate[0];
 
                 if (array_key_exists(2, $txtCalToDate))
-                    ;
-                $txtCalToDate = $txtCalToDate[2] . '-' . $txtCalToDate[1] . '-' . $txtCalToDate[0];
+                    $txtCalToDate = $txtCalToDate[2] . '-' . $txtCalToDate[1] . '-' . $txtCalToDate[0];
             }
-
-            $campusId = $this->session->userdata('sess_campus_id'); // GET THE CAMPUS ID IF AVAILABLE.
+            $campusId = $this->session->userdata('sess_campus_id');// GET THE CAMPUS ID IF AVAILABLE.
+            if(empty($campusId))
+                 $campusId = $this->input->post('campusId');            
             $studentsList = $this->tuitionsmodel->getAllStudents($campusId, $keyword, $txtCalFromDate, $txtCalToDate);
             if ($studentsList) {
                 if (APP_THEME == 'OLD') {
@@ -1841,10 +1877,10 @@ class Tuitions extends Controller {
                                 <th>Booking Id</th>
                                 <th>Campus arrival</th>
                                 <th>Campus departure</th>
-                                <th class="col-text-numeric">Listening &<br/> comprehension</th>
-                                <th class="col-text-numeric">Oral test</th>
-                                <th class="col-text-numeric">Student <br />test score</th>
-                                <th class="col-text-numeric">Language knowledge</th>
+                                <th class="col-text-numeric">Listening &<br/> comprehension<br /><small>a (0-10)</small></th>
+                                <th style="width:43px!important;" class="col-text-numeric">Oral&nbsp;test<br /><small>b (0-40)</small></th>
+                                <th class="col-text-numeric">Online <br />test score<br /><small>c (0-50)</small></th>
+                                <th class="col-text-numeric">Overall test score<br /><small>(a + b + c)</small></th>
                             </tr>
                         </thead>
                         <tbody>
@@ -1947,7 +1983,8 @@ class Tuitions extends Controller {
                                     <th>Course</th>
                                     <th>Class level</th>
                                     <th>Room id</th>
-                                    <th>Language knowledge</th>
+                                    <th>Online test score</th>
+                                    <th>Gender</th>
                                     <th>Age</th>
                                     <th>Nationality</th>
                                     <th>Booking Id</th>
@@ -1968,6 +2005,7 @@ class Tuitions extends Controller {
                                         <td style="background-color: <?php echo getStudentListColor($student['lk_lang_knowledge']); ?>"><?php echo empty($student['class_name']) ? '' : $student['class_name'] . ' #' . $student['class_id']; ?></td>
                                         <td style="background-color: <?php echo getStudentListColor($student['lk_lang_knowledge']); ?>"><?php echo $student['class_room_number'] ?></td>
                                         <td style="background-color: <?php echo getStudentListColor($student['lk_lang_knowledge']); ?>"><?php echo $student['lk_lang_knowledge']; ?></td>
+                                        <td style="background-color: <?php echo getStudentListColor($student['lk_lang_knowledge']); ?>"><?php echo ($student['sesso'] == 'M' ? 'Male' : 'Female'); ?></td>
                                         <td style="background-color: <?php echo getStudentListColor($student['lk_lang_knowledge']); ?>"><?php echo $stdAge; ?></td>
                                         <td style="background-color: <?php echo getStudentListColor($student['lk_lang_knowledge']); ?>"><?php echo ucwords($student['nazionalita']); ?></td>
                                         <td style="background-color: <?php echo getStudentListColor($student['lk_lang_knowledge']); ?>"><?php echo $student['id_year'] . '_' . $student['id_book']; ?></td>

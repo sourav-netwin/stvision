@@ -167,8 +167,10 @@ function unloading() {
         }, 1000);
 }
 
-$( document ).ajaxSend(function() {
-	loading();
+$( document ).ajaxSend(function(e, xhr, opt) {
+    if(!(opt.url.indexOf("students/logquesanswer") != -1 
+    || opt.url.indexOf("students/upatetimer") != -1))
+    	loading();
 });
 
 $( document ).ajaxComplete(function() {
@@ -438,7 +440,7 @@ $(document).ready(function(){
 			image_advtab: true ,
 			external_filemanager_path:lte_url+"frontweb/tinymce/filemanager/",
 			filemanager_title:"Responsive Filemanager" ,
-			external_plugins: { "filemanager" : lte_url+"frontweb/tinymce/filemanager/plugin.min.js"}
+			external_plugins: {"filemanager" : lte_url+"frontweb/tinymce/filemanager/plugin.min.js"}
 		});
 	}
 

@@ -140,13 +140,7 @@
                                                 <div class="box box-primary">
                                                     <div class="box-header">
                                                         <h4 class="box-title">Students list</h4>
-                                                        <div class="studentlist-legents pull-right">
-                                                            <div class="studentlist-elmentary">Elementary  1 – 33</div>
-                                                            <div class="studentlist-pre-int">Pre-intermediate  34 – 50</div>
-                                                            <div class="studentlist-intermediate">Intermediate  51 – 66</div>
-                                                            <div class="studentlist-upper-int">Upper-intermediate  67 – 83</div>
-                                                            <div class="studentlist-advanced">Advanced  84 - 100</div>
-                                                        </div>
+                                                        <?php echo $this->load->view('lte/backoffice/tuition/schedule_ajax/studentlist_legents');?>
                                                     </div>
 
                                                     <div class="content viewStudents">

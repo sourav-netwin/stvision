@@ -274,6 +274,75 @@ class Mbackoffice extends Model {
         $Q->free_result();
         return $data;
     }
+    
+    function exportCSVBookingsToBeElapsedReport($campus, $agent, $status, $whereCls = "") {
+        $data = array();
+        if ($campus != "all")
+            $this->db->where('id_centro', $campus);
+        if ($agent != "all")
+            $this->db->where('id_agente', $agent);
+        if ($status != "all")
+            $this->db->where('status', $status);
+        //Riaggiunto filtro sull'anno on request il 13/02/2014
+        //$this->db->where('id_year',$year);
+        if($whereCls != "")
+            $this->db->where($whereCls,null,FALSE);
+        $this->db->order_by("data_insert", "desc");
+        $Q = $this->db->get('plused_book');
+        //echo $this->db->last_query();
+        
+        if ($Q->num_rows() > 0) {
+            foreach ($Q->result_array() as $row) {
+                $data2 = array();
+                $this->db->select('valuta, valore_acconto');
+                $nomedelcentro = $row["id_centro"];
+                $this->db->where('id', $nomedelcentro);
+                $queryvaluta = $this->db->get('centri');
+                //echo $this->db->last_query();
+                $recordvaluta = $queryvaluta->result_array();
+                //print_r($row);
+                if ($nomedelcentro != "None") {
+                    $row['valuta'] = $recordvaluta[0]['valuta'];
+                    $row['valore_acconto'] = $recordvaluta[0]['valore_acconto'];
+                } else {
+                    $row['valuta'] = "$";
+                    $row['valore_acconto'] = 0;
+                }
+                $row['centro'] = $this->centerNameById($row["id_centro"]);
+                $row['all_acco'] = $this->magenti->getBookAccomodations($row["id_book"]);
+                $row['agency'] = $this->magenti->plused_get_ag_details($row["id_agente"]);
+                $data[] = $row;
+            }
+        }
+        $Q->free_result();
+        return $data;
+    }
+    
+    function exportCSVBookingsToBeElapsedAlert($whereCls){
+        $data = array();
+        if($whereCls != "")
+            $this->db->where($whereCls,null,FALSE);
+        $this->db->select("
+            b.id_book,b.id_year,b.id_centro,b.id_agente,b.tot_pax,b.weeks,b.arrival_date,
+            b.departure_date,c.nome_centri,
+            a.email as agent_email,a.businessname,
+            am.firstname as account_manager_firstname,am.familyname as account_manager_familyname,am.email as account_manager_email,
+            SUM(CASE WHEN r.tipo_pax = 'STD' THEN 1 ELSE 0 END) AS std_count,
+            SUM(CASE WHEN r.tipo_pax = 'GL' THEN 1 ELSE 0 END) AS gl_count
+        ");
+        $this->db->order_by("b.data_insert", "desc");
+        $this->db->from('plused_book b');
+        $this->db->join('plused_rows r','b.id_book = r.id_book');
+        $this->db->join('centri c','b.id_centro = c.id','left');
+        $this->db->join('agenti a','b.id_agente = a.id');
+        $this->db->join('`plused_account-manager` am','a.account = am.id','left');
+        $this->db->group_by('b.id_book');
+        $query = $this->db->get();
+        if($query->num_rows())
+            return $query->result_array();
+        else
+            return $data;
+    }
 
     function getFullInvoiceNew($idBook) {
 
@@ -868,6 +937,16 @@ class Mbackoffice extends Model {
         $this->db->update('plused_book', $data);
         return true;
     }
+    
+    function add_flag_elapsed_complete($id,$elapsedComment) {
+        $data = array(
+            'flag_elapsed' => 1,
+            'flag_elapsed_comment' => $elapsedComment
+        );
+        $this->db->where('id_book', $id);
+        $this->db->update('plused_book', $data);
+        return true;
+    }
 
     function changeDownloadVisa($id, $canDwn) {
         $data = array(
@@ -941,8 +1020,11 @@ class Mbackoffice extends Model {
 
     function agent_detail($id) {
         $data = null;
-        $this->db->where('id', $id);
-        $Q = $this->db->get('agenti');
+        $this->db->where('agenti.id', $id);
+        $this->db->from('agenti');
+        $this->db->select('agenti.*,plused_account-manager.firstname as acc_manager_firstname,plused_account-manager.familyname as acc_manager_lastname,plused_account-manager.email as acc_manager_email');
+        $this->db->join('plused_account-manager','agenti.account = plused_account-manager.id','left');
+        $Q = $this->db->get();
         if ($Q->num_rows() > 0) {
             foreach ($Q->result_array() as $row) {
                 $data[] = $row;
@@ -952,6 +1034,21 @@ class Mbackoffice extends Model {
         return $data;
     }
 
+    function getBookingAgentDetail($id_book) {
+        $data = null;
+        $this->db->where('plused_book.id_book', $id_book);
+        $this->db->from('plused_book');
+        $this->db->join('agenti','plused_book.id_agente = agenti.id');
+        $this->db->join('plused_account-manager','agenti.account = plused_account-manager.id','left');
+        $this->db->select('agenti.*,plused_account-manager.firstname as acc_manager_firstname,plused_account-manager.familyname as acc_manager_lastname,plused_account-manager.email as acc_manager_email');
+        $Q = $this->db->get();
+        if ($Q->num_rows() > 0) {
+            $data = $Q->row();
+        }
+        $Q->free_result();
+        return $data;
+    }
+    
     function agentIdByBkIdYear($year, $book) {
         $data = null;
         $this->db->select('id_agente');
@@ -2066,16 +2163,29 @@ class Mbackoffice extends Model {
      * @return type
      */
     function elapsedBookingsToElapse() {
-        $dataOggi = date("Y-m-d");
+        $expiryDate = date("Y-m-d");
         $this->db->flush_cache();
-        $this->db->select("plused_book.id_book,plused_book.id_year,plused_book.id_agente,agenti.email as agent_email,plused_account-manager.email as accoun_manager_email");
-        $this->db->where("plused_book.data_scadenza < ", $dataOggi);
+        $this->db->select("plused_book.id_book,plused_book.id_year,
+            plused_book.arrival_date,plused_book.departure_date,plused_book.weeks,
+            plused_book.id_agente,agenti.email as agent_email,agenti.businessname,
+            am.firstname as account_manager_firstname,
+            am.familyname as account_manager_familyname,
+            am.email as account_manager_email,
+            nome_centri,
+            SUM(CASE WHEN r.tipo_pax = 'STD' THEN 1 ELSE 0 END) AS std_count,
+            SUM(CASE WHEN r.tipo_pax = 'GL' THEN 1 ELSE 0 END) AS gl_count
+            ");
+        $this->db->where("plused_book.data_scadenza < ", $expiryDate);
         $this->db->where("plused_book.status", "active");
         $this->db->where("acconto_versato", "0");
+        $this->db->join('plused_rows r','plused_book.id_book = r.id_book');
         $this->db->join("agenti", "plused_book.id_agente = agenti.id", "LEFT");
-        $this->db->join("plused_account-manager", "agenti.account = plused_account-manager.id", "LEFT");
+        $this->db->join("centri", "plused_book.id_centro = centri.id", "LEFT");
+        $this->db->join("plused_account-manager am", "agenti.account = am.id", "LEFT");
+        $this->db->group_by('plused_book.id_book');
         $resultData = $this->db->get("plused_book");
-
+        //echo $this->db->last_query();die;
+        $this->load->library('email');
         if ($resultData->num_rows()) {
             foreach ($resultData->result_array() as $booking) {
                 // UPDATE BOOKING STATUS
@@ -2088,33 +2198,57 @@ class Mbackoffice extends Model {
                 $this->db->update("plused_book", $updateData);
                 // SEND AN EMAIL TO AGENT
                 $agentEmail = $booking['agent_email'];
-                $accountManagerEmail = $booking['accoun_manager_email'];
+                $agencyBusinessName = $booking['businessname'];
+                $elapsedDate = date("d/m/Y", strtotime($expiryDate));
                 $bookingId = $booking['id_book'] . "_" . $booking['id_year'];
-                $expiryDate = $dataOggi;
+                $campusName = $booking['nome_centri'];
+                $dateIn = $booking['arrival_date'];
+                $dateOut = $booking['departure_date'];
+                if(validateDate($dateIn, 'Y-m-d'))
+                    $dateIn = date("d-m-Y",  strtotime ($dateIn));
+                if(validateDate($dateOut, 'Y-m-d'))
+                    $dateOut = date("d-m-Y",  strtotime ($dateOut));
+                $numberOfWeeks = $booking['weeks'];
+                $stdCount = $booking['std_count'];
+                $glCount = $booking['gl_count'];
+                $accountManagerName = $booking['account_manager_firstname']." ".$booking['account_manager_familyname'];
+                $accountManagerEmail = $booking['account_manager_email'];
+                $strParam = array(
+                    '{AGENCY_NAME}' => $agencyBusinessName,
+                    '{ELAPSED_DATE}' => $elapsedDate,
+                    '{GROUP_ID}' => $bookingId,
+                    '{CAMPUS}' => $campusName,
+                    '{DATE_IN}' => $dateIn,
+                    '{DATE_OUT}' => $dateOut,
+                    '{NO_OF_WEEKS}' => $numberOfWeeks,
+                    '{STD_COUNT}' => $stdCount,
+                    '{GL_COUNT}' => $glCount,
+                    '{ACCOUNT_MANAGER_NAME}' => $accountManagerName,
+                    '{ACCOUNT_MANAGER_EMAIL}' => $accountManagerEmail
+                );
                 if ($_SERVER['HTTP_HOST'] != "localhost" && $_SERVER['HTTP_HOST'] != "192.168.43.47") {
-                    $this->_sendEmailToAgent($agentEmail, $accountManagerEmail, $bookingId, $expiryDate);
+                    $this->_sendEmailToAgent($agentEmail, $accountManagerEmail, $strParam);
                 }
             }
         }
         return $this->db->affected_rows();
     }
 
-    function _sendEmailToAgent($agentEmail, $accountManagerEmail, $bookingId, $expiryDate) {
-        $senderEmail = PLUS_SELES_SENDER_EMAIL_ADDRESS;
-        ob_start(); // start output buffer
-        $data['bookingId'] = $bookingId;
-        $data['expiryDate'] = date("d/m/Y", strtotime($expiryDate));
-        $this->load->view('tuition/email/booking_elapsed_email_to_agent', $data);
-        $messageBody = ob_get_contents(); // get contents of buffer
-        ob_end_clean();
-        $this->load->library('email');
+    function _sendEmailToAgent($agentEmail, $accountManagerEmail, $strParam) 
+    {
+        /*
+         * $this->load->view('tuition/email/booking_elapsed_email_to_agent', $data);
+         */
+        $this->email->clear();
+        $emailTemplate = getEmailTemplate(6); // Booking expired email 
         $this->email->set_newline("\r\n");
-        $this->email->from($senderEmail, 'plus-ed.com');
+        $this->email->from($emailTemplate->emt_from_email, "Plus-ed.com");
         $this->email->to($agentEmail);
         $this->email->cc($accountManagerEmail);
         $this->email->bcc("a.sudetti@gmail.com,smarra@plus-ed.com");
-        $this->email->subject("plus-ed.com | Booking expired");
-        $this->email->message($messageBody);
+        $this->email->subject($emailTemplate->emt_title);
+        $txtMessageStr = mergeContent($strParam,$emailTemplate->emt_text);
+        $this->email->message($txtMessageStr);
         $this->email->send();
     }
 
@@ -4274,6 +4408,28 @@ class Mbackoffice extends Model {
         }
         return $costoriga . "___" . $symbV;
     }
+    
+    function getSingleBookingAccommodationCost($bookId){
+        $strQuery = "
+            SELECT plused_book.id_book,valuta,costo_ensuite,costo_standard,costo_homestay,costo_twin,plused_rows.accomodation,
+            CASE 
+            WHEN plused_rows.accomodation = 'ensuite' THEN costo_ensuite 
+            WHEN plused_rows.accomodation = 'standard' THEN costo_standard
+            WHEN plused_rows.accomodation = 'homestay' THEN costo_homestay
+            WHEN plused_rows.accomodation = 'twin' THEN costo_twin
+            ELSE 0 
+            END AS effected_acc_cost
+            from plused_book 
+            JOIN centri  ON plused_book.id_centro  = centri.id
+            JOIN plused_rows ON plused_book.id_book = plused_rows.id_book
+            WHERE plused_book.id_book = ".$bookId."
+        ";
+        $result = $this->db->query($strQuery);
+        if($result->num_rows())
+            return $result->result_array();
+        else
+            return 0;
+    }
 
 //NEW FUNCTIONS PER REVIEWDAY2DAY - TERMINATI I TEST RIMUOVERE TUTTE LE FUNCTIONS SENZA SUFFISSO _pax, IDEM DAL CONTROLLER E IDEM PER LE VIEW
 
@@ -4922,6 +5078,7 @@ class Mbackoffice extends Model {
         $tra_cp_phone = $this->input->xss_clean($this->input->post('tra_cp_phone'));
         $tra_cp_emergency = $this->input->xss_clean($this->input->post('tra_cp_emergency'));
         $tra_cp_fax = $this->input->xss_clean($this->input->post('tra_cp_fax'));
+        $tra_cp_server_type = $this->input->xss_clean($this->input->post('tra_cp_server_type'));
         $data = array(
             'tra_cp_name' => $tra_cp_name,
             'tra_cp_address' => $tra_cp_address,
@@ -4930,7 +5087,8 @@ class Mbackoffice extends Model {
             'tra_cp_email' => $tra_cp_email,
             'tra_cp_phone' => $tra_cp_phone,
             'tra_cp_emergency' => $tra_cp_emergency,
-            'tra_cp_fax' => $tra_cp_fax
+            'tra_cp_fax' => $tra_cp_fax,
+            'tra_cp_server_type' => $tra_cp_server_type
         );
         $this->db->where('tra_cp_id', $idC);
         $this->db->update('plused_tra_companies', $data);
@@ -4946,6 +5104,7 @@ class Mbackoffice extends Model {
         $tra_cp_phone = $this->input->xss_clean($this->input->post('tra_cp_phone'));
         $tra_cp_emergency = $this->input->xss_clean($this->input->post('tra_cp_emergency'));
         $tra_cp_fax = $this->input->xss_clean($this->input->post('tra_cp_fax'));
+        $tra_cp_server_type = $this->input->xss_clean($this->input->post('tra_cp_server_type'));
         $data = array(
             'tra_cp_name' => $tra_cp_name,
             'tra_cp_address' => $tra_cp_address,
@@ -4954,7 +5113,8 @@ class Mbackoffice extends Model {
             'tra_cp_email' => $tra_cp_email,
             'tra_cp_phone' => $tra_cp_phone,
             'tra_cp_emergency' => $tra_cp_emergency,
-            'tra_cp_fax' => $tra_cp_fax
+            'tra_cp_fax' => $tra_cp_fax,
+            'tra_cp_server_type' => $tra_cp_server_type
         );
         $this->db->insert('plused_tra_companies', $data);
         return true;
@@ -5957,7 +6117,7 @@ class Mbackoffice extends Model {
         $params = array(
             '_UserId' => 'visioN@0315',
             '_Psw' => 'j%asbwY3',
-            '_anno' => '2017'
+            '_anno' => '2018'
         );
         $result = $client->getPrenotazioniProdotti($params);
 
@@ -6353,6 +6513,7 @@ class Mbackoffice extends Model {
         $this->db->select('a.plr_id, a.description')
                 ->from('plused_roster_supplements as a')
                 ->join('plused_roster_supplement_types as b', 'a.supl_id=b.id')
+                ->where('a.active',1)
                 ->where('a.centri_id', $idCentro);
         $result = $this->db->get();
         if ($result->num_rows() > 0) {
@@ -7181,7 +7342,41 @@ class Mbackoffice extends Model {
     public function getTicket($id) {
         return $this->db->get_where('plused_ticket_cm', array('ptc_id' => $id))->row();
     }
+    
+    public function getBookingDetails($id = 0){
+        $this->db->from('plused_book');
+        $this->db->join('centri','plused_book.id_centro = centri.id');
+        $this->db->join('plused_rows','plused_book.id_book = plused_rows.id_book');
+        $this->db->where('plused_book.id_book',$id);
+        $this->db->select("plused_book.id_book,plused_book.id_year,arrival_date,departure_date,
+            id_centro,weeks,nome_centri,valuta_fattura,
+            tot_pax,
+            sum(CASE WHEN tipo_pax = 'STD' THEN 1 ELSE 0 END) as std_count,
+            sum(CASE WHEN tipo_pax = 'GL' THEN 1 ELSE 0 END) as gl_count");
+        $result = $this->db->get();
+        if($result->num_rows())
+            return $result->result_array();
+        else
+            return 0;
+    }
+    
+    function updatePaxAcc($paxId,$accValue){
+        $this->db->where('id_prenotazione',$paxId);
+        $accValue = strtolower($accValue);
+        $updateArr = array(
+            'accomodation' => $accValue
+        );
+        $this->db->update('plused_rows',$updateArr);
+    }
+    
+    function updatePaymentNoteText($id,$note){
+        $this->db->where('pfp_id',$id);
+        $updateArr =array(
+            'pfp_note'=>$note
+        );
+        $this->db->update('plused_fincon_payments',$updateArr);
+        return 1;
+    }
 
 }
-
 ?>

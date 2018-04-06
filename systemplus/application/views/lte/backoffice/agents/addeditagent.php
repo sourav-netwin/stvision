@@ -59,14 +59,14 @@
 					<label class="col-sm-3 control-label" >Business country</label>
 					<div class="col-sm-6">
 						<select class="form-control" id="txt_businesscountry" name="txt_businesscountry">
-                            <option value="">Select Country</option>
-                            <?php if($countries){
-                                    foreach ($countries as $country){
-                                        ?><option <?php echo ($formData['txt_businesscountry'] == $country['country'] ? "selected='selected'" : '');?> value="<?php echo $country['country'];?>"><?php echo $country['country'];?></option><?php 
-                                    }
-                            }
-                            ?>
-                        </select>
+                                                    <option value="">Select Country</option>
+                                                    <?php if($countries){
+                                                            foreach ($countries as $country){
+                                                                ?><option <?php echo ($formData['txt_businesscountry'] == $country['country'] ? "selected='selected'" : '');?> value="<?php echo $country['country'];?>"><?php echo $country['country'];?></option><?php 
+                                                            }
+                                                    }
+                                                    ?>
+                                                </select>
 						
 					</div>
 				</div>
@@ -82,6 +82,21 @@
 					<label class="col-sm-3 control-label ">Business telephone</label>
 					<div class="col-sm-6">
 						<input type="text" value="<?php echo htmlspecialchars(trim(set_value('txt_businesstelephone', $formData['txt_businesstelephone']))); ?>" id="txt_businesstelephone" onkeypress="return keyRestrict(event,'1234567890+- ');" name="txt_businesstelephone" class="form-control" />
+					</div>
+				</div>
+                                
+                                <div class="form-group">
+					<label class="col-sm-3 control-label" >Account manager</label>
+					<div class="col-sm-6">
+                                            <select class="form-control" id="selAccountMngr" name="selAccountMngr">
+                                                <option value="">Select account manager</option>
+                                                <?php if($accountManagers){
+                                                        foreach ($accountManagers as $accountMngr){
+                                                            ?><option <?php echo ($formData['selAccountMngr'] == $accountMngr['id'] ? "selected='selected'" : '');?> value="<?php echo $accountMngr['id'];?>" data-fname="<?php echo ucwords($accountMngr['firstname']);?>" data-lname="<?php echo ucwords($accountMngr['familyname']);?>" data-position="<?php echo ucwords($accountMngr['position']);?>" ><?php echo ucwords($accountMngr['firstname']." ".$accountMngr['familyname']);?></option><?php 
+                                                        }
+                                                }
+                                                ?>
+                                            </select>
 					</div>
 				</div>
 				
@@ -142,6 +157,7 @@ $(document).ready(function() {
 						txt_businesspostalcode: "required",
 						txt_businesscountry: "required",
 						txt_businesstelephone: "required",
+                                                selAccountMngr: "required"
 						
                     },
                     messages: {
@@ -153,11 +169,21 @@ $(document).ready(function() {
 						txt_businesspostalcode: "Please enter postal code",
 						txt_businesscountry: "Please select country",
 						txt_businesstelephone: "Please enter telephone number",
+                                                selAccountMngr: "Please select account manager"
 						
                     },
                     submitHandler: function(form) {
                         form.submit();
                     }
+            });
+            
+            $("body").on("change","#selAccountMngr",function (){
+                var fname = $('option:selected', this).attr('data-fname');
+                var lname = $('option:selected', this).attr('data-lname');
+                var position = $('option:selected', this).attr('data-position');
+                $("#txt_accountmanagerfirstname").val(fname);
+                $("#txt_accountmanagerfamilyname").val(lname);
+                $("#txt_accountmanagerposition").val(position);
             });
 });
   

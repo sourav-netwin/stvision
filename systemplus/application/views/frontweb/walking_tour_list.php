@@ -5,7 +5,7 @@
 
 <!----------Form validation js----------->
 <script src="<?php echo base_url(); ?>js/tuition/jquery_validations1.9.0.js"></script>
-<link rel="stylesheet" href="<?php echo LTE; ?>frontweb/style.css">
+<link rel="stylesheet" href="<?php echo LTE; ?>frontweb/style.css?v=1.1">
 
 <div class="right_col" role="main">
 	<div class="row">

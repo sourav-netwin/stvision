@@ -32,7 +32,7 @@
                 <ul >
                     <li>We anticipate being able to offer you an hourly rate of <?php echo $currencySymbol;?><?php echo $ratePerHour;?> per week based upon an average of 15-18 teaching hours per week.  92% of this weekly package will be paid to you as salary during your employment.  The balance of this package relates to holiday pay.  As the Company is not permitted to roll up holiday pay into your normal salary, assuming that you have not taken any paid holiday during your employment, the balance will be paid to you in lieu of your accrued but untaken holiday entitlement following the termination of your employment with your final salary payment;</li>
                     <li>Induction and training on first day of contract, paid at €50;</li>
-                    <li>In the event that you are returning to work for the Company within two (2) years of you having last worked on a summer programme, you will be entitled to a Returner Bonus of <?php echo $currencySymbol;?>50.</li>
+                    <li>In the event that you are returning to work for the Company within two (2) years of you having last worked on a summer programme, you will be entitled to a Returner Bonus of <?php //echo $currencySymbol;?>€50.</li>
                 </ul>
                 </p>
                 <p>

@@ -85,7 +85,7 @@
 								<?php
 								if (!empty($courseDetails) && $pax["tipo_pax"] != 'GL') {
 									?>
-									<div class="col-md-6" id="suppl-div"><label for="share_room">Type of course</label>
+									<div class="col-md-6" id="suppl-div"><label for="share_room">Academy Type</label>
 										<select class="form-control" id="suppl" name="suppl">
 											<option value="">Select</option>
 											<?php
@@ -108,7 +108,7 @@
 								}
 								elseif (!empty($courseDetails) && $pax["tipo_pax"] == 'GL') {
 									?>
-									<div class="col-md-6" style="display: none" id="suppl-div"><label for="share_room">Type of course</label>
+									<div class="col-md-6" style="display: none" id="suppl-div"><label for="share_room">Academy Type</label>
 										<select class="form-control" id="suppl" disabled="disabled" name="suppl">
 											<option value="">Select</option>
 											<?php

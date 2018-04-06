@@ -211,11 +211,37 @@
 		//Function is used to perform delete operation for master module(soft delete)
 		function delete($module = NULL , $id = NULL)
 		{
-			$updateData = array(
-				'delete_flag' => 1
-			);
 			$moduleArr = $this->mastermodel->getModule($module);
-			$this->admin_model->commonUpdate($moduleArr['dbName'] , $moduleArr['key'].' = '.$id , $updateData);
+			//Hard delete from database with foreign key checking
+			if(isset($moduleArr['deleteCheck']))
+			{
+				$this->admin_model->commonDelete($moduleArr['dbName'] , $moduleArr['key'].' = '.$id);
+				$subModuleArr = $this->mastermodel->getModule($moduleArr['deleteCheck']);
+				if(isset($subModuleArr['deleteCheck']))
+				{
+					$childSubModuleArr = $this->mastermodel->getModule($subModuleArr['deleteCheck']);
+					$subModuleResult = $this->admin_model->commonGetData($subModuleArr['key'] , $subModuleArr['foreignKey'].' = '.$id , $subModuleArr['dbName'] , 2);
+					if(!empty($subModuleResult))
+					{
+						foreach($subModuleResult as $value)
+						{
+							$this->admin_model->commonDelete($subModuleArr['dbName'] , $subModuleArr['key'].' = '.$value[$subModuleArr['key']]);
+							$this->admin_model->commonDelete($childSubModuleArr['dbName'] , $childSubModuleArr['foreignKey'].' = '.$value[$subModuleArr['key']]);
+						}
+					}
+				}
+				else
+					$this->admin_model->commonDelete($subModuleArr['dbName'] , $subModuleArr['foreignKey'].' = '.$id);
+			}
+			//Soft delete from database(by changing one flag)
+			else
+			{
+				$updateData = array(
+					'delete_flag' => 1
+				);
+				$this->admin_model->commonUpdate($moduleArr['dbName'] , $moduleArr['key'].' = '.$id , $updateData);
+			}
+
 			$this->session->set_flashdata('success_message', str_replace('**module**' , $moduleArr['title'] , $this->lang->line('delete_success_message')));
 			redirect('/frontweb/master/index/'.$module);
 		}

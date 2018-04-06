@@ -1,5 +1,4 @@
-  <section class="content">
-      <div class="box hlt-link">
+    <div class="box hlt-link">
         <div class="box-header with-border">
           <h3 class="box-title">Welcome to your Dashboard</h3>
 
@@ -29,8 +28,6 @@
         </div>
         <!-- /.box-footer-->
       </div>
-    </section>
-    
 <script>
     $(function () {
         // your code

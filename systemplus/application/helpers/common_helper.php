@@ -22,6 +22,15 @@ if (!function_exists('getDateFromJSONString')) {
 
 }
 
+if (!function_exists('validateDate')) {
+
+    function validateDate($date, $format = 'Y-m-d H:i:s') {
+        $d = DateTime::createFromFormat($format, $date);
+        return $d && $d->format($format) == $date;
+    }
+    
+}
+
 /**
  * Site URL
  *
@@ -563,4 +572,42 @@ function print_tags($csvStr,$newLine = 0,$row = array()){
         }
     }
     return $html;
+}
+
+/**
+ * getEmailTemplate
+ * fetch email template as per given id. 
+ */
+if ( ! function_exists('getEmailTemplate'))
+{
+    function getEmailTemplate($templateId){
+        $CI = &get_instance();
+        $CI->db->where('emt_id',$templateId);
+        $result = $CI->db->get("agnt_email_template");
+        if($result->num_rows() > 0)
+            return $result->row();
+        else
+            return 0;
+    }
+}
+
+/**
+ * mergeContent
+ * this function is used to merge email template parameter
+ */
+if ( ! function_exists('mergeContent'))
+{
+    function mergeContent($strParam,$strContent){
+            foreach ($strParam as $key => $value){
+                $strContent = str_replace($key, $value, $strContent);
+            }
+            $CI = &get_instance();
+            ob_start(); // start output buffer
+            $data['emailContent'] = $strContent;
+            $CI->load->view('lte/email/template',$data);
+            //print_r($data);die;
+            $template = ob_get_contents(); // get contents of buffer
+            ob_end_clean();
+            return $template;
+        }
 }

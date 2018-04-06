@@ -22,13 +22,9 @@
                 <li>Proof of eligibility to work in the UK.</li>
                 <li>The provision of original copies of relevant qualifications.</li>
             </ul>
-          <?php 
-            if(isset($specificaitonFile))
-                if(file_exists(JOB_OFFER_TERM_SPECIFICATION_PATH . $specificaitonFile))
-                {
-          ?>
-            <p>Please click <a href="<?php echo base_url().'index.php/positions/specification/'.$specificaitonFile;?>">here</a> to download terms and job specification.</p>
-          <?php }?>
+          
+            <p>Please click <a href="<?php echo $termsAndJobSpecFile?>">here</a> to download terms and job specification.</p>
+          
             <p>We look forward to working with you.</p>
             <p>Plus Staff</p>
         </div>

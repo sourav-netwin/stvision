@@ -9,7 +9,7 @@
 
 <!----------Form validation js----------->
 <script src="<?php echo base_url(); ?>js/tuition/jquery_validations1.9.0.js"></script>
-<link rel="stylesheet" href="<?php echo LTE; ?>frontweb/style.css">
+<link rel="stylesheet" href="<?php echo LTE; ?>frontweb/style.css?v=1.1">
 
 <!------------custom javascript for master activity------------>
 <script>
@@ -21,7 +21,7 @@
 	var duplicate_dynamic = "<?php echo $this->lang->line("duplicate_dynamic"); ?>";
 	var start_end_date_validation = "<?php echo $this->lang->line("start_end_date_validation"); ?>";
 </script>
-<script src="<?php echo LTE; ?>frontweb/custom/master_activity.js?v=0.1"></script>
+<script src="<?php echo LTE; ?>frontweb/custom/master_activity.js?v=1.1"></script>
 
 <div class="right_col" role="main">
 	<div class="row">

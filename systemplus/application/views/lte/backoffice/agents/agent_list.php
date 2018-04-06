@@ -18,21 +18,28 @@
             <!-- /.box-body -->
             <div class="box-body">
                 <form id="search_agent_filter_form" name="box_campus" action="<?php echo base_url(); ?>index.php/manageagents" method="post">
-                    <div class="col-md-4">
+                    <div class="col-md-3">
                         <div class="form-group">
                             <label>Agent name</label> 
                             <input type="text" name="agentname" id="agentname" value="<?php echo htmlentities($agentName) ?>" class="form-control ui-autocomplete-input" autocomplete="off" >
                         </div>
                     </div>
+                    
+                    <div class="col-md-3">							
+                        <div class="form-group">
+                            <label>Business name</label> 
+                            <input type="text" name="businessname" id="businessname" value="" class="form-control ui-autocomplete-input" autocomplete="off" >
+                        </div>
+                    </div>
 
-                    <div class="col-md-4">							
+                    <div class="col-md-3">							
                         <div class="form-group">
                             <label>Account manager name</label> 
                             <input type="text" name="accountmanagername" id="accountmanagername" value="<?php echo htmlentities($accountmanagername) ?>" class="form-control ui-autocomplete-input" autocomplete="off" >
                         </div>
                     </div>
 
-                    <div class="col-md-4">
+                    <div class="col-md-3">
                         <div class="form-group">
                             <label>Agent Country</label> 
                             <select class="form-control" id="selCountry" name="selCountry[]" multiple="multiple">
@@ -172,9 +179,9 @@
 <script src="<?php echo LTE; ?>plugins/datatables/dataTables.bootstrap.min.js"></script>
 <script src="<?php echo LTE; ?>custom/backoffice.js"></script>
 <script>
-    var agentName = '', accountmanagername = '', selCountry = '';
+    var agentName = '', accountmanagername = '', selCountry = '', businessName = '';
     $(function () {
-        datatable();
+        datatable(agentName,businessName, accountmanagername,selCountry);
         $('#selCountry').select2({
             dropdownAutoWidth: true,
             width: '100%'
@@ -187,6 +194,26 @@
                 // suggestion list.
                 $.ajax({
                     url: "manageagents/getAgentNameAutoComplete",
+                    type: "POST",
+                    data: {
+                        'name': request.term
+                    },
+                    dataType: "json",
+                    success: response,
+                    error: function () {
+                        response([]);
+                    }
+                });
+            }
+        });
+        
+        $("#businessname").autocomplete({
+            source: function (request, response) {
+                // request.term is the term searched for.
+                // response is the callback function you must call to update the autocomplete's
+                // suggestion list.
+                $.ajax({
+                    url: "manageagents/getBusinessNameAutoComplete",
                     type: "POST",
                     data: {
                         'name': request.term
@@ -232,28 +259,31 @@
 
         $("#btnsearchagent").click(function () {
             agentName = $.trim($('#agentname').val());
+            businessName = $.trim($('#businessname').val());
             accountmanagername = $.trim($('#accountmanagername').val());
             selCountry = $('#selCountry').val();
-            if (agentName == '' && accountmanagername == '' && selCountry == null)
+            if (agentName == '' && businessName == '' && accountmanagername == '' && selCountry == null)
             {
                 swal("Error", "Please, select one or more filter!");
             } else {
                 table.destroy();
-                datatable(agentName, accountmanagername, selCountry);
+                datatable(agentName,businessName, accountmanagername, selCountry);
             }
         });
         $('#resetList').on('click', function () {
-            if (agentName == '' && accountmanagername == '' && selCountry == '') {
+            if (agentName == '' && businessName == '' && accountmanagername == '' && selCountry == '') {
                 return;
             }
             $('#agentname').val('');
+            $('#businessname').val('');
             $('#accountmanagername').val('');
             $('#selCountry').val('');
             agentName = '';
+            businessName = '';
             accountmanagername = '';
             selCountry = '';
             table.destroy();
-            datatable();
+            datatable('','','','');
         });
         $('body').on('click', '.view_agent', function () {
             $('#viewModal').modal();
@@ -283,7 +313,7 @@
             });
         });
     });
-    function datatable(agentName = '', accountmanagername = '', selCountry = '') {
+    function datatable(agentName,businessName, accountmanagername, selCountry) {
         table = $('#reportTable').DataTable({
             "processing": true,
             "serverSide": true,
@@ -292,9 +322,10 @@
                 "url": "<?php echo base_url() . 'index.php/manageagents/getAgents' ?>",
                 data: {
                     agentname: agentName,
+                    businessname: businessName,
                     accountmanagername: accountmanagername,
                     selCountry: selCountry
-                },
+                }
             },
             "order": [[0, "asc"]],
             "columns": [
@@ -305,7 +336,7 @@
                 {"data": "account_manager_name", "name": "account_manager_name"},
                 {"data": "position", "name": "position"},
                 {"data": "action", "name": "action", "orderable": false, "searchable": false}
-            ],
+            ]
         });
     }
 </script>

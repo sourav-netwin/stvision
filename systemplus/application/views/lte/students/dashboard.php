@@ -1,6 +1,31 @@
 <section class="content">
     <div class="box">
         <div class="box-header with-border">
+            <h3 class="box-title">PLUS placement test</h3>
+            <div class="box-tools pull-right">
+                <button title="Collapse" data-toggle="tooltip" data-widget="collapse" class="btn btn-box-tool" type="button">
+                    <i class="fa fa-minus"></i></button>
+            </div>
+        </div>
+        <div class="box-body">
+            <p>
+                In order to attend the online test please <a href="<?php echo base_url();?>index.php/students/englishtest" >click here</a>
+            </p>
+            <p>
+                The PLUS Team.
+            </p>            
+        </div>
+        <!-- /.box-body -->
+        <div class="box-footer">
+            &nbsp;
+<!--            <p>
+                <a href="<?php // echo base_url() . 'index.php/students/englishtest'; ?>" class="btn btn-primary">Grammar and Vocabulary</a>
+            </p>-->
+        </div>
+        <!-- /.box-footer-->
+    </div>
+    <div class="box">
+        <div class="box-header with-border">
             <h3 class="box-title">Welcome to PLUS satisfaction survey!</h3>
 
             <div class="box-tools pull-right">

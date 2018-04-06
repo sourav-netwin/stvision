@@ -27,6 +27,7 @@
                             foreach ($dates as $dataArr) {
                                 $dateArr[] = strtotime($dataArr["start_date"]);
                             }
+                            
                             for ($a = 0; $a < count($simbooking); $a++) {
                                 $contarighe = 1;
                                 ?>
@@ -196,7 +197,8 @@
                                                         if(in_array($weekDay, $weekEndDays))
                                                         $weekends = "weekends ";
                                                     ?>
-                                                    <td class="<?php echo $weekends;?>"><input class="form-control nobbg" type="text" readonly id="<?php echo $_REQUEST["accomodation"][$a] ?>_totpax_<?php echo strtotime($datecycle) ?>" value="0"></td>
+                                                    <td class="<?php echo $weekends;?>">
+                                                        <input class="form-control nobbg" type="text" readonly id="<?php echo $_REQUEST["accomodation"][$a] ?>_totpax_<?php echo strtotime($datecycle) ?>" value="0"></td>
                                                     <?php
                                                     $datecycle = date("Y-m-d", strtotime("+1 day", strtotime($datecycle)));
                                                 }

@@ -498,8 +498,11 @@ class Magenti extends Model {
 
     function plused_get_ag_details($id) {
         $dataend = array();
-        $Q = $this->db->getwhere('agenti', array('id' => $id));
-
+        $this->db->where('agenti.id', $id);
+        $this->db->from('agenti');
+        $this->db->select('agenti.*,plused_account-manager.firstname as acc_manager_firstname,plused_account-manager.familyname as acc_manager_lastname,plused_account-manager.email as acc_manager_email');
+        $this->db->join('plused_account-manager','agenti.account = plused_account-manager.id','left');
+        $Q = $this->db->get();
         if ($Q->num_rows() > 0) {
             foreach ($Q->result_array() as $row) {
                 $dataend[] = $row;
@@ -2555,7 +2558,7 @@ class Magenti extends Model {
      */
 
     function getAgentDetails($id = 0) {
-        $this->db->select("a.id, CONCAT(a.mainfirstname,' ',a.mainfamilyname) as agentname, a.mainfirstname, a.mainfamilyname,a.email as agentemail, a.businessname, a.businessaddress, a.businesscity, a.businesscountry, a.businesspostalcode, a.businesstelephone,  CONCAT( am.firstname, ' ', am.familyname ) as account_manager_name, am.firstname, am.familyname, am.position", FALSE);
+        $this->db->select("a.id, CONCAT(a.mainfirstname,' ',a.mainfamilyname) as agentname, a.mainfirstname, a.mainfamilyname,a.email as agentemail, a.businessname, a.businessaddress, a.businesscity, a.businesscountry, a.businesspostalcode, a.businesstelephone,  account, CONCAT( am.firstname, ' ', am.familyname ) as account_manager_name, am.firstname, am.familyname, am.position", FALSE);
         $this->db->from("agenti a");
         $this->db->join("`plused_account-manager` am", "am.id = a.account");
 
@@ -2607,6 +2610,26 @@ class Magenti extends Model {
                 $rowOk["id"] = $row["id"];
                 $rowOk["label"] = $row["mainfirstname"] . ' ' . $row["mainfamilyname"];
                 $rowOk["value"] = $row["id"];
+                $data[] = $rowOk;
+            }
+        }
+        $result->free_result();
+        return json_encode($data);
+    }
+    
+    /* Author : SK 
+     * Purpose: Get businessname details for autocomplete
+     */
+    function getBusinessNameAutoComplete($name) {
+        $data = array();
+        $this->db->select("a.id,a.businessname");
+        $this->db->or_like("a.businessname", $name);
+        $result = $this->db->get('agenti a');
+        if ($result->num_rows() > 0) {
+            foreach ($result->result_array() as $row) {
+                $rowOk["id"] = $row["id"];
+                $rowOk["label"] = $row["businessname"];
+                $rowOk["value"] = $row["businessname"];
                 $data[] = $rowOk;
             }
         }
@@ -2721,6 +2744,10 @@ class Magenti extends Model {
         if ($search['agentName']) {
             $this->db->like("CONCAT(a.mainfirstname,' ',a.mainfamilyname)", $search['agentName']);
         }
+        
+        if ($search['businessName']) {
+            $this->db->like("a.businessname", $search['businessName']);
+        }
 
         if ($search['accountManager']) {
             $this->db->like("CONCAT( am.firstname, ' ', am.familyname )", $search['accountManager']);
@@ -2729,6 +2756,7 @@ class Magenti extends Model {
         if ($search['search']) {
             $this->db->where('(businessname LIKE "%' . $search['search'] . '%" OR '
                     . 'businesscity LIKE "%' . $search['search'] . '%" OR '
+                    . 'businessname LIKE "%' . $search['search'] . '%" OR '
                     . 'businesscountry LIKE "%' . $search['search'] . '%" OR '
                     . 'a.businesscountry LIKE "%' . $search['search'] . '%" OR '
                     . 'CONCAT(a.mainfirstname," ",a.mainfamilyname) LIKE "%' . $search['search'] . '%" OR '

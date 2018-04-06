@@ -1,7 +1,7 @@
 /*
 	This JS file is used to manage all custom javascript functionality(applicable for
 	add/edit/list) related to the master module
-	Current Version : 0.2
+	Current Version : 1.3
 */
 
 var pageHighlightMenu = 'frontweb/master/index/'+moduleName;
@@ -48,68 +48,42 @@ $(document).ready(function(){
 			$(document).on('click' , '.copyMasterActivity' , function(){
 				$('#copyMasterActivityModal').find('.modalTitle').text('Copy master activity for '+$(this).parent().parent().parent().find('td').eq(1).text());
 				$('#copyMasterActivityModal').find('#id').val($(this).data('id'));
-				$('#copyMasterActivityModal').find('.customActivityError').text('');
-				$('#copyMasterActivityModal').modal();
-				$('#copyMasterActivityModal').find('input:text').val('');
-			});
+				$('#copyMasterActivityModal').find('#centre_id').text($(this).parent().parent().parent().find('td').eq(1).text());
+				$('#copyMasterActivityModal').find('#activity_name').text($(this).parent().parent().parent().find('td').eq(3).text());
+				$('#copyMasterActivityModal').find('#arrival_date').text($(this).parent().parent().parent().find('td').eq(4).text());
+				$('#copyMasterActivityModal').find('#departure_date').text($(this).parent().parent().parent().find('td').eq(5).text());
 
-			//After click on the add more icon it will clone and append the item
-			$(document).on('click' , '.addMoreTable' , function(){
-				if($(this).parent().find('i').length == 1)
-					$(this).parent().append('<i class="fa fa-lg fa-minus-circle delete_section removeMoreTable" aria-hidden="true"></i>');
-				$(this).parent().parent().after($(this).parent().parent().clone());
-				$(this).parent().parent().next().find('input:text').val('');
-				$(this).parent().parent().next().find('.showErrorMsg').text('');
-				$('.datepicker').datepicker({
-					format: "dd-mm-yyyy",
-					autoclose: true
-				});
-			});
-
-			//After click on the remove more icon it will remove the current content
-			$(document).on('click' , '.removeMoreTable' , function(){
-				$(this).parent().parent().remove();
-				if($('.addMoreWrapper').length == 1)
-					$('.addMoreWrapper').find('.removeMoreTable').remove();
-			});
-
-			//Check required validation for copy ativity form during form submit
-			$('#copyMasterActivityForm').submit(function(e){
-				if($('#copyActivityFlag').val() == 2)
-					return true;
-				e.preventDefault();
-				var errorFlag = 1;
-				var datesArr = [];
-				$('#copyMasterActivityModal').find('.customActivityError').text('');
-				//To check the required validation
-				$('input[name="date[]"]').each(function(){
-					if($(this).val() == '')
-					{
-						errorFlag = 2;
-						$(this).next('.showErrorMsg').text(please_enter_dynamic.replace('**field**' , 'Date')).css('display' , 'block');
-					}
-					else
-					{
-						datesArr.push($(this).val());
-						$(this).next('.showErrorMsg').text('');
-					}
-				});
-				if(errorFlag == 1)
-				{
-					$.ajax({
-						url : baseUrl+'index.php/frontweb/master_activity/copy_duplicate',
-						type : 'POST',
-						data : {'datesArr' : datesArr , 'id' : $('#copyMasterActivityModal').find('#id').val()},
-						success : function(response){
-							if(response == 'true')
-							{
-								$('#copyActivityFlag').val('2');
-								$('#copyMasterActivityForm').submit();
-							}
-							else
-								$('#copyMasterActivityModal').find('.customActivityError').text(duplicate_dynamic.replace('**field**' , 'Date'));
+				//Get the student dropdoen values to show in the copy activity form
+				$.ajax({
+					url : baseUrl+'index.php/frontweb/master_activity/get_copy_student_group',
+					type : 'POST',
+					data : {'id' : $(this).data('id')},
+					dataType : 'JSON',
+					success : function(response){
+						$('#copyMasterActivityModal').find('#student_group').empty().append(
+							$('<option></option>').attr('value' , '').text('Please select group')
+						);
+						if(response.length > 0)
+						{
+							$.each(response , function(index , value){
+								$('#copyMasterActivityModal').find('#student_group').append(
+									$('<option></option>').attr('value' , value.student_group_id).text(value.group_name)
+								);
+							});
 						}
-					});
+					}
+				});
+
+				$('#copyMasterActivityModal').modal();
+			});
+
+			//Check required validation
+			$('#copyMasterActivityForm').validate({
+				errorElement : 'span',
+				rules : {
+					student_group : {
+						required : true
+					}
 				}
 			});
 		}

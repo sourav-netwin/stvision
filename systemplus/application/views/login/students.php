@@ -35,7 +35,7 @@
             </div>
             <!-- /.login-logo -->
             <div class="login-box-body">
-                <p class="login-box-msg">Welcome back!</p>
+                <p class="login-box-msg">Welcome!</p>
                 <div class="row">
                     <?php
                     $success_message = $this->session->flashdata('success_message');

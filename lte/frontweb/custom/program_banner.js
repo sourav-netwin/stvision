@@ -1,7 +1,7 @@
 /*
 	This file is used to manage all the customize javascript related operation for program
 	banner module .
-	Current Version : 0.2
+	Current Version : 1.1
 */
 var pageHighlightMenu = "frontweb/program";
 $(document).ready(function(){

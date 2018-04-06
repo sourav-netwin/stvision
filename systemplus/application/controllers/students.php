@@ -144,10 +144,8 @@ class Students extends Controller {
         }
     }
 
-    /**
-     * This functions load students english test 
-     */
-    function englishtest() {
+    function englishtest($readonly = "")
+    {
         if ($this->session->userdata('role') == 502) {
             $data['title'] = "plus-ed.com | Test: Grammar and vocabulary";
             $data['breadcrumb1'] = 'Test / Survey';
@@ -160,12 +158,29 @@ class Students extends Controller {
             if ($userData) {
                 $data['userData'] = $userData;
                 $data['userId'] = $id;
-                $testId = 2; // THIS IS STATIC ID FOR : ENGLISH GRAMMAR TEST
+                $testId = 3; // THIS IS STATIC ID FOR : ENGLISH GRAMMAR TEST
+                $remainingTime = "30:00"; //Minutes, THIS IS STATIC TIME FOR : ENGLISH GRAMMAR TEST
+                $runningTestId = 0;// RUNNING TEST INSTANCE FOR STUDENT
+                $currentTestAttempt = 0;// RUNNING TEST INSTANCE ATTENMPT FOR STUDENT
+                $testSubmitedStatus = 0;
                 $checkAlreadySubmitted = $this->studentsmodel->checkAlreadySubmited($testId, $userUUID);
                 $checkCDUserMarks = $this->studentsmodel->checkCDUserEnteredMarks($userUUID);
-                $data['testAlreadySubmitted'] = $checkAlreadySubmitted;
+                
+                if(!empty($checkAlreadySubmitted))
+                {
+                    $runningTestId = $checkAlreadySubmitted->ts_id;
+                    $remainingTime = $checkAlreadySubmitted->ts_remaining_time;
+                    $testSubmitedStatus = ($checkAlreadySubmitted->ts_test_status == "Completed" ? 1 : 0);
+                    $currentTestAttempt = $checkAlreadySubmitted->ts_attempt_count;
+                }
+                $data['remainingTime'] = $remainingTime;
+                $data['runningTestId'] = $runningTestId;
+                $data['testAlreadySubmitted'] = $testSubmitedStatus;
+                $data['currentTestAttempt'] = $currentTestAttempt;
+                
                 $data['checkCDUserMarks'] = $checkCDUserMarks;
                 $testQuestionData = $this->studentsmodel->getTestQuestions($testId, $userUUID);
+                
                 $data['testQuestionData'] = $testQuestionData;
                 if ($data['testQuestionData']) {
                     $data['testName'] = $data['testQuestionData'][0]['test_title'];
@@ -177,7 +192,10 @@ class Students extends Controller {
                 else { // if(APP_THEME == "LTE")
                     $data['pageHeader'] = "Grammar and vocabulary";
                     $data['optionalDescription'] = "";
-                    $this->ltelayout->view('lte/students/english_test', $data);
+                    if($testSubmitedStatus)
+                        $this->ltelayout->view('lte/students/english_test', $data);
+                    else
+                        $this->ltelayout->view('lte/students/online_english_test', $data);
                 }
             } else
                 redirect('students', 'refresh');
@@ -204,6 +222,28 @@ class Students extends Controller {
             }
         } else {
             echo json_encode(array('result' => 0, "message" => "User session expired."));
+        }
+    }
+    
+    function teststarted(){
+        $testId = $this->input->post('testId');
+        $remainingTime = $this->input->post('remainingTime');
+        $userUUID = $this->session->userdata('uuid');
+        $testSubmitId = 0;
+        if (!empty($userUUID)) {
+            if (!empty($testId)) {
+                $testSubmitId = $this->studentsmodel->testStarted($testId, $userUUID, $remainingTime);
+            }
+        }
+        echo json_encode(array('testSubmitId'=>$testSubmitId));
+    }
+    
+    function upatetimer(){
+        $runningTestId = $this->input->post('runningTestId');
+        $remainingTime = $this->input->post('remainingTime');
+        $timeUpdated = 0;
+        if (!empty($runningTestId)) {
+            $timeUpdated = $this->studentsmodel->upatetimer($runningTestId, $remainingTime);
         }
     }
 
@@ -239,15 +279,15 @@ class Students extends Controller {
      * it will provoid a raw form to enter one question at time
      *  'tque_test_id' => 2, please change test id here in below code.
      */
-    function _temp() {
+    function temp() {
         $this->load->helper('form');
         echo form_open('students/temp');
         echo "<style>input{ width:450px;display:block;}</style>";
-        echo "<input type='text' name='question' value='' />";
-        echo "<input type='text' name='option1' value='' />";
-        echo "<input type='text' name='option2' value='' />";
-        echo "<input type='text' name='option3' value='' />";
-        echo "<input type='text' name='option4' value='' />";
+        echo "question: <input type='text' name='question' value='' />";
+        echo "option a:<input type='text' name='option1' value='' />";
+        echo "option b:<input type='text' name='option2' value='' />";
+        echo "option c:<input type='text' name='option3' value='' />";
+        echo "option d:<input type='text' name='option4' value='' />";
         echo "<input type='submit' name='submit' value='Submit' />";
         echo form_close();
 
@@ -258,7 +298,7 @@ class Students extends Controller {
             $option3 = $this->input->post('option3');
             $option4 = $this->input->post('option4');
             $insertQues = array(
-                'tque_test_id' => 2,
+                'tque_test_id' => 3,
                 'tque_question' => $question
             );
             $this->db->insert('plused_test_question', $insertQues);

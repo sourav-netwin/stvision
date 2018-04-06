@@ -111,7 +111,7 @@ class Positions extends Controller {
                     $file_name = time() . '_' . $this->stripJunk($_FILES['cvFile']['name']);
                     $config['upload_path'] = $CV_FILE_PATH;
                     $config['allowed_types'] = 'doc|docx|ods|pdf';
-                    $config['max_size'] = '1000';
+                    $config['max_size'] = '2048';
                     $config['file_name'] = $file_name;
                     $this->upload->initialize($config);
                     //---- UPLOAD IMAGE ----//
@@ -130,7 +130,7 @@ class Positions extends Controller {
                     $file_name = time() . '_' . $this->stripJunk($_FILES['otherFile']['name']);
                     $config['upload_path'] = $OTHER_FILE_PATH;
                     $config['allowed_types'] = 'doc|docx|ods|pdf';
-                    $config['max_size'] = '1000';
+                    $config['max_size'] = '2048';
                     $config['file_name'] = $file_name;
                     $this->upload->initialize($config);
                     //---- UPLOAD IMAGE ----//
@@ -151,6 +151,11 @@ class Positions extends Controller {
                         @unlink($CV_FILE_PATH . $cvFile);
                     if (!empty($otherFile))
                         @unlink($OTHER_FILE_PATH . $otherFile);
+                    $errorMessage = $formData['other_file_error'];
+                    $errorMessage .= $formData['cv_file_error'];
+                    $errorMessage = strip_tags($errorMessage);
+                    header("location: http://www.plus-ed.com/apps/index.php/courses/job/ko2/". base64_encode($errorMessage));
+                    exit;
                 }
                 else {
                     $fromDate = $this->input->post('txtAblilityFrom');

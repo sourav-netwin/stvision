@@ -24,6 +24,7 @@
                         </th>
                         <th>Duration</th>
                         <th>Days</th>
+                        <th>Planned / Extra</th>
                         <th>Airport</th>
                         <th class="no-sort">Action</th>
                     </tr>
@@ -46,7 +47,9 @@
                                             </div>
                                             <div class="modal-body">
                                                 <p><strong>Description: </strong><?php echo htmlspecialchars($excursion["exc_brief_description"]);?></p>
-                                                <p><strong>Days: </strong><?php echo htmlspecialchars($excursion["exc_days"]);?></p>
+                                                <p><strong>Day type: </strong><?php echo ucfirst($excursion["exc_day_type"]);?></p>
+                                                <p><strong>Planned / Extra: </strong><?php echo ucfirst($excursion["exc_old_type"]);?></p>
+                                                <p><strong>Days: </strong><?php echo htmlspecialchars($excursion["exc_days"]). " (week: ".$excursion['exc_weeks'].")";?></p>
                                                 <p><strong>Airport: </strong><?php echo htmlspecialchars($excursion["exc_airport"]);?></p>
                                                 <p>
                                                     <strong>Mapped campus: </strong>
@@ -90,8 +93,9 @@
                                     ?>
                                 </p>
                                 </td>
-                                <td class="center"><?php echo htmlspecialchars($excursion["exc_day_type"]);?></td>
-                                <td class="center"><?php echo htmlspecialchars($excursion["exc_days"]);?></td>
+                                <td class="center"><?php echo (!empty($excursion["exc_day_type"]) ? htmlspecialchars($excursion["exc_day_type"]) : "-");?></td>
+                                <td class="center"><?php echo htmlspecialchars($excursion["exc_days"]). " (week: ".$excursion['exc_weeks'].")";?></td>
+                                <td class="center"><?php echo ucfirst($excursion["exc_old_type"]);?></td>
                                 <td class="center"><?php echo htmlspecialchars($excursion["exc_airport"]);?></td>
                                 <td class="text-center">
                                     <div class="btn-group">
@@ -116,6 +120,7 @@
                     <th>Brief description</th>
                     <th>Duration</th>
                     <th>Days</th>
+                    <th>Planned / Extra</th>
                     <th>Airport</th>
                     <th>Action</th>
                 </tr>

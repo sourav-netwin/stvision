@@ -74,6 +74,15 @@
 						$statusClass = ($value[$moduleArr['statusField']] == 1) ? 'fa-check-square-o' : 'fa-square-o';
 						$actionStr.= '<a data-module="'.$moduleName.'" data-module_title="'.$moduleArr['title'].'" data-status="'.$value[$moduleArr['statusField']].'" data-id="'.$value[$moduleArr['key']].'" data-toggle="tooltip" data-original-title="Change Status for '.$moduleArr['title'].'" class="btn btn-xs btn-danger btn-wd-24 global-list-status-icon statusIcon"><span><i class="fa '.$statusClass.'" aria-hidden="true"></i></span></a>';
 					}
+
+					//For master activity module(copy master activity for groups)
+					if($moduleName == 'manage_fixed_activity')
+					{
+						$copyIconArr = $this->showCopyActivityIcon($value);
+						if($copyIconArr['show'] == 1)
+							$actionStr.= '<a data-id="'.$value[$moduleArr['key']].'" data-toggle="tooltip" data-original-title="Copy master activity" class="btn btn-xs btn-success btn-wd-24 copyMasterActivity"><span><i class="fa fa-copy" aria-hidden="true"></i></span></a>';
+					}
+
 					$actionStr.= "</div>";
 
 					$resultData[$key][0] = $siNo++;
@@ -290,5 +299,30 @@
 				$fieldStr.= '<i class="fa fa-lg fa-minus-circle delete_section removeMoreTable" aria-hidden="true"></i>';
 			$fieldStr.= '</div><br><br></div>';
 			return $fieldStr;
+		}
+
+		/**
+		*This function is used to check if copy master activity icon should in the listing page ot not
+		*
+		*@param Array $data : Master activity details
+		*@return Array
+		*/
+		private function showCopyActivityIcon($data = array())
+		{
+			$returnArr = array();
+			unset($data['master_activity_id']);
+			unset($data['student_group']);
+			$masterGroup = $this->db->select('student_group')
+							->where($data)
+							->where("student_group != ''")
+							->get(TABLE_MASTER_ACTIVITY)->result_array();
+			$studentGroup = $this->db->select('student_group_id , group_name')
+									->where('centre_id' , $data['centre_id'])
+									->get(TABLE_STUDENT_GROUP)->result_array();
+			if(count($studentGroup) > count($masterGroup))
+				$returnArr['show'] = 1;
+			else
+				$returnArr['show'] = 2;
+			return $returnArr;
 		}
 	}

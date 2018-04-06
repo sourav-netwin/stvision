@@ -10,16 +10,18 @@
 		//This function is used to get the master activity details to show in the activity report
 		public function getActivityReport($whereCondition = NULL)
 		{
-			$this->db->select('b.date , c.*');
+			$this->db->select("b.date , c.program_name , c.location , c.activity , c.from_time , c.to_time , concat_ws(' ' ,  d.ta_firstname , d.ta_lastname) as managed_by" , FALSE);
 			$this->db->from(TABLE_MASTER_ACTIVITY.' a');
 			$this->db->join(TABLE_FIXED_DAY_ACTIVITY.' b' , 'a.master_activity_id = b.master_activity_id' , 'left');
 			$this->db->join(TABLE_FIXED_DAY_ACTIVITY_DETAILS.' c' , 'b.fixed_day_activity_id = c.fixed_day_activity_id' , 'left');
+			$this->db->join(TABLE_TEACHER_APPLICATION.' d' , 'c.managed_by = d.ta_id' , 'left');
 			$this->db->where("cast(b.date as DATE) between '".date('Y-m-d' , strtotime($this->input->post('start_date')))."' AND '".date('Y-m-d' , strtotime($this->input->post('end_date')))."'");
 			$this->db->where('a.centre_id' , $this->input->post('centre_id'));
 			$this->db->where('a.student_group' , $this->input->post('student_group'));
 			if($whereCondition != '')
 				$this->db->where($whereCondition);
 			$this->db->order_by('b.date asc , c.from_time asc');
+			//echo "<pre>";print_r($this->db->get()->result_array());die('pop');
 			return $this->db->get()->result_array();
 		}
 
@@ -70,12 +72,9 @@
 				foreach($result as $value)
 					$returnArr['toTime'][] = $value['to_time'];
 			}
-			$result = $this->getDistinctActivityEntity('managed_by');
-			if(!empty($result))
-			{
-				foreach($result as $value)
-					$returnArr['managedBy'][] = $value['managed_by'];
-			}
+			$result = getContractPersonDropdown();
+			unset($result['']);
+			$returnArr['managedBy'] = $result;
 			return $returnArr;
 		}
 
@@ -83,10 +82,11 @@
 		public function getExportActivity()
 		{
 			$returnArr = array();
-			$this->db->select('b.date , c.*');
+			$this->db->select("b.date , c.program_name , c.location , c.activity , c.from_time , c.to_time , concat_ws(' ' ,  d.ta_firstname , d.ta_lastname) as managed_by" , FALSE);
 			$this->db->from(TABLE_MASTER_ACTIVITY.' a');
 			$this->db->join(TABLE_FIXED_DAY_ACTIVITY.' b' , 'a.master_activity_id = b.master_activity_id' , 'left');
 			$this->db->join(TABLE_FIXED_DAY_ACTIVITY_DETAILS.' c' , 'b.fixed_day_activity_id = c.fixed_day_activity_id' , 'left');
+			$this->db->join(TABLE_TEACHER_APPLICATION.' d' , 'c.managed_by = d.ta_id' , 'left');
 			$this->db->where("cast(b.date as DATE) between '".date('Y-m-d' , strtotime($this->session->userdata('start_date')))."' AND '".date('Y-m-d' , strtotime($this->session->userdata('end_date')))."'");
 			$this->db->where('a.centre_id' , $this->session->userdata('centre_id'));
 			$this->db->where('a.student_group' , $this->session->userdata('student_group'));
@@ -111,58 +111,22 @@
 		}
 
 		/**
-		*This function is used to get the unique dates and id to show in the table(Generate table)
-		*
-		*@param Array $masterActivityIdArr : Master activity id array
-		*@return Array
-		*/
-		public function getDates($masterActivityIdArr = array())
-		{
-			return $this->db->select("group_concat(fixed_day_activity_id) as id , date_format(date , '%d-%m-%Y') as date" , FALSE)
-							->where_in('master_activity_id' , $masterActivityIdArr)
-							->group_by('date')
-							->order_by('cast(date as DATE)' , 'asc')
-							->get(TABLE_FIXED_DAY_ACTIVITY)->result_array();
-		}
-
-		/**
-		*This function is used to get the activity details to show in the edit page
-		*
-		*@param Integer $id : Master activity id
-		*@return Array
-		*/
-		public function getEditdata($id)
-		{
-			$post = $this->db->select("a.centre_id , a.activity_name , date_format(a.arrival_date , '%d-%m-%Y') as arrival_date ,
-								date_format(a.departure_date , '%d-%m-%Y') as departure_date , b.group_name" , FALSE)
-							->from(TABLE_MASTER_ACTIVITY.' a')
-							->join(TABLE_STUDENT_GROUP.' b' , 'b.student_group_id = a.student_group' , 'left')
-							->where('master_activity_id' , $id)
-							->get()->row_array();
-			$post['datesArr'] = $this->getDates(array($id));
-			$post['details'] = $this->getActivityDetails($post['datesArr']);
-			return $post;
-		}
-
-		/**
 		*This function is used to get the activity details - date and time slot wise
 		*
-		*@param Array $datesArr : dates array
+		*@param Array $idArr : fixed activity id array
 		*@return Array
 		*/
-		private function getActivityDetails($datesArr = array())
+		public function getActivityDetails($idArr = array())
 		{
 			$returnArr = array();
-			foreach($datesArr as $idValue)
-				$idArr[] = $idValue['id'];
-			$result = $this->db->select('*')
+			$result = $this->db->select('fixed_day_activity_details_id as id , activity as name , from_time , to_time , fixed_day_activity_id')
 							->where_in('fixed_day_activity_id' , $idArr)
 							->order_by('from_time' , 'asc')
 							->get(TABLE_FIXED_DAY_ACTIVITY_DETAILS)->result_array();
 			if(!empty($result))
 			{
 				foreach($result as $value)
-					$returnArr[date('H:i' , strtotime($value['from_time'])).'-'.date('H:i' , strtotime($value['to_time']))][$value['fixed_day_activity_id']] = $value;
+					$returnArr[date('H:i' , strtotime($value['from_time'])).'-'.date('H:i' , strtotime($value['to_time']))][$value['fixed_day_activity_id']][] = $value;
 			}
 			return $returnArr;
 		}
@@ -197,6 +161,25 @@
 							->where("cast(b.date as DATE) between '".date('Y-m-d' , strtotime($this->input->post('start_date')))."' AND '".date('Y-m-d' , strtotime($this->input->post('end_date')))."'")
 							->order_by('c.'.$fieldName , 'asc')
 							->get()->result_array();
+		}
+
+		/**
+		*This function is used to get the student group dropdown details to show in the cop activity modal popup form
+		*
+		*@param NONE
+		*@return NONE
+		*/
+		public function getCopyStudentGroup()
+		{
+			$masterResult = $this->db->select('centre_id , activity_name , arrival_date , departure_date')
+									->where('master_activity_id' , $this->input->post('id'))
+									->get(TABLE_MASTER_ACTIVITY)->row_array();
+			$groupResult = $this->db->select('student_group_id , group_name')
+									->where("student_group_id not in(select student_group from ".TABLE_MASTER_ACTIVITY." where centre_id='".$masterResult['centre_id']."'
+											and activity_name='".$masterResult['activity_name']."' and arrival_date='".$masterResult['arrival_date']."' and departure_date =
+											'".$masterResult['departure_date']."') and centre_id='".$masterResult['centre_id']."'")
+									->get(TABLE_STUDENT_GROUP)->result_array();
+			return $groupResult;
 		}
 	}
 ?>

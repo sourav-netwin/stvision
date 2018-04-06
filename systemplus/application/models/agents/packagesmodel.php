@@ -24,6 +24,8 @@ class Packagesmodel extends Model {
     function getCampusExcursion($campusId){
         $this->db->select('exc_excursion_name,exc_id,exc_days,exc_type,exc_weeks,exc_day_type');
         $this->db->where('excm_campus_id',$campusId);
+        $this->db->where('exc_is_active',1);
+        $this->db->where('exc_is_deleted',0);
         $this->db->where("exc_type = 'excursion'");//(exc_type = 'planned' OR exc_type = 'extra')
         $this->db->order_by('exc_excursion_name','asc');
         $this->db->join('agnt_excursions','excm_exc_id = exc_id');
@@ -45,8 +47,10 @@ class Packagesmodel extends Model {
     
     function loadCountry($regionId = 0){
         $this->db->select('cou_descrizione,cou_id');
-        if($regionId)
+        if(is_numeric($regionId))
             $this->db->where('cou_regione',$regionId);
+        else if(is_array($regionId))
+            $this->db->where_in('cou_regione',$regionId);
         $result = $this->db->get('plused_tb_country');
         if($result->num_rows())
             return $result->result_array();
@@ -55,7 +59,7 @@ class Packagesmodel extends Model {
     }
     
     function loadAgents($countryId = ""){
-        $this->db->select('businessname,id');
+        $this->db->select('businessname,id,businesscountry');
         if($countryId)
             $this->db->where_in('businesscountry',$countryId);
         $result = $this->db->get('agenti');
@@ -156,7 +160,7 @@ class Packagesmodel extends Model {
     }
     
     function getSinglePackageData($pack_package_id){
-        $this->db->select("pack_package_id,pack_package,pack_category_program_id,pack_program_description,pack_campus_id,pack_week_1,pack_week_2,pack_week_3,pack_free_gl_per_pax,pack_start_date,pack_expiry_date,pack_full_price,pack_price_a,pack_price_b,pack_price_c,pack_for_location,pack_location_region,pack_location_country,
+        $this->db->select("pack_package_id,pack_package,pack_category_program_id,pack_program_description,pack_campus_id,pack_week_1,pack_week_2,pack_week_3,pack_week_4,pack_free_gl_per_pax,pack_start_date,pack_expiry_date,pack_full_price,pack_price_a,pack_price_b,pack_price_c,pack_for_location,pack_location_region,pack_location_country,
             pack_extra_gl_price,pack_extra_tuition_price,pack_cd_salary,pack_cd_accomodation,pack_acd_salary,pack_acd_accomodation,pack_cm_salary,pack_cm_accomodation,pack_acm_salary,pack_acm_accomodation,pack_teacher_accomodation,pack_teacher_lunch,pack_travelling,pack_printing_stationary,pack_books,pack_expenses");
         $this->db->where('pack_package_id',$pack_package_id);
         $result = $this->db->get('agnt_packages pack');

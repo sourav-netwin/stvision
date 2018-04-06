@@ -1,6 +1,6 @@
 <!----------Form validation js----------->
 <script src="<?php echo base_url(); ?>js/tuition/jquery_validations1.9.0.js"></script>
-<link rel="stylesheet" href="<?php echo LTE; ?>frontweb/style.css">
+<link rel="stylesheet" href="<?php echo LTE; ?>frontweb/style.css?v=1.1">
 
 <!-------------Bootstrap multiselect css and js---------------->
 <link rel="stylesheet" href="<?php echo LTE; ?>frontweb/bootstrap-multiselect.css" />
@@ -34,7 +34,7 @@
 	var duplicate_dynamic = "<?php echo $this->lang->line("duplicate_dynamic"); ?>";
 	var required_upload_file = "<?php echo $this->lang->line("required_upload_file"); ?>";
 </script>
-<script src="<?php echo LTE; ?>frontweb/custom/junior_ministay.js?v=0.4"></script>
+<script src="<?php echo LTE; ?>frontweb/custom/junior_ministay.js?v=1.1"></script>
 
 <div class="right_col" role="main">
 	<div class="row">

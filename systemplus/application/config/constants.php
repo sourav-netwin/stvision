@@ -210,6 +210,9 @@ define('TABLE_EXTRA_DAY_ACTIVITY_DETAILS' , 'frontweb_extra_day_activity_details
 define('TABLE_PLUS_BOOK' , 'plused_book');
 define('TABLE_MASTER_ACTIVITY' , 'frontweb_master_activity');
 define('TABLE_EXTRA_MASTER_ACTIVITY' , 'frontweb_extra_master_activity');
+define('TABLE_TEACHER_APPLICATION' , 'plused_teacher_application');
+define('TABLE_JOB_POSITION' , 'plused_job_positions');
+define('TABLE_JOB_CONTRACT' , 'pulsed_job_contract');
 
 //Constant for create folder permission
 define('DIR_PERMISSION' , 0755);

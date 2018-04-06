@@ -47,7 +47,8 @@
                 <div class="col-sm-7 col-lg-4">
                     <label class="chLabel" for="chkOneWeek1"><input autocomplete="off" type="checkbox" class="chPackageWeeks" id="chkOneWeek1" name="packageWeeks[]" <?php echo ( $formData['chkWeek1'] ? 'checked' : '')?> value="1 Week" /> 1 Week</label>&nbsp;&nbsp;&nbsp;
                     <label class="chLabel" for="chkOneWeek2"><input autocomplete="off" type="checkbox" class="chPackageWeeks" id="chkOneWeek2" name="packageWeeks[]" <?php echo ( $formData['chkWeek2'] ? 'checked' : '')?> value="2 Week" /> 2 Week</label>&nbsp;&nbsp;&nbsp;
-                    <label class="chLabel" for="chkOneWeek3"><input autocomplete="off" type="checkbox" class="chPackageWeeks" id="chkOneWeek3" name="packageWeeks[]" <?php echo ( $formData['chkWeek3'] ? 'checked' : '')?> value="3 Week" /> 3 Week</label>
+                    <label class="chLabel" for="chkOneWeek3"><input autocomplete="off" type="checkbox" class="chPackageWeeks" id="chkOneWeek3" name="packageWeeks[]" <?php echo ( $formData['chkWeek3'] ? 'checked' : '')?> value="3 Week" /> 3 Week</label>&nbsp;&nbsp;&nbsp;
+                    <label class="chLabel" for="chkOneWeek4"><input autocomplete="off" type="checkbox" class="chPackageWeeks" id="chkOneWeek4" name="packageWeeks[]" <?php echo ( $formData['chkWeek4'] ? 'checked' : '')?> value="4 Week" /> 4 Week</label>
                     <div for="packageWeeks[]" generated="true" class="error"></div>
                 </div>
             </div>
@@ -126,12 +127,13 @@
                                 <div class="form-group">
                                     <label for="selRegion">Region</label>
                                     <div class="form-data">
-                                    <select autocomplete="off" class="form-control" id="selRegion" name="selRegion">
-                                        <option value="">Select region</option>
+                                    <select autocomplete="off" class="form-control" id="selRegion" name="selRegion[]"  multiple="multiple">
+<!--                                        <option value="">Select region</option>-->
                                         <?php 
                                         if(is_array($locationRegion)){
+                                            $selectedRegions = explode(',', $formData['selRegion']);
                                             foreach($locationRegion as $region){
-                                                ?><option <?php echo ($formData['selRegion'] == $region['reg_id'] ? "selected='selected'" : '');?> value="<?php echo $region['reg_id'];?>"><?php echo $region['reg_descrizione'];?></option><?php 
+                                                ?><option <?php echo (in_array($region['reg_id'], $selectedRegions) ? "selected='selected'" : '');?> value="<?php echo $region['reg_id'];?>"><?php echo $region['reg_descrizione'];?></option><?php 
                                             }
                                         }
                                         ?>
@@ -583,6 +585,9 @@
                                 elseif($addComp['pcomp_week'] == 3){
                                     $weekTotalCost = $addComp['pcomp_total_cost'] * 21 + $addComp['pcomp_excursion_cost'] + ($addComp['pcomp_staff_charges'] + $addComp['pcomp_other_charges']);
                                 }
+                                elseif($addComp['pcomp_week'] == 4){
+                                    $weekTotalCost = $addComp['pcomp_total_cost'] * 28 + $addComp['pcomp_excursion_cost'] + ($addComp['pcomp_staff_charges'] + $addComp['pcomp_other_charges']);
+                                }
                         ?>
                             <tr>
                                 <td><?php echo $addComp['composition_name'];?>
@@ -692,6 +697,10 @@
 	$(document).ready(function() {
             iCheckInit();
             
+            $('#selRegion').select2({
+                dropdownAutoWidth : true,
+                width: '100%'
+            });
             $('#selCountry').select2({
                 dropdownAutoWidth : true,
                 width: '100%'
@@ -971,7 +980,7 @@
                     txtPriceC:{
                         required: true
                     },
-                    selRegion: {
+                    'selRegion[]': {
                         required: function(element) {
                             return $('#chkValidRegion').is(':checked');
                         }
@@ -1007,7 +1016,7 @@
                     txtPriceA: "Please enter price for group a",
                     txtPriceB: "Please enter price for group b",
                     txtPriceC: "Please enter price for group c",
-                    selRegion: "Please select region",
+                    'selRegion[]': "Please select region",
                     'selCountry[]': "Please select country",
                     'selAgents[]': "Please select agent",
                     txtCourseDirectorSalary: "Please enter course director salary",
@@ -1026,6 +1035,11 @@
                 }
             });
            
+            $('#chkOneWeek3').on('ifUnchecked', function(event){
+                if($("#chkOneWeek4").prop('checked') == true){
+                    setTimeout(function(){$("#chkOneWeek3").iCheck('check');},200);
+                }
+            });
             $('#chkOneWeek2').on('ifUnchecked', function(event){
                 if($("#chkOneWeek3").prop('checked') == true){
                     setTimeout(function(){$("#chkOneWeek2").iCheck('check');},200);
@@ -1043,6 +1057,10 @@
                 }else if($(this).prop('checked') && $(this).val() == '3 Week'){
                     $("#chkOneWeek1").iCheck('check');
                     $("#chkOneWeek2").iCheck('check');
+                }else if($(this).prop('checked') && $(this).val() == '4 Week'){
+                    $("#chkOneWeek1").iCheck('check');
+                    $("#chkOneWeek2").iCheck('check');
+                    $("#chkOneWeek3").iCheck('check');
                 }
                 
                 $("#btnAddExcursionSelectWeek").html("");
@@ -1154,7 +1172,7 @@
              $('#selRegion').on('change', function(event){
                  //$("#selCountry")
                  var regionId = $(this).val();
-                 if(parseInt(regionId)){
+                 if(regionId != ""){
                      var editCountry = "<?php echo $formData['selCountry'];?>";
                      $.post(SITE_PATH + 'packages/loadCountry',{'regionId':regionId,'editCountry':editCountry},function(data){
                          $("#selCountry").html(data);

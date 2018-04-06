@@ -4,7 +4,7 @@
 
 <!----------Form validation js----------->
 <script src="<?php echo base_url(); ?>js/tuition/jquery_validations1.9.0.js"></script>
-<link rel="stylesheet" href="<?php echo LTE; ?>frontweb/style.css">
+<link rel="stylesheet" href="<?php echo LTE; ?>frontweb/style.css?v=1.3">
 
 <!------------custom javascript for master activity------------>
 <script>
@@ -17,7 +17,7 @@
 	var start_end_date_validation = "<?php echo $this->lang->line("start_end_date_validation"); ?>";
 	var delete_confirmation = "<?php echo $this->lang->line("delete_confirmation"); ?>";
 </script>
-<script src="<?php echo LTE; ?>frontweb/custom/manage_master_activity.js?v=0.7"></script>
+<script src="<?php echo LTE; ?>frontweb/custom/manage_master_activity.js?v=1.3"></script>
 
 <div class="right_col" role="main">
 	<div class="row">
@@ -31,7 +31,7 @@
 			echo form_open_multipart('frontweb/master_activity/add_edit/'.$id , $formAttribute);
 ?>
 				<input type="hidden" name="flag" id="flag" value="<?php echo $flag; ?>" />
-				<input type="hidden" id="globalCount" value="<?php echo (isset($post['details'])) ? count($post['details']) : 1; ?>">
+				<input type="hidden" id="globalCount" value="<?php echo (!empty($post['details'])) ? count($post['details']) : 1; ?>" />
 				<div class="x_panel box">
 					<div class="box-header col-sm-12">
 						<div class="row">
@@ -48,19 +48,12 @@
 									</div>
 								</div>
 								<div class="col-lg-6 form-group">
-									<label class="control-label custom-control-label col-lg-4">Activity name<span class="required">*</span></label>
+									<label class="control-label custom-control-label col-lg-4">Student group</label>
 									<div class="col-lg-8">
 <?php
-										$inputAttribute = array(
-											'name' => 'activity_name',
-											'id' => 'activity_name',
-											'class' => 'form-control',
-											'value' => (isset($post['activity_name'])) ? $post['activity_name'] : '',
-											'placeholder' => 'Activity Name'
-										);
-										if($flag == 'es')
-											$inputAttribute['disabled'] = 'disabled';
-										echo form_input($inputAttribute);
+										$groupId = (isset($post['student_group'])) ? $post['student_group'] : '';
+										$disabled = ($flag == 'es') ? 'disabled' : '';
+										echo form_dropdown('student_group' , $groupDropdown , $groupId , 'class="form-control" id="student_group" '.$disabled);
 ?>
 										<span class="error showErrorMessage"></span>
 									</div>
@@ -103,23 +96,25 @@
 									</div>
 								</div>
 								<div class="clearfix"></div>
-								<div class="col-lg-8 form-group">
-									<label class="control-label custom-control-label col-lg-3">Student group</label>
-									<div class="col-lg-9">
+								<div class="col-lg-6 form-group">
+									<label class="control-label custom-control-label col-lg-4">Activity name<span class="required">*</span></label>
+									<div class="col-lg-8">
 <?php
 										$inputAttribute = array(
-											'id' => 'group_names',
+											'name' => 'activity_name',
+											'id' => 'activity_name',
 											'class' => 'form-control',
-											'placeholder' => 'Group names',
-											'disabled' => TRUE,
-											'style' => 'color : green',
-											'value' => (isset($post['group_name'])) ? $post['group_name'] : ''
+											'value' => (isset($post['activity_name'])) ? $post['activity_name'] : '',
+											'placeholder' => 'Activity Name'
 										);
+										if($flag == 'es')
+											$inputAttribute['disabled'] = 'disabled';
 										echo form_input($inputAttribute);
 ?>
+										<span class="error showErrorMessage"></span>
 									</div>
 								</div>
-								<div class="col-lg-4 form-group" style="padding-left: 20px;">
+								<div class="col-lg-6 form-group" style="padding-left: 30px;">
 <?php
 									if($flag == 'as')
 									{
@@ -156,7 +151,7 @@
 															<th class="timeColumn" colspan="2">Date</th>
 <?php
 															foreach($post['datesArr'] as $dateValue)
-																echo "<th>".date('d-M-Y' , strtotime($dateValue['date']))."</th>";
+																echo "<th>".date('d-M-Y' , strtotime($dateValue))."</th>";
 ?>
 														</tr>
 														<tr>
@@ -164,7 +159,7 @@
 															<th>Finish</th>
 <?php
 															foreach($post['datesArr'] as $dateValue)
-																echo "<th>".date('l' , strtotime($dateValue['date']))."</th>";
+																echo "<th>".date('l' , strtotime($dateValue))."</th>";
 ?>
 														</tr>
 													</thead>
@@ -174,7 +169,7 @@
 														foreach($post['details'] as $timeSlot => $detailsValue)
 														{
 ?>
-															<tr data-reference="<?php echo $tempCount; ?>">
+															<tr data-reference = "<?php echo $tempCount; ?>">
 																<td>
 																	<i class="fa fa-lg fa-plus-circle add_section addMoreTable" aria-hidden="true"></i>
 <?php
@@ -195,22 +190,25 @@
 ?>
 																</td>
 <?php
-																foreach($post['datesArr'] as $dateValue)
+																foreach($post['datesArr'] as $datesId => $dateValue)
 																{
 ?>
-																	<td class="enterDetails" data-delete_flag="" data-id="<?php echo isset($detailsValue[$dateValue['id']]['fixed_day_activity_details_id']) ? $detailsValue[$dateValue['id']]['fixed_day_activity_details_id'] : ''; ?>" data-parent_id="<?php echo $dateValue['id']; ?>" data-date="<?php echo $dateValue['date']; ?>">
+																	<td class="<?php echo (isset($detailsValue[$datesId])) ? 'multipleDetails' : 'enterDetails'; ?>" data-parent_id="<?php echo $datesId; ?>" data-date="<?php echo $dateValue; ?>">
+																		<span class="droppableItem"></span>
 <?php
-																		if(isset($detailsValue[$dateValue['id']]))
+																		if(isset($detailsValue[$datesId]))
 																		{
+																			foreach($detailsValue[$datesId] as $activityDetails)
+																			{
 ?>
-																			<span class="draggableItem" data-tr_reference="<?php echo $tempCount; ?>" data-td_reference="<?php echo $dateValue['date']; ?>">
-																				<?php echo $detailsValue[$dateValue['id']]['activity']; ?>
-																			</span>
-																			<br><i class="fa fa-trash-o deleteActivityDetails" style="float: right;color: red;"></i>
+																				<div>
+																					<span class="draggableItem" data-id="<?php echo $activityDetails['id']; ?>"><?php echo $activityDetails['name']; ?></span>
+																					<br><i class="fa fa-trash-o deleteActivityDetails"></i>
+																				</div><hr>
 <?php
+																			}
+																			echo '<i class="fa fa-plus-square addMoreActivityDetails"></i>';
 																		}
-																		else
-																			echo '<span class="droppableItem"></span>';
 ?>
 																	</td>
 <?php
@@ -225,30 +223,6 @@
 												</table>
 											</div>
 <?php
-										}
-?>
-									</div>
-									<div id="activityDetailsContainer">
-<?php
-										if(!empty($post['datesArr']) && !empty($post['details']))
-										{
-											$tempCount = 1;
-											foreach($post['details'] as $timeSlot => $detailsValue)
-											{
-												foreach($post['datesArr'] as $dateValue)
-												{
-													if(isset($detailsValue[$dateValue['id']]))
-													{
-														echo '<input type="hidden" name="program_name['.$dateValue['date'].'][]" value="'.$detailsValue[$dateValue['id']]['program_name'].'" id="program_name_'.$tempCount.'_'.$dateValue['date'].'">
-																<input type="hidden" name="location['.$dateValue['date'].'][]" value="'.$detailsValue[$dateValue['id']]['location'].'" id="location_'.$tempCount.'_'.$dateValue['date'].'">
-																<input type="hidden" name="activity['.$dateValue['date'].'][]" value="'.$detailsValue[$dateValue['id']]['activity'].'" id="activity_'.$tempCount.'_'.$dateValue['date'].'">
-																<input type="hidden" name="from_time['.$dateValue['date'].'][]" value="'.$detailsValue[$dateValue['id']]['from_time'].'" id="from_time_'.$tempCount.'_'.$dateValue['date'].'">
-																<input type="hidden" name="to_time['.$dateValue['date'].'][]" value="'.$detailsValue[$dateValue['id']]['to_time'].'" id="to_time_'.$tempCount.'_'.$dateValue['date'].'">
-																<input type="hidden" name="managed_by['.$dateValue['date'].'][]" value="'.$detailsValue[$dateValue['id']]['managed_by'].'" id="managed_by_'.$tempCount.'_'.$dateValue['date'].'">';
-													}
-												}
-												$tempCount++;
-											}
 										}
 ?>
 									</div>
@@ -301,6 +275,7 @@
 			);
 			echo form_open_multipart('' , $formAttribute);
 ?>
+				<input type="hidden" name="activityDetailsFlag" id="activityDetailsFlag" />
 				<input type="hidden" name="activityDetailsParentId" id="activityDetailsParentId" />
 				<input type="hidden" name="activityDetailsId" id="activityDetailsId" />
 				<div class="modal-body">
@@ -380,13 +355,7 @@
 						<label class="control-label custom-control-label col-md-3 col-sm-3 col-xs-12">Managed by</label>
 						<div class="col-md-6 col-sm-6 col-xs-12">
 <?php
-							$inputFieldAttribute = array(
-								'name' => 'managed_by',
-								'id' => 'managed_by',
-								'class' => 'form-control',
-								'placeholder' => 'Managed by'
-							);
-							echo form_input($inputFieldAttribute);
+							echo form_dropdown('managed_by' , getContractPersonDropdown() , '' , 'class = "form-control" id = "managed_by"');
 ?>
 						</div>
 					</div>

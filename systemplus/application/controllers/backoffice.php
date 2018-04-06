@@ -382,7 +382,7 @@ class Backoffice extends Controller {
 
     function overviewBookingsDetailNew() {
         if ($this->session->userdata('role')) {
-            authSessionMenu($this);
+            //authSessionMenu($this);
             $campusArray = $_REQUEST["centri"];
             $data["statusArray"] = $_REQUEST["status"];
             $lm = 0;
@@ -484,7 +484,7 @@ class Backoffice extends Controller {
             if ($data['book']) {
                 $data['detMyPax'] = $this->mbackoffice->detMyPaxForRosterBackoffice($data['book'][0]["id_year"], $idBook);
             }
-
+            
             $data['payments'] = $this->mbackoffice->paymentsById($idBook);
             $data['payTypes'] = $this->mbackoffice->getAllPaymentTypes();
             $data['payServices'] = $this->mbackoffice->getAllPaymentServices();
@@ -521,6 +521,81 @@ class Backoffice extends Controller {
             redirect('backoffice', 'refresh');
         }
     }
+    
+    function getPaxListOfBook(){
+        $data = array();
+        $year = $this->input->post('year');
+        $bookId = $this->input->post('bookId');
+        $campId = $this->input->post('campId');
+        $isRosterLock = $this->input->post('isRosterLock');
+        if($isRosterLock != 1)
+            $isRosterLock = 0;
+        $data['detMyPax'] = $this->mbackoffice->detMyPaxForRosterBackoffice($year, $bookId);
+        $data['isFlocked'] = $isRosterLock;
+        $data['accoS'] = $this->mbackoffice->getAccomodationsByCampusId($campId);
+        $this->load->view('lte/backoffice/edit_accomodation',$data);
+    }
+    
+    /**
+     * updatePaymentHistoryNote
+     * This function is to update the note text for the 
+     * booking overview payment history.
+     */
+    function updatePaymentHistoryNote(){
+        $noteText = $this->input->post('editNote');
+        $historyId = $this->input->post('recId');
+        $result = $this->mbackoffice->updatePaymentNoteText($historyId,$noteText);
+        if($result)
+            echo json_encode (array('result'=>1,'message'=>'Note updated successfully.'));
+        else
+            echo json_encode (array('result'=>0,'message'=>'Unable to update note.'));
+    }
+    
+    function _stringToFloatNumber($strNumber){
+        return floatval(str_replace(',', '.', str_replace('.', '', $strNumber)));
+    }
+    
+    function updateAllPaxAcc(){
+        $paxAccArray = $this->input->post('selectAcc');
+        $selAccAll = $this->input->post('selAccAll');
+        $markAll = $this->input->post('markAll');
+        $bookId = $this->input->post('hiddBookId');
+        $oldAccomodationCost = 0;
+        $newAccomodationCost = 0;
+        if(!empty($paxAccArray)){
+            // get existing accomodation cost $bookId
+            $bookAccCost = $this->_bookingAccCost($bookId);
+            $oldAccomodationCost = $bookAccCost['cost'];
+            $valuta = $bookAccCost['valuta'];
+            foreach($paxAccArray as $paxId => $accValue){
+                $newAccommodation = $accValue;
+                if($markAll)
+                {
+                    $newAccommodation = $selAccAll;
+                }
+                $this->mbackoffice->updatePaxAcc($paxId,$newAccommodation);
+            }
+            $bookAccCost = $this->_bookingAccCost($bookId);
+            $newAccomodationCost = $bookAccCost['cost'];
+            $insertOld = $this->mbackoffice->insertPayment($bookId, $oldAccomodationCost * -1, NULL, $valuta, NULL, "acq", "Accomodation Change", "");
+            $insertNew = $this->mbackoffice->insertPayment($bookId, $newAccomodationCost, NULL, $valuta, NULL, "acq", "Accomodation Change", "");
+        }
+    }
+    
+    function _bookingAccCost($bookId){
+        $accomodationCost = 0;
+        $valuta = '';
+        $bookAccCost = $this->mbackoffice->getSingleBookingAccommodationCost($bookId);
+        if($bookAccCost){
+            foreach($bookAccCost as $baCost){
+                $costOfAcc = $baCost['effected_acc_cost'];
+                $valuta = $baCost['valuta'];
+                $costOfAcc = $number = $this->_stringToFloatNumber($costOfAcc);
+                $accomodationCost = $accomodationCost + $costOfAcc;
+            }
+        }
+        return array('cost'=>$accomodationCost,'valuta'=>$valuta);   
+    }
 
     function exportCSVBookings($campus, $agent, $status, $year) {
         if ($this->session->userdata('role')) {
@@ -540,7 +615,7 @@ class Backoffice extends Controller {
             $myFile = "/var/www/html/www.plus-ed.com/vision_ag/downloads/export_csv/allCSVBookings.csv";
             //$myFile = "./downloads/export_csv/allCSVBookings.csv";
             $fh = fopen($myFile, 'w+') or die("can't open file");
-            $intestData = '"Centro";"Booking number";"Agency";"Arrival date";"Departure date";"Weeks";"Pax type";"Accomodation";"Pax number";"Status";"Elapsing date";"Booking date and time";"Deposit invoice";"Full invoice";"Currency"' . PHP_EOL;
+            $intestData = '"Centro";"Booking number";"Agency";"Arrival date";"Departure date";"Weeks";"Pax type";"Accomodation";"Pax number";"Status";"Elapsing date";"Booking date and time";"Deposit invoice";"Full invoice";"Currency";"Account Manager";"Account Manager Email"' . PHP_EOL;
             fwrite($fh, $intestData);
             foreach ($data["all_books"] as $singbk) {
                 //echo "<br />".$singbk["centro"].'";"'.$singbk["id_book"]."_".$singbk["id_year"].$singbk["agency"][0]["businessname"].'";"'.$singbk["arrival_date"].'";"'.$singbk["departure_date"].'";"'.$singbk["weeks"].'";"'.$singbk["status"].'";"'.$singbk["data_scadenza"].'";"'.$singbk["data_insert"].'";'.str_replace(".",",",$singbk["acconto_versato"]).';'.str_replace(".",",",$singbk["saldo_versato"]).';"'.$singbk["valuta"]."<br />";
@@ -549,7 +624,14 @@ class Backoffice extends Controller {
                         $agencyBusinessName = "";
                         if(isset($singbk["agency"][0]["businessname"]))
                             $agencyBusinessName = $singbk["agency"][0]["businessname"];
-                        $rigaData = '"' . $singbk["centro"] . '";"' . $singbk["id_year"] . "_" . $singbk["id_book"] . '";"' . $agencyBusinessName . '";"' . $singacco->data_arrivo_campus /*$singbk["arrival_date"]*/ . '";"' . $singacco->data_partenza_campus /*$singbk["departure_date"]*/ . '";"' . $singbk["weeks"] . '";"' . $singacco->tipo_pax . '";"' . $singacco->accomodation . '";"' . $singacco->contot . '";"' . $singbk["status"] . '";"' . $singbk["data_scadenza"] . '";"' . $singbk["data_insert"] . '";' . str_replace(".", ",", $singbk["acconto_versato"]) . ';' . str_replace(".", ",", $singbk["saldo_versato"]) . ';"' . $singbk["valuta"] . '"' . PHP_EOL;
+                        $agencyAccMngrName = "";
+                        if(isset($singbk["agency"][0]["acc_manager_firstname"]) && isset($singbk["agency"][0]["acc_manager_lastname"]))
+                            $agencyAccMngrName = ucwords($singbk["agency"][0]["acc_manager_firstname"] . " " . $singbk["agency"][0]["acc_manager_lastname"]);
+                        $agencyAccMngrEmail = "";
+                        if(isset($singbk["agency"][0]["acc_manager_email"]))
+                            $agencyAccMngrEmail = $singbk["agency"][0]["acc_manager_email"];
+                        
+                        $rigaData = '"' . $singbk["centro"] . '";"' . $singbk["id_year"] . "_" . $singbk["id_book"] . '";"' . $agencyBusinessName . '";"' . $singacco->data_arrivo_campus /*$singbk["arrival_date"]*/ . '";"' . $singacco->data_partenza_campus /*$singbk["departure_date"]*/ . '";"' . $singbk["weeks"] . '";"' . $singacco->tipo_pax . '";"' . $singacco->accomodation . '";"' . $singacco->contot . '";"' . $singbk["status"] . '";"' . $singbk["data_scadenza"] . '";"' . $singbk["data_insert"] . '";' . str_replace(".", ",", $singbk["acconto_versato"]) . ';' . str_replace(".", ",", $singbk["saldo_versato"]) . ';"' . $singbk["valuta"] . '";"'.$agencyAccMngrName.'";"'.$agencyAccMngrEmail.'"' . PHP_EOL;
                         //echo "<br />".$rigaData."<br />";
                         fwrite($fh, $rigaData);
                     }
@@ -692,6 +774,7 @@ class Backoffice extends Controller {
     }
 
     function change_booking_status($id, $stato, $datanuova = 0, $lm = 0) {
+        $data = array();
          if ($this->session->userdata('role')) {
             authSessionMenu($this);
             $dataok = 0;
@@ -711,26 +794,85 @@ class Backoffice extends Controller {
                 if ($fullInvoiceNum <= 0) {
                     $this->mbackoffice->insertPayment($id, $cifraFull, NULL, $valutaFull, NULL, "acq", "Full Invoice", "");
                 }
+                // GET THE BOOKING AGENT AND ACCOUNT MANAGER DETAILS
+                $accountManagerEmail = "";
+                $bookAgentDetails = $this->mbackoffice->getBookingAgentDetail($id);
+                if(isset($bookAgentDetails->acc_manager_email))
+                if(!empty($bookAgentDetails->acc_manager_email))
+                {
+                    $accountManagerEmail = $bookAgentDetails->acc_manager_email;
+                }
+                $bookingDetailHtml = $this->_getBookingInfoHTML($id);
                 //invio mail all'agente
                 $this->load->library('email');
-                $mymessage = "<!DOCTYPE HTML PUBLIC =22-//W3C//DTD HTML 4.01 Transitional//EN=22 =22http://www.w3.org/TR/html4/loose.dtd=22>";
-                $mymessage .= "<html><head><meta http-equiv=\"content-type\" content=\"text/html; charset=ISO-8859-1\" />";
-                $mymessage .= "<strong>  Dear Sir/Madam </strong><br/><br/>";
-                $mymessage .= "Your booking " . date('Y') . "_" . $id . " is now active and will expire on " . $datanuova . "<br /><br />You can now log in your personal page on PLUS Vision system to review your booking and to download your invoice.<br />";
-                $mymessage .= "<strong>Plus Sales Office</strong>" . "<br/><br/>";
-                $mymessage .= "</body></html>";
-
+                $messageBody = "";
+                $data['bookingDetailHtml'] = $bookingDetailHtml;
+                $data['bookId'] = $id;
+                $data['datanuova'] = $datanuova;
+                ob_start(); // start output buffer
+                $this->load->view('tuition/email/email_body_booking_activation', $data);
+                $messageBody = ob_get_contents(); // get contents of buffer
+                ob_end_clean();
+                
                 $this->email->from('info@plus-ed.com', 'Plus Sales Office');
                 $this->email->to($a_email);
-                $this->email->cc("smarra@plus-ed.com");
+                if(!empty($accountManagerEmail))
+                    $this->email->cc($accountManagerEmail. ", smarra@plus-ed.com");
+                else
+                    $this->email->cc("smarra@plus-ed.com");
                 $this->email->bcc($this->session->userdata('email'));
                 $this->email->subject('Plus Sales Office - Your booking has been activated.');
-                $this->email->message($mymessage);
+                $this->email->message($messageBody);
                 $this->email->send();
+                //echo $this->email->print_debugger();
+            }if ($stato == "confirmed") {
+                // used email template to send email on booking
+                // confirmation Email Template id is 7
+                $bookAgentDetails = $this->mbackoffice->getBookingAgentDetail($id);
+                if(isset($bookAgentDetails->email))
+                if(!empty($bookAgentDetails->email))
+                {
+                    $agencyName = $bookAgentDetails->mainfirstname ." ". $bookAgentDetails->mainfamilyname;
+                    $agentEmail = $bookAgentDetails->email;
+                    $accountManagerEmail = $bookAgentDetails->acc_manager_email;
+                    $accountManagerName = $bookAgentDetails->acc_manager_firstname ." ". $bookAgentDetails->acc_manager_lastname;
+                    $this->load->library('email');
+                    $emailTemplate = getEmailTemplate(EmailTemplateIds::$BOOKING_CONFIRMATION_TEMPLATE);
+                    $this->email->set_newline("\r\n");
+                    $this->email->from($emailTemplate->emt_from_email, "Plus-ed.com");
+                    $this->email->to($agentEmail);
+                    $this->email->cc($accountManagerEmail);
+                    $this->email->subject($emailTemplate->emt_title);
+                    $strParam = array(
+                        '{AGENCY_NAME}' => $agencyName,
+                        '{ACCOUNT_MNGR_NAME}' => $accountManagerName,
+                        '{ACCOUNT_MNGR_EMAIL}' => $accountManagerEmail
+                    );
+                    $txtMessageStr = mergeContent($strParam,$emailTemplate->emt_text);
+                    $this->email->message($txtMessageStr);
+                    $this->email->send();
+                }
             }
         } else {
             redirect('backoffice', 'refresh');
         }
+    }
+    
+    function _getBookingInfoHTML($id){
+        $bookingDetails = $this->mbackoffice->getBookingDetails($id);
+        $str = "";
+        if($bookingDetails){
+            $bookRow = $bookingDetails[0];
+            $str = "<strong>Booking details:</strong>
+               <table cellspacing='0' cellpadding='5' ><tr><td>Group ID</td><td>".$bookRow['id_book']."</td></tr>
+               <tr><td>Campus</td><td>".$bookRow['nome_centri']."</td></tr><tr>
+               <td>Total pax</td><td>".$bookRow['tot_pax']."</td></tr>
+               <td>No of students</td><td>".$bookRow['std_count']."</td></tr>
+               <tr><td>No of GL</td><td>".$bookRow['gl_count']."</td></tr>
+               <tr><td>From date</td><td>".date('d/m/Y',  strtotime($bookRow['arrival_date']))."</td></tr>
+               <tr><td>To date</td><td>".date('d/m/Y',  strtotime($bookRow['departure_date']))."</td></tr></table>";
+        }
+        return $str;
     }
 
     function changeDownloadVisa($id, $canDwn) {
@@ -765,6 +907,13 @@ class Backoffice extends Controller {
             redirect('backoffice', 'refresh');
         }
     }
+    
+    function updateElapsedMarkedNote(){
+        $id = $this->input->post("id");
+        $elapsedNote = $this->input->post("elapsedNote");
+        $result = $this->mbackoffice->add_flag_elapsed_complete($id,$elapsedNote);
+        echo json_encode(array('result'=>1));
+    }
 
     function unlockRoster($idBook) {
         if ($this->session->userdata('role') == 100) {
@@ -792,7 +941,7 @@ class Backoffice extends Controller {
 
     function invoice_pdf_no_acconto($id) {
         if ($this->session->userdata('role')) {
-            authSessionMenu($this);
+            //authSessionMenu($this);
             $this->mbackoffice->set_first_print($id);
             $data['booking_detail'] = $this->mbackoffice->get_booking_detail($id);
             $data['booking_acc'] = $this->mbackoffice->getBookAccomodations($id);
@@ -3932,6 +4081,8 @@ class Backoffice extends Controller {
             else { // if(APP_THEME == "LTE")
                 $data['pageHeader'] = $data['breadcrumb2'];
                 $data['optionalDescription'] = "";
+                $data['calFromDate'] = date("d/m/Y");
+                $data['calToDate'] = date("d/m/Y",time() + (86400 * 20));
                 $this->ltelayout->view('lte/backoffice/bookings/availability_new', $data);
             }
         } else {
@@ -4001,12 +4152,22 @@ class Backoffice extends Controller {
             authSessionMenu($this);
             $campusArray = $_REQUEST["centri"];
             $data["statusArray"] = $_REQUEST["status"];
-            $datein = $_REQUEST["dateStart"];
+            //$_REQUEST["dateStart"] = "13/07/2016";
+            /*$datein = $_REQUEST["dateStart"];
             $dateinArr = explode("/", $_REQUEST["dateStart"]);
             $dateinA = $dateinArr[1] . "/" . $dateinArr[0] . "/" . $dateinArr[2];
             $datech = date('Y-m-d', strtotime($dateinA));
             $datein = date('Y-m-d', strtotime($dateinA . "-15 days"));
             $dateout = date('Y-m-d', strtotime($dateinA . "+15 days"));
+             */
+            //not in use
+            $datein = $_REQUEST["fd"];
+            $dateinArr = explode("/", $_REQUEST["fd"]);
+            $datein = $dateinArr[2] . "/" . $dateinArr[1] . "/" . $dateinArr[0];
+            
+            $dateout = $_REQUEST["td"];
+            $dateoutArr = explode("/", $_REQUEST["td"]);
+            $dateout = $dateoutArr[2] . "/" . $dateoutArr[1] . "/" . $dateoutArr[0];
             if (count($campusArray) == 1) {
                 $campus = $campusArray[0];
                 foreach ($_REQUEST["accomodation"] as $accomodat) {
@@ -4025,11 +4186,10 @@ class Backoffice extends Controller {
                     $data['simcalendar'][] = $this->mbackoffice->getSimCalendarAllAccos($campus, $datein, $dateout, $_REQUEST["status"]);
                 }
             }
-
             $data['title'] = 'plus-ed.com | Simulator day 2 day';
             $data['breadcrumb1'] = 'Booking';
             $data['breadcrumb2'] = 'Simulator day 2 day';
-            $data['datechoose'] = $datech;
+            $data['datechoose'] = $datein; //date("m/d/Y");
             $data['datein'] = $datein;
             $data['dateout'] = $dateout;
             if (APP_THEME == 'OLD') {
@@ -4561,6 +4721,7 @@ class Backoffice extends Controller {
             else { // if(APP_THEME == "LTE")
                 $data['pageHeader'] = $data['breadcrumb2'];
                 $data['optionalDescription'] = "";
+                
                 if($reportType == "Book")
                     $this->load->view('lte/backoffice/bookings/tuition_total_detail_new', $data);
                 else
@@ -4625,7 +4786,6 @@ class Backoffice extends Controller {
         if ($this->session->userdata('role') == 100) {
             $data['importStudyCSV'] = $this->mbackoffice->TEST_importStudyJSON();
             echo "<br />Import done<br />";
-            //die();
             $data['syncStudyPax'] = $this->mbackoffice->syncStudyPax();
             echo "Sync done<br />";
             echo "Checking inbound<br />";
@@ -4710,16 +4870,44 @@ class Backoffice extends Controller {
             redirect('backoffice', 'refresh');
         }
     }
-
-    function addRosterPax($idBook) {
+    
+    function delRosterPaxMultiple(){
         if ($this->session->userdata('role')) {
             authSessionMenu($this);
-            $accoAdded = $this->gestione_centri_model->addPaxToRoster($idBook);
-            $costoNewAr = explode("___", $this->mbackoffice->getSingleAccoPrice($accoAdded, $idBook));
-            $costoNew = $costoNewAr[0];
-            $valutaNew = $costoNewAr[1];
-            $insertNew = $this->mbackoffice->insertPayment($idBook, $costoNew, NULL, $valutaNew, NULL, "acq", "Pax added", "");
-            $sendMail = $this->mbackoffice->sendRosterMail('added', $idBook);
+            $bookId = $this->input->post('bookId');
+            $paxIds = $this->input->post('paxIds');
+            if(is_array($paxIds)){
+                $costoNew = 0;
+                foreach($paxIds as $paxId){
+                    $remMap = $this->mbackoffice->remUuidByPaxId($paxId);
+                    $accoType = $this->mbackoffice->getAccoByPaxId($paxId);
+                    $koPax = $this->gestione_centri_model->delPaxFromRoster($paxId, $bookId);
+                    $costoNewAr = explode("___", $this->mbackoffice->getSingleAccoPrice($accoType, $bookId));
+                    $costoNew += $costoNewAr[0];
+                    $valutaNew = $costoNewAr[1];
+                }
+                $countOfPax = count($paxIds);
+                $insertNew = $this->mbackoffice->insertPayment($bookId, $costoNew * -1, NULL, $valutaNew, NULL, "acq", "Pax deleted", "Pax deleted:".$countOfPax);
+                $sendMail = $this->mbackoffice->sendRosterMail('deleted', $bookId);
+            }
+        }
+    }
+
+    function addRosterPax($idBook,$qnt = 1) {
+        if ($this->session->userdata('role')) {
+            authSessionMenu($this);
+            if($qnt > 0)
+            {
+                for($inc = 0;$inc < $qnt; $inc++){
+                    $accoAdded = $this->gestione_centri_model->addPaxToRoster($idBook);
+                }
+                $costoNewAr = explode("___", $this->mbackoffice->getSingleAccoPrice($accoAdded, $idBook));
+                $costoNew = $costoNewAr[0] * $qnt;
+                $valutaNew = $costoNewAr[1];
+                $the_note = " Number of pax added:".$qnt;
+                $insertNew = $this->mbackoffice->insertPayment($idBook, $costoNew, NULL, $valutaNew, NULL, "acq", "Pax added", $the_note);
+                $sendMail = $this->mbackoffice->sendRosterMail('added', $idBook);
+            }
         } else {
             redirect('backoffice', 'refresh');
         }

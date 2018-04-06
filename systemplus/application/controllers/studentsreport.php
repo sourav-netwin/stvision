@@ -51,6 +51,7 @@ class Studentsreport extends Controller {
         $keyword = $request['studentName'];
         $param = datatable_param($request, 'id_prenotazione');
         $testData = $this->studentsmodel->getStudentTestData($testId, $keyword, $param);
+        
         $testData = $this->makeReportData($testData);
         $testCount = $this->studentsmodel->getStudentTestCount($testId, $keyword);
         $count = 0;
@@ -74,8 +75,22 @@ class Studentsreport extends Controller {
                 $testData[$key]['nome'] = html_entity_decode($test["cognome"] . ' ' . $test["nome"]);
             }
             $testData[$key]['id_book'] = $test["id_book"] . '_' . $test["id_year"];
+            if($testData[$key]['test_status'] == 'Running' && $testData[$key]['attempt_count'] > 2)
+                $testData[$key]['attempt_count'] = "<span id='span_".$testData[$key]['tsid']."'>".$testData[$key]['attempt_count'] . "</span><br /><input value='Reset attempt' class='btnResetAtt btn btn-xs btn-danger' data-id='".$testData[$key]['tsid']."' type='button'>";
         }
         return $testData;
+    }
+    
+    function resetAttempt(){
+        $returnArray = array();
+        $test_sub_id = $this->input->post('sid');
+        $result = $this->studentsmodel->resetAttempt($test_sub_id);
+        if($result){
+            $returnArray = array("result"=>1,"message"=>"Test attempt reset successfully to zero(0)");
+        }
+        else
+            $returnArray = array("result"=>0,"message"=>"Unable to reset test attempt");
+        echo json_encode($returnArray);
     }
 
     /*

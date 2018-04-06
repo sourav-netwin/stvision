@@ -1515,13 +1515,11 @@ class Teachers extends Controller {
     
     
     /* FUNCTIONS FOR: TEACHER APPLICATION STEP-2 */
-    
     function sendadvjoboffer(){
         $returnData = array(
             'result' => 0,
             'message' => 'Unable to send available positions email.'
         );
-        
         $teacherAppId = $this->input->post('teach_id');
         $teacher = $this->teachersappmodel->getTeachersApplicationsSingle($teacherAppId);
         if($teacher){
@@ -1529,32 +1527,19 @@ class Teachers extends Controller {
             {
                 $senderEmail = PLUS_SENDER_EMAIL_ADDRESS;
                 $receiverEmail = $teacher->ta_email;
-
-                ob_start(); // start output buffer
-                $messageBody = "";
-                $data['content'] = $messageBody;
-                $this->load->view('tuition/email/job_offer_template', $data);
-                $messageBody = ob_get_contents(); // get contents of buffer
-                ob_end_clean();
-                
+                // REMOVED STATIC FILE TEMPLATE
+                // tuition/email/job_offer_template
                 $this->load->library('email');
-
-//                $config['protocol'] = 'sendmail';
-//                //$config['mailpath'] = '/usr/sbin/sendmail';
-//                $config['charset'] = 'iso-8859-1';
-//                $config['wordwrap'] = TRUE;
-//                $config['mailtype'] = 'html';
-//                $this->email->initialize($config);
-                
                 $this->email->set_newline("\r\n");
+                $emailTemplate = getEmailTemplate(2);
+                $strParam = array();
+                $messageBody = mergeContent($strParam,$emailTemplate->emt_text);
                 $this->email->from($senderEmail, 'plus-ed.com');
                 $this->email->to($receiverEmail);
-                $this->email->subject("plus-ed.com | Plus Junior Summer Programs 2017");
+                $this->email->subject("plus-ed.com | " . $emailTemplate->emt_title);
                 $this->email->message($messageBody);
                 $attachFile = SENT_JOB_OFFER_PATH . 'job_adv_offer.pdf';
-
                 $this->email->attach($attachFile);
-
                 if($this->email->send())
                 {
                     // update flag in database ta_job_adv_sent
@@ -1566,7 +1551,6 @@ class Teachers extends Controller {
                         'result' => 1,
                         'message' => 'Available positions are sent successfully.'
                     );
-                    
                 }
                 else
                 {
@@ -1889,27 +1873,32 @@ class Teachers extends Controller {
                         // add record in history
                         $insertArr['job_offer_file'] = $fpdFileName;
                         $jobOfferId = $this->teachersappmodel->jobOfferOperations('insert',$insertArr);
-                        $data['jobOfferId'] = $jobOfferId;
                         // send offer letter email
+                        $data['jobOfferId'] = $jobOfferId;
                         $senderEmail = PLUS_SENDER_EMAIL_ADDRESS;
                         $receiverEmail = $teacher->ta_email;
-
-                        ob_start(); // start output buffer
-                        $this->load->view('tuition/email/job_offer_letter_pdf', $data);
-                        $messageBody = ob_get_contents(); // get contents of buffer
-                        ob_end_clean();
-
+                        $specificaitonFile = $data['specificaitonFile'];
+                        $termsAndJobSpecFile = base_url().'index.php/positions/specification/'.$specificaitonFile;
+                        $jobOfferPdfFile = base_url().'index.php/positions/jobofferdownload/'.base64_encode($jobOfferId);
                         $this->load->library('email');
-
+                        
+                        $emailTemplate = getEmailTemplate(4); // ACTUAL JOB OFFER LETTER
                         $this->email->set_newline("\r\n");
-                        $this->email->from($senderEmail, 'plus-ed.com');
+                        $this->email->from($emailTemplate->emt_from_email, "Plus-ed.com");
                         $this->email->to($receiverEmail);
-                        $this->email->subject("plus-ed.com | Job offer letter");
+                        $strParam = array(
+                            '{TERMS_AND_JOB_SPEC_FILE_URL}' => $termsAndJobSpecFile,
+                            '{JOB_OFFER_PDF_FILE_URL}' => $jobOfferPdfFile
+                        );
+                        $messageBody = mergeContent($strParam,$emailTemplate->emt_text);
+                        $this->email->subject("plus-ed.com | ".$emailTemplate->emt_title);
                         $this->email->message($messageBody);
+                        
                         $attachFile = SENT_JOB_OFFER_PATH.$fpdFileName;
 
                         $this->email->attach($attachFile);
                         $emaiResult = @$this->email->send();
+                        //echo $this->email->print_debugger();die;
                         if($emaiResult)
                         {
                             echo json_encode(array('result'=>1,'message'=>"Job offer letter email sent successfully."));

@@ -2,7 +2,7 @@
 <link href="<?php echo LTE; ?>plugins/datatables/dataTables.bootstrap.css" rel="stylesheet">
 <script src="<?php echo LTE; ?>plugins/datatables/jquery.dataTables.min.js"></script>
 <script src="<?php echo LTE; ?>plugins/datatables/dataTables.bootstrap.min.js"></script>
-<link rel="stylesheet" href="<?php echo LTE; ?>frontweb/style.css">
+<link rel="stylesheet" href="<?php echo LTE; ?>frontweb/style.css?v=1.1">
 
 <!---------------Sweet Alert CSS and JS----------------->
 <link rel="stylesheet" href="<?php echo LTE; ?>plugins/sweetalert/sweetalert.css">
@@ -16,7 +16,7 @@
 	var active_confirmation = "<?php echo $this->lang->line("active_confirmation"); ?>";
 	var delete_confirmation = "<?php echo $this->lang->line("delete_confirmation"); ?>";
 </script>
-<script src="<?php echo LTE; ?>frontweb/custom/ministay_program.js?v=0.2"></script>
+<script src="<?php echo LTE; ?>frontweb/custom/ministay_program.js?v=1.1"></script>
 
 <div class="right_col" role="main">
 	<div class="row">

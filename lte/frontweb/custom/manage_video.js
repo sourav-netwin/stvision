@@ -1,7 +1,7 @@
 /*
 	This file is used to manage all the customize javascript related operation for manage
 	video module .
-	Current Version : 0.1
+	Current Version : 1.1
 */
 var pageHighlightMenu = "frontweb/manage_video";
 $(document).ready(function(){

@@ -2,7 +2,7 @@
 
 	This JS file is to manage custom javascript functionality(for both add/edit/list)
 	related to the ministay program module
-	Current Version : 0.2
+	Current Version : 1.1
 */
 
 var pageHighlightMenu = "frontweb/ministay_program";

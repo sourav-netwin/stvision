@@ -8,6 +8,10 @@
 <script src="<?php echo LTE; ?>custom/custom.js"></script>
 <script src="<?php echo LTE; ?>plugins/sweetalert/sweetalert.min.js"></script>
 
+<?php if($moduleName == 'manage_fixed_activity'){ ?>
+	<script src="<?php echo base_url(); ?>js/tuition/jquery_validations1.9.0.js"></script>
+<?php } ?>
+
 <!------------custom javascript for for master modules------------>
 <script>
 	var pageType = 'list';
@@ -20,7 +24,7 @@
 	var please_enter_dynamic = "<?php echo $this->lang->line("please_enter_dynamic"); ?>";
 	var duplicate_dynamic = "<?php echo $this->lang->line("duplicate_dynamic"); ?>";
 </script>
-<script src="<?php echo LTE; ?>frontweb/custom/master.js?v=0.2"></script>
+<script src="<?php echo LTE; ?>frontweb/custom/master.js?v=1.3"></script>
 
 <div class="right_col" role="main">
 	<div class="row">
@@ -84,7 +88,7 @@
 		<div class="modal-content">
 			<div class="modal-header">
 				<button type="button" class="close" data-dismiss="modal">&times;</button>
-				<h4 class="modal-title modalTitle"></h4>
+				<h4 class="modal-title modalTitle">Copy master activity</h4>
 			</div>
 <?php
 			$formAttribute = array(
@@ -95,32 +99,51 @@
 			echo form_open_multipart('frontweb/master_activity/copy' , $formAttribute);
 ?>
 				<input type="hidden" name="id" id="id">
-				<input type="hidden" id="copyActivityFlag" value="1" />
 				<div class="modal-body">
-					<div class="error text-center customActivityError"></div>
-					<div class="addMoreWrapper">
-						<div class="form-group form-border-box-wrapper copyActivityMargin">
-							<label class="control-label custom-control-label col-md-3 col-sm-3 col-xs-12">
-								Select date<span class="required">*</span>
-							</label>
-							<div class="col-md-6 col-sm-6 col-xs-12">
-<?php
-								$inputFieldAttribute = array(
-									'name' => 'date[]',
-									'class' => 'form-control datepicker',
-									'placeholder' => 'dd-mm-yyyy'
-								);
-								echo form_input($inputFieldAttribute);
-?>
-								<span class="error showErrorMsg"></span>
-							</div>
+					<div class="form-group">
+						<label class="control-label custom-control-label col-md-3 col-sm-3 col-xs-12">
+							Select centre<span class="required">*</span>
+						</label>
+						<div class="col-md-9 col-sm-9 col-xs-12">
+							<div class="form-control" id="centre_id"></div>
 						</div>
-						<div style="float: right; margin-top:-12px;">
-							<i class="fa fa-lg fa-plus-circle add_section addMoreTable" aria-hidden="true"></i>
-						</div><br>
 					</div>
-					<div class="clearfix"></div>
+					<div class="form-group">
+						<label class="control-label custom-control-label col-md-3 col-sm-3 col-xs-12">
+							Activity name<span class="required">*</span>
+						</label>
+						<div class="col-md-9 col-sm-9 col-xs-12">
+							<div class="form-control" id="activity_name"></div>
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="control-label custom-control-label col-md-3 col-sm-3 col-xs-12">
+							Arrival date<span class="required">*</span>
+						</label>
+						<div class="col-md-9 col-sm-9 col-xs-12">
+							<div class="form-control" id="arrival_date"></div>
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="control-label custom-control-label col-md-3 col-sm-3 col-xs-12">
+							Departure date<span class="required">*</span>
+						</label>
+						<div class="col-md-9 col-sm-9 col-xs-12">
+							<div class="form-control" id="departure_date"></div>
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="control-label custom-control-label col-md-3 col-sm-3 col-xs-12">
+							Student group<span class="required">*</span>
+						</label>
+						<div class="col-md-9 col-sm-9 col-xs-12">
+<?php
+							echo form_dropdown('student_group' , array('' => 'Please select group') , '' , 'class="form-control" id="student_group"');
+?>
+						</div>
+					</div>
 				</div>
+				<div class="clearfix"></div>
 				<div class="modal-footer">
 					<button type="submit" class="btn btn-info">Save</button>
 					<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>

@@ -159,19 +159,19 @@ if ( ! function_exists('getStudentListColor'))
      * @return string 
      */
     function getStudentListColor($languageKnowledge){
-        if($languageKnowledge >= 1 && $languageKnowledge <= 33){
+        if($languageKnowledge >= 1 && $languageKnowledge <= 10){
             return "#73E0FD";
         }
-        elseif($languageKnowledge >= 34 && $languageKnowledge <= 50){
+        elseif($languageKnowledge >= 11 && $languageKnowledge <= 20){
             return "#B3F8AE";
         }
-        elseif($languageKnowledge >= 51 && $languageKnowledge <= 66){
+        elseif($languageKnowledge >= 21 && $languageKnowledge <= 30){
             return "#FCFDB0";
         }
-        elseif($languageKnowledge >= 67 && $languageKnowledge <= 83){
+        elseif($languageKnowledge >= 31 && $languageKnowledge <= 40){
             return "#F6D2AD";
         }
-        elseif($languageKnowledge >= 84 && $languageKnowledge <= 100){
+        elseif($languageKnowledge >= 41 && $languageKnowledge <= 50){
             return "#FD9BAD";
         }
     }
