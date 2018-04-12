@@ -1,7 +1,7 @@
 /*
 	Description : This js file is used to manage all the javascript related operations
 					for the master activity module
-	Version : 1.1
+	Version : 1.5
 */
 $(document).ready(function(){
 	//For datepicker
@@ -80,6 +80,8 @@ $(document).ready(function(){
 			{
 				if($(this).data('field_ref') == 'date')
 					whereConditionArr.push("b.date = '"+$(this).val()+"'");
+				else if($(this).data('field_ref') == 'managed_by')
+					whereConditionArr.push("d.managed_by_name = '"+$(this).val()+"'");
 				else
 					whereConditionArr.push("c."+$(this).data('field_ref')+" = '"+$(this).val()+"'");
 			}

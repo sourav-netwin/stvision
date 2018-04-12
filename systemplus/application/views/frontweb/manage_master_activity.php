@@ -6,6 +6,10 @@
 <script src="<?php echo base_url(); ?>js/tuition/jquery_validations1.9.0.js"></script>
 <link rel="stylesheet" href="<?php echo LTE; ?>frontweb/style.css?v=1.3">
 
+<!-------------Bootstrap multiselect css and js---------------->
+<link rel="stylesheet" href="<?php echo LTE; ?>frontweb/bootstrap-multiselect.css" />
+<script src="<?php echo LTE; ?>frontweb/bootstrap-multiselect.js"></script>
+
 <!------------custom javascript for master activity------------>
 <script>
 	var id = "<?php echo $id; ?>";
@@ -17,7 +21,7 @@
 	var start_end_date_validation = "<?php echo $this->lang->line("start_end_date_validation"); ?>";
 	var delete_confirmation = "<?php echo $this->lang->line("delete_confirmation"); ?>";
 </script>
-<script src="<?php echo LTE; ?>frontweb/custom/manage_master_activity.js?v=1.3"></script>
+<script src="<?php echo LTE; ?>frontweb/custom/manage_master_activity.js?v=1.7"></script>
 
 <div class="right_col" role="main">
 	<div class="row">
@@ -355,9 +359,16 @@
 						<label class="control-label custom-control-label col-md-3 col-sm-3 col-xs-12">Managed by</label>
 						<div class="col-md-6 col-sm-6 col-xs-12">
 <?php
-							echo form_dropdown('managed_by' , getContractPersonDropdown() , '' , 'class = "form-control" id = "managed_by"');
+							echo form_dropdown('managed_by[]' , getContractPersonDropdown() , '' , 'class = "form-control" id = "managed_by" multiple="multiple"');
 ?>
 						</div>
+					</div>
+					<div class="form-group moreManagedByPerson">
+						<label class="control-label custom-control-label col-md-3 col-sm-3 col-xs-12"></label>
+						<div class="col-md-6 col-sm-6 col-xs-12">
+							<input name="managed_by_text[]" class="form-control" type="text">
+						</div>
+						<i class="fa fa-lg fa-plus-circle add_section addMorePerson" aria-hidden="true"></i>
 					</div>
 				</div>
 				<div class="modal-footer">

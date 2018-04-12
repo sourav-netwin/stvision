@@ -261,6 +261,8 @@
 					'' => $this->lang->line('please_select_dropdown')
 				);
 				$this->db->order_by($moduleArr['dropdown']['value'] , 'asc');
+				if(isset($moduleArr['listWhere']))
+					$this->db->where($moduleArr['listWhere']);
 				$result = $this->db->get($moduleArr['dbName'])->result_array();
 				if(!empty($result))
 				{

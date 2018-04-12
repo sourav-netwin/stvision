@@ -905,6 +905,12 @@ class Mbackoffice extends Model {
                 'flag_lm' => $lm
             );
         }
+        // ELAPSED CHECKED FLAG REVERT
+        if($stato != "elapsed")
+        {
+            $data['flag_elapsed'] = 0;
+            $data['flag_elapsed_comment'] = '';
+        }
         $this->db->where('id_book', $id);
         $this->db->update('plused_book', $data);
         $agemail = $this->getAgentMailByOrderId($id);
@@ -1923,7 +1929,7 @@ class Mbackoffice extends Model {
           }
           $querya .= ") GROUP BY plused_rows.accomodation, plused_book.id_book ORDER BY num_in DESC";
          */
-        $querya = "SELECT DISTINCT plused_rows.id_book, plused_rows.id_year, agenti.businessname, COUNT(plused_rows.id_book) as num_in, plused_rows.data_arrivo_campus as arrival_date, plused_rows.data_partenza_campus as departure_date, plused_book.status, agenti.businesscountry, COUNT(CASE WHEN plused_rows.cognome IS NOT NULL AND plused_rows.cognome <> '' THEN 1 END) as contaPieni FROM plused_book, plused_rows, agenti WHERE plused_book.id_agente = agenti.id AND plused_book.id_centro = $campus AND plused_rows.data_arrivo_campus <= '$dateout' AND plused_rows.data_partenza_campus >= '$datein' AND plused_book.id_book = plused_rows.id_book AND plused_book.id_year = plused_rows.id_year AND plused_rows.accomodation = '$accomodation' AND ( ";
+        $querya = "SELECT DISTINCT plused_rows.id_book,plused_rows.nazionalita, plused_rows.id_year,plused_book.id_agente,agenti.businessname, COUNT(plused_rows.id_book) as num_in, plused_rows.data_arrivo_campus as arrival_date, plused_rows.data_partenza_campus as departure_date, plused_book.status, agenti.businesscountry, COUNT(CASE WHEN plused_rows.cognome IS NOT NULL AND plused_rows.cognome <> '' THEN 1 END) as contaPieni FROM plused_book, plused_rows, agenti WHERE plused_book.id_agente = agenti.id AND plused_book.id_centro = $campus AND plused_rows.data_arrivo_campus <= '$dateout' AND plused_rows.data_partenza_campus >= '$datein' AND plused_book.id_book = plused_rows.id_book AND plused_book.id_year = plused_rows.id_year AND plused_rows.accomodation = '$accomodation' AND ( ";
         $contastati = 1;
         //echo count($arrayStatus);
         foreach ($arrayStatus as $stat) {
@@ -3594,6 +3600,24 @@ class Mbackoffice extends Model {
         $this->db->where('id_book', $book);
         $this->db->where('tipo_pax', $type);
         $this->db->order_by("gl_rif", "asc");
+        $this->db->order_by("tipo_pax", "asc");
+        $this->db->order_by("cognome", "asc");
+        $Q = $this->db->get('plused_rows');
+        if ($Q->num_rows() > 0) {
+            foreach ($Q->result_array() as $row) {
+                $data[] = $row;
+            }
+        }
+        $Q->free_result();
+        return $data;
+    }
+    
+    function listPaxForLogin($book, $year, $type = "STD") {
+        $data = array();
+        $this->db->select('nome, cognome, sesso, pax_dob');
+        $this->db->where('id_year', $year);
+        $this->db->where('id_book', $book);
+        $this->db->where('tipo_pax', $type);
         $this->db->order_by("tipo_pax", "asc");
         $this->db->order_by("cognome", "asc");
         $Q = $this->db->get('plused_rows');
@@ -7377,6 +7401,15 @@ class Mbackoffice extends Model {
         $this->db->update('plused_fincon_payments',$updateArr);
         return 1;
     }
-
+    
+    function checkAccMngrAgentBooking($accMngrId,$agentId){
+        $this->db->where('id',$agentId);
+        $this->db->where('account',$accMngrId);
+        $result = $this->db->get("agenti");
+        if($result->num_rows()){
+            return 1;
+        }
+        return 0;
+    }
 }
 ?>

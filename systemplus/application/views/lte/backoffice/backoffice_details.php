@@ -362,6 +362,7 @@
                             <h3 class="box-title width-full">
                                 Booking roster - <strong><?php echo $yearId; ?>_<?php echo $storeId; ?></strong><?php if ($isFlocked == 1) { ?><span class="rLocked">LOCKED</span><?php } ?>
                                 <span class="pull-right">
+                                    <a id="printStdLogin" data-roster-lock="<?php echo $isFlocked;?>" href="javascript:void(0);" ><span class="fa fa-sign-in"></span> Students login detail</a>
                                     <a id="editAccModal" data-roster-lock="<?php echo $isFlocked;?>" href="javascript:void(0);" ><span class="fa fa-edit"></span> Edit accommodation</a>
                                     <a id="addRosterPax" href="javascript:void(0);" ><span class="fa fa-plus"></span> Add new pax to this booking</a>
 
@@ -887,6 +888,24 @@
     </div>
 </div>
 
+<div id="dialog_modal_print_std_login" class="modal fade" tabindex="-1" role="dialog" >
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" onclick="$('#dialog_modal_print_std_login').modal('hide');">
+                    <span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">Students login detail</h4>
+                <input type="hidden" id="emailAddressForStudentsLoginDetail" value="<?php echo $agente[0]["email"] ?>" />
+            </div>
+            <div class="modal-body" id="divPrintStdLogin">
+            </div>
+            <div class="modal-footer">
+                <button onclick="$('#dialog_modal_print_std_login').modal('hide');" type="button" class="btn btn-default" >Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script src="<?php echo base_url(); ?>js/tuition/jquery_validations1.9.0.js"></script>
 <script src="<?php echo LTE; ?>plugins/iCheck/icheck.min.js"></script>
 <link href="<?php echo LTE; ?>plugins/iCheck/all.css" rel="stylesheet">
@@ -972,9 +991,9 @@
                     required: true
                 },
                 date_out:
-                        {
-                            required: true
-                        }
+                {
+                    required: true
+                }
             },
             messages: {
                 date_in: {
@@ -1013,7 +1032,54 @@
                 $("#editAccList").html(data);
             });
         });
-        //$('body').addClass('modal-open');
+        
+        $('#printStdLogin').click(function () {
+            $("#dialog_modal_print_std_login").modal('show');
+            var bookId = $("#bkDetBookId").val();
+            var year = $("#yearId").val();
+            var emailAddressForStudentsLoginDetail = $("#emailAddressForStudentsLoginDetail").val();
+            var isRosterLock = $(this).attr('data-roster-lock');
+            $.post(siteUrl + "backofficeextn/getPaxListPrintLogin",{'year':year,'bookId':bookId,'isRosterLock':isRosterLock},function(data){
+                $("#divPrintStdLogin").html(data);
+                $("#txtEmailAddressForStudentsLoginDetail").val(emailAddressForStudentsLoginDetail);
+            });
+        });
+        
+        function validateEmail(value) {
+                return /^([\w\-\.]+)@((\[([0-9]{1,3}\.){3}[0-9]{1,3}\])|(([\w\-]+\.)+)([a-zA-Z]{2,40}))$/.test(value);
+        };
+        
+        $( "#divPrintStdLogin" ).on( "click", "#btnSendEmailToAgents", function() {
+            var emailIds = $("#txtEmailAddressForStudentsLoginDetail").val();
+            var emailBody = $("#tblStdList").html();
+            var emailIdsArr = emailIds.split(',');
+            var allowedEmail = true;
+            $.each(emailIdsArr, function( index, value ) {
+                if(!validateEmail($.trim(value)))
+                    allowedEmail = false;
+            });
+            if(allowedEmail)
+            {
+                $.post(siteUrl + "backofficeextn/sendStdLoginDetails",
+                {'emailBody':emailBody,'emailIds':emailIds},
+                function(data){
+                    if(data.result){
+                        swal("Success","Email has been sent successfully");
+                    }
+                    else
+                        swal("Error","Unable to send email.");
+                },'json');
+            }
+            else
+            {
+                swal("Warning","Please enter valid email address.");
+            }
+        });
+        
+        $('#dialog_modal_print_std_login').on('hidden.bs.modal', function () { 
+            $('body').addClass('modal-open');
+        });
+        
         $('#dialog_modal_edit_acc').on('hidden.bs.modal', function () { 
             $('body').addClass('modal-open');
         });

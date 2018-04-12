@@ -25,7 +25,7 @@
 				$post['end_date'] = $this->input->post('end_date');
 
 				//Prepare group dropdown
-				$result = $this->admin_model->commonGetData("group_name , student_group_id" , 'centre_id = '.$this->input->post('centre_id') , TABLE_STUDENT_GROUP , 2);
+				$result = $this->get_group_dropdown(1);
 				if(!empty($result))
 				{
 					foreach($result as $value)
@@ -103,7 +103,7 @@
 								date_format(departure_date , '%d-%m-%Y') as departure_date , student_group" , 'master_activity_id = '.$id , TABLE_MASTER_ACTIVITY , 1);
 
 				//Prepare group dropdown
-				$result = $this->admin_model->commonGetData("group_name , student_group_id" , 'centre_id = '.$post['centre_id'] , TABLE_STUDENT_GROUP , 2);
+				$result = $this->admin_model->commonGetData("group_name , student_group_id" , 'centre_id = '.$post['centre_id'].' AND delete_flag=0' , TABLE_STUDENT_GROUP , 2);
 				if(!empty($result))
 				{
 					foreach($result as $value)
@@ -126,20 +126,6 @@
 			$data['pageHeader'] = $data['breadcrumb2'] = ($id != '') ? 'Edit master activity' : 'Add master activity';
 			$data['title'] = 'plus-ed.com | '.$data['pageHeader'];
 			$this->ltelayout->view('frontweb/manage_master_activity' , $data);
-		}
-
-		/**
-		*This function is used to get the student group names acording to the centre through ajax call
-		*
-		*@param NONE
-		*@return NONE
-		*/
-		public function get_student_group()
-		{
-			$data = array();
-			if($this->input->post('centre_id'))
-				$data = $this->admin_model->commonGetData("group_name as name , student_group_id as id" , 'centre_id = '.$this->input->post('centre_id') , TABLE_STUDENT_GROUP , 2);
-			echo json_encode($data);
 		}
 
 		/**
@@ -219,19 +205,90 @@
 		{
 			if($this->input->post('activityDetailsFlag'))
 			{
+				$managedByDropdownArr = $this->input->post('managed_by');
+				$managedByTextArr = $this->input->post('managed_by_text');
+
 				$insertData = array(
 					'program_name' => $this->input->post('program_name'),
 					'location' => $this->input->post('location'),
 					'activity' => $this->input->post('activity'),
 					'from_time' => $this->input->post('from_time'),
 					'to_time' => $this->input->post('to_time'),
-					'managed_by' => $this->input->post('managed_by'),
 					'fixed_day_activity_id' => $this->input->post('activityDetailsParentId')
 				);
 				if($this->input->post('activityDetailsFlag') == 'as')
+				{
 					$activityDetailsId = $this->admin_model->commonAdd(TABLE_FIXED_DAY_ACTIVITY_DETAILS , $insertData);
+					//For managd by dropdown value(save into the database)
+					if(!empty($managedByDropdownArr))
+					{
+						foreach($managedByDropdownArr as $value)
+						{
+							if(isset($value) && $value != '')
+							{
+								$insertData = array(
+									'managed_by_name' => $value,
+									'type' => 1,
+									'fixed_day_activity_details_id' => $activityDetailsId
+								);
+								$this->admin_model->commonAdd(TABLE_FIXED_DAY_MANAGED_BY , $insertData);
+							}
+						}
+					}
+					//For managd by textbox value(save into the database)
+					if(!empty($managedByTextArr))
+					{
+						foreach($managedByTextArr as $value)
+						{
+							if(isset($value) && $value != '')
+							{
+								$insertData = array(
+									'managed_by_name' => $value,
+									'type' => 2,
+									'fixed_day_activity_details_id' => $activityDetailsId
+								);
+								$this->admin_model->commonAdd(TABLE_FIXED_DAY_MANAGED_BY , $insertData);
+							}
+						}
+					}
+				}
 				else
+				{
 					$this->admin_model->commonUpdate(TABLE_FIXED_DAY_ACTIVITY_DETAILS , "fixed_day_activity_id = ".$this->input->post('activityDetailsParentId')." AND fixed_day_activity_details_id = ".$this->input->post('activityDetailsId') , $insertData);
+					$this->admin_model->commonDelete(TABLE_FIXED_DAY_MANAGED_BY , 'fixed_day_activity_details_id = '.$this->input->post('activityDetailsId'));
+					//For managd by dropdown value(save into the database)
+					if(!empty($managedByDropdownArr))
+					{
+						foreach($managedByDropdownArr as $value)
+						{
+							if(isset($value) && $value != '')
+							{
+								$insertData = array(
+									'managed_by_name' => $value,
+									'type' => 1,
+									'fixed_day_activity_details_id' => $this->input->post('activityDetailsId')
+								);
+								$this->admin_model->commonAdd(TABLE_FIXED_DAY_MANAGED_BY , $insertData);
+							}
+						}
+					}
+					//For managd by textbox value(save into the database)
+					if(!empty($managedByTextArr))
+					{
+						foreach($managedByTextArr as $value)
+						{
+							if(isset($value) && $value != '')
+							{
+								$insertData = array(
+									'managed_by_name' => $value,
+									'type' => 2,
+									'fixed_day_activity_details_id' => $this->input->post('activityDetailsId')
+								);
+								$this->admin_model->commonAdd(TABLE_FIXED_DAY_MANAGED_BY , $insertData);
+							}
+						}
+					}
+				}
 				echo ($this->input->post('activityDetailsFlag') == 'as') ? $activityDetailsId : $this->input->post('activityDetailsId');
 			}
 		}
@@ -247,6 +304,7 @@
 			if($this->input->post('id'))
 			{
 				$this->admin_model->commonDelete(TABLE_FIXED_DAY_ACTIVITY_DETAILS , 'fixed_day_activity_details_id = '.$this->input->post('id'));
+				$this->admin_model->commonDelete(TABLE_FIXED_DAY_MANAGED_BY , 'fixed_day_activity_details_id = '.$this->input->post('id'));
 				echo '';
 			}
 
@@ -273,12 +331,15 @@
 		*@param NONE
 		*@return NONE
 		*/
-		public function get_group_dropdown()
+		public function get_group_dropdown($returnType = NULL)
 		{
 			$data = array();
 			if($this->input->post('centre_id'))
-				$data = $this->admin_model->commonGetData("group_name , student_group_id" , 'centre_id = '.$this->input->post('centre_id') , TABLE_STUDENT_GROUP , 2);
-			echo json_encode($data);
+				$data = $this->admin_model->commonGetData("group_name , student_group_id" , 'centre_id = '.$this->input->post('centre_id').' AND delete_flag=0' , TABLE_STUDENT_GROUP , 2);
+			if($returnType == 1)
+				return $data;
+			else
+				echo json_encode($data);
 		}
 
 		/**
@@ -291,7 +352,11 @@
 		{
 			$data = array();
 			if($this->input->post('id'))
+			{
 				$data = $this->admin_model->commonGetData("*" , 'fixed_day_activity_details_id = '.$this->input->post('id') , TABLE_FIXED_DAY_ACTIVITY_DETAILS , 1);
+				$data['managed_by'] = $this->admin_model->commonGetData("managed_by_name" , 'fixed_day_activity_details_id = '.$this->input->post('id').' AND type = 1' , TABLE_FIXED_DAY_MANAGED_BY , 2);
+				$data['managed_by_text'] = $this->admin_model->commonGetData("managed_by_name" , 'fixed_day_activity_details_id = '.$this->input->post('id').' AND type = 2' , TABLE_FIXED_DAY_MANAGED_BY , 2);
+			}
 			echo json_encode($data);
 		}
 
@@ -306,24 +371,33 @@
 			$data = array();
 			if($this->input->post('id'))
 			{
-				$result = $this->admin_model->commonGetData("program_name , location , activity , managed_by" , 'fixed_day_activity_details_id = '.$this->input->post('id') , TABLE_FIXED_DAY_ACTIVITY_DETAILS , 1);
+				$result = $this->admin_model->commonGetData("program_name , location , activity" , 'fixed_day_activity_details_id = '.$this->input->post('id') , TABLE_FIXED_DAY_ACTIVITY_DETAILS , 1);
+				$managedByResult = $this->admin_model->commonGetData('managed_by_name , type' , 'fixed_day_activity_details_id = '.$this->input->post('id') , TABLE_FIXED_DAY_MANAGED_BY , 2);
 				$insertData = array(
 					'program_name' => $result['program_name'],
 					'location' => $result['location'],
 					'activity' => $result['activity'],
 					'from_time' => $this->input->post('from_time'),
 					'to_time' => $this->input->post('to_time'),
-					'managed_by' => $result['managed_by'],
 					'fixed_day_activity_id' => $this->input->post('fixed_day_activity_id')
 				);
-				$data['id'] = $this->admin_model->commonAdd(TABLE_FIXED_DAY_ACTIVITY_DETAILS , $insertData);
+				$detailsId = $this->admin_model->commonAdd(TABLE_FIXED_DAY_ACTIVITY_DETAILS , $insertData);
+				if(!empty($managedByResult))
+				{
+					foreach($managedByResult as $value)
+					{
+						$value['fixed_day_activity_details_id'] = $detailsId;
+						$this->admin_model->commonAdd(TABLE_FIXED_DAY_MANAGED_BY , $value);
+					}
+				}
+				$data['id'] = $detailsId;
 				$data['name'] = $result['activity'];
 			}
 			echo json_encode($data);
 		}
 
 		/**
-		*This function is used to get the student group dropdown details to show in the cop activity modal popup form
+		*This function is used to get the student group dropdown details to show in the copy activity modal popup form
 		*
 		*@param NONE
 		*@return NONE
@@ -358,13 +432,23 @@
 						'date' => $fixedValue['date']
 					);
 					$fixedId = $this->admin_model->commonAdd(TABLE_FIXED_DAY_ACTIVITY , $insertData);
-					$activityDetails = $this->admin_model->commonGetData('program_name , location , activity , from_time , to_time , managed_by' , 'fixed_day_activity_id = '.$fixedValue['fixed_day_activity_id'] , TABLE_FIXED_DAY_ACTIVITY_DETAILS , 2);
+					$activityDetails = $this->admin_model->commonGetData('fixed_day_activity_details_id , program_name , location , activity , from_time , to_time' , 'fixed_day_activity_id = '.$fixedValue['fixed_day_activity_id'] , TABLE_FIXED_DAY_ACTIVITY_DETAILS , 2);
 					if(!empty($activityDetails))
 					{
 						foreach($activityDetails as $value)
 						{
+							$managedByArr = $this->admin_model->commonGetData('managed_by_name , type' , 'fixed_day_activity_details_id = '.$value['fixed_day_activity_details_id'] , TABLE_FIXED_DAY_MANAGED_BY , 2);
+							unset($value['fixed_day_activity_details_id']);
 							$value['fixed_day_activity_id'] = $fixedId;
-							$this->admin_model->commonAdd(TABLE_FIXED_DAY_ACTIVITY_DETAILS , $value);
+							$fixedDetailsId = $this->admin_model->commonAdd(TABLE_FIXED_DAY_ACTIVITY_DETAILS , $value);
+							if(!empty($managedByArr))
+							{
+								foreach($managedByArr as $personValue)
+								{
+									$personValue['fixed_day_activity_details_id'] = $fixedDetailsId;
+									$this->admin_model->commonAdd(TABLE_FIXED_DAY_MANAGED_BY , $personValue);
+								}
+							}
 						}
 					}
 				}

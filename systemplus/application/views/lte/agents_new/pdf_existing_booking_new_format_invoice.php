@@ -418,7 +418,7 @@
                         </tr>
                         <?php if(!empty($paymentReceived)){?>
                         <tr>
-                            <td style="width:40%">Payment Received</td>
+                            <td style="width:40%">Payment(s) received</td>
                             <td style="width:10%;text-align: right;">
                             <?php echo $book['valuta'].number_format($paymentReceived, 2, '.', ''); 
                                     $totalInvoiceCost = $totalInvoiceCost - $paymentReceived;

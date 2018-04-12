@@ -121,6 +121,7 @@ define('CAMPUS_AGENTS_SINGLE_PDF_PATH', '../teacherApplications/campus/agents_si
 /* Start: constants for Booking availability report */
 
 define('AVAILABILITY_DWNLD', 'downloads/export_csv/allCSVAvailability.csv');
+define('WEEKLY_ELAPSED_BOOKING', 'downloads/export_csv/');
 define('WEEKLY_AVAILABILITY_DWNLD', 'downloads/export_weekly_report');
 
 /* End: constants for Booking availability report */
@@ -151,6 +152,11 @@ class BookingStatus{
     static $CONFIRMED = 3; // confirmed
     static $REJECTED = 4; // rejected
     static $ELAPSED = 5; // elapsed
+}
+class EmailTemplateIds{
+    static $BOOKING_CONFIRMATION_TEMPLATE = 7; // BOOKING CONFIRMED
+    static $STUDENTS_LOGIN_DETAIL = 8; // EMAIL TO AGENTS
+    
 }
 
 //Database table names
@@ -213,6 +219,8 @@ define('TABLE_EXTRA_MASTER_ACTIVITY' , 'frontweb_extra_master_activity');
 define('TABLE_TEACHER_APPLICATION' , 'plused_teacher_application');
 define('TABLE_JOB_POSITION' , 'plused_job_positions');
 define('TABLE_JOB_CONTRACT' , 'pulsed_job_contract');
+define('TABLE_FIXED_DAY_MANAGED_BY' , 'frontweb_fixed_day_managed_by');
+define('TABLE_EXTRA_DAY_MANAGED_BY' , 'frontweb_extra_day_managed_by');
 
 //Constant for create folder permission
 define('DIR_PERMISSION' , 0755);

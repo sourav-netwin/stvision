@@ -41,7 +41,7 @@
                                     <table class="table table-bordered table-condensed table-striped tabAvail" style="font-size:9px;">
                                         <thead>
                                             <tr>
-                                                <th  >Agency</th>
+                                                <th>Agency</th>
                                                 <?php
                                                 $datecycle = $datein;
                                                 while (strtotime($datecycle) <= strtotime($dateout)) {
@@ -61,6 +61,19 @@
                                         <tbody>
                                             <?php
                                             foreach ($simbooking[$a] as $book) {
+                                                
+                                                $sessRule = $this->session->userdata('ruolo');
+                                                $allowedBkViewLink = TRUE;
+                                                if($sessRule == "Account manager")
+                                                {
+                                                    $allowedBkViewLink = FALSE;
+                                                    $sessAccMngrId = $this->session->userdata('id');
+                                                    $agentId = $book["id_agente"];
+                                                    $isAccMngrBk = $this->mbackoffice->checkAccMngrAgentBooking($sessAccMngrId,$agentId);
+                                                    if($isAccMngrBk)
+                                                        $allowedBkViewLink = TRUE;
+                                                }
+                                                
                                                 //echo "<br />->".$book["arrival_date"]."--->".$book["departure_date"];
                                                 $da = explode("-", $book["arrival_date"]);
                                                 $dd = explode("-", $book["departure_date"]);
@@ -80,7 +93,7 @@
                                                 }
                                                 ?>
                                                 <tr id="riga_<?php echo $contarighe ?>">
-                                                    <td  class="n_<?php echo $book["status"] ?>"><input type="hidden" value="<?php echo $book["num_in"] ?>" id="pax_<?php echo $contarighe ?>"><a class="goToBookingDetail" href="javascript:void(0);" data-book-id="<?php echo $book["id_book"] ?>" title="Go to booking detail"><span class="tdTool" data-toggle="tooltip" title="<?php echo $book["businessname"] ?>"><img style="margin-top:-1px;" class="lilFlag" src="<?php echo base_url(); ?>img/flags/16/<?php echo $book["businesscountry"] ?>.png" alt="<?php echo $book["businesscountry"] ?>" title="<?php echo $book["businesscountry"] ?>" /> <?php echo $book["id_year"] ?>_<?php echo $book["id_book"] ?></span></a></td>
+                                                    <td  class="n_<?php echo $book["status"] ?>"><input type="hidden" value="<?php echo $book["num_in"] ?>" id="pax_<?php echo $contarighe ?>"><a class="goToBookingDetail<?php echo ($allowedBkViewLink ? '' : 'notallowed');?>" href="javascript:void(0);" data-book-id="<?php echo $book["id_book"] ?>" title="Go to booking detail"><span class="tdTool" data-toggle="tooltip" title="<?php echo ($allowedBkViewLink ? $book["businessname"] : ''); ?>"><img style="margin-top:-1px;" class="lilFlag" src="<?php echo base_url(); ?>img/flags/16/<?php echo $book["businesscountry"] ?>.png" alt="<?php echo $book["businesscountry"] ?>" title="<?php echo $book["businesscountry"] ?>" /> <?php echo $book["id_year"] ?>_<?php echo $book["id_book"] ?></span></a></td>
                                                     <?php
                                                     //echo $datein."-->";
                                                     $datecycle = date("Y-m-d", strtotime("+0 day", strtotime($datein)));
@@ -296,12 +309,10 @@
                     }
                 });	
                 
-                
                 $('.goToBookingDetail').on('click', function(e){
                     e.preventDefault();
                     var bookingId = $(this).attr('data-book-id');
                     loadBookingDetail(bookingId);
-                    
                 });
                 
                 $('#retriveDataDiv').on('mouseover', function(e){

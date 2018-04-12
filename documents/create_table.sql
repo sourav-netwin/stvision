@@ -422,3 +422,19 @@ ALTER TABLE `frontweb_extra_day_activity` CHANGE `centre_id` `extra_master_activ
 
 
 /* ----------------------------Not Executed---------------------------- */
+
+/* Date: 10-Apr-2018 | Sourav Dhara */
+
+CREATE TABLE `vision_plus`.`frontweb_fixed_day_managed_by` ( `fixed_day_managed_by_id` INT NOT NULL AUTO_INCREMENT COMMENT 
+'primary key' , `managed_by_name` VARCHAR(255) NULL , `fixed_day_activity_details_id` INT NOT NULL COMMENT 'foreign key' , 
+PRIMARY KEY (`fixed_day_managed_by_id`)) ENGINE = MyISAM;
+
+ALTER TABLE `frontweb_fixed_day_managed_by` ADD `type` TINYINT(1) NULL COMMENT '1 : from dropdown & 2: from textbox' AFTER `managed_by_name`; 
+
+ALTER TABLE `frontweb_fixed_day_activity_details` DROP `managed_by`;
+
+CREATE TABLE `vision_plus`.`frontweb_extra_day_managed_by` ( `extra_day_managed_by_id` INT NOT NULL AUTO_INCREMENT COMMENT 
+'primary key' , `managed_by_name` VARCHAR(255) NULL , `type` TINYINT(1) NULL COMMENT '1 : from dropdown & 2: from textbox' , 
+`extra_day_activity_details_id` INT NOT NULL COMMENT 'foreign key' , PRIMARY KEY (`extra_day_managed_by_id`)) ENGINE = MyISAM; 
+
+ALTER TABLE `frontweb_extra_day_activity_details` DROP `managed_by`;

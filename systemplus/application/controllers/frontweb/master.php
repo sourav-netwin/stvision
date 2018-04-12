@@ -216,22 +216,7 @@
 			if(isset($moduleArr['deleteCheck']))
 			{
 				$this->admin_model->commonDelete($moduleArr['dbName'] , $moduleArr['key'].' = '.$id);
-				$subModuleArr = $this->mastermodel->getModule($moduleArr['deleteCheck']);
-				if(isset($subModuleArr['deleteCheck']))
-				{
-					$childSubModuleArr = $this->mastermodel->getModule($subModuleArr['deleteCheck']);
-					$subModuleResult = $this->admin_model->commonGetData($subModuleArr['key'] , $subModuleArr['foreignKey'].' = '.$id , $subModuleArr['dbName'] , 2);
-					if(!empty($subModuleResult))
-					{
-						foreach($subModuleResult as $value)
-						{
-							$this->admin_model->commonDelete($subModuleArr['dbName'] , $subModuleArr['key'].' = '.$value[$subModuleArr['key']]);
-							$this->admin_model->commonDelete($childSubModuleArr['dbName'] , $childSubModuleArr['foreignKey'].' = '.$value[$subModuleArr['key']]);
-						}
-					}
-				}
-				else
-					$this->admin_model->commonDelete($subModuleArr['dbName'] , $subModuleArr['foreignKey'].' = '.$id);
+				$this->deleteCheck($moduleArr['deleteCheck'] , $id);
 			}
 			//Soft delete from database(by changing one flag)
 			else
@@ -244,6 +229,23 @@
 
 			$this->session->set_flashdata('success_message', str_replace('**module**' , $moduleArr['title'] , $this->lang->line('delete_success_message')));
 			redirect('/frontweb/master/index/'.$module);
+		}
+
+		/**
+		*This function is used to delete the master module data recursively for the submodules
+		*
+		*@param String $moduleName : Module name
+		*@param String $idList : The foreign key id list
+		*@return NONE
+		*/
+		private function deleteCheck($moduleName = NULL , $idList = NULL)
+		{
+			$moduleArr = $this->mastermodel->getModule($moduleName);
+			if(isset($moduleArr['deleteCheck']))
+				$referenceKeyList = $this->admin_model->commonGetData('group_concat('.$moduleArr['key'].') as id' , $moduleArr['foreignKey'].' in ('.$idList.')' , $moduleArr['dbName'] , 1);
+			$this->admin_model->commonDelete($moduleArr['dbName'] , $moduleArr['foreignKey'].' in ('.$idList.')');
+			if(isset($moduleArr['deleteCheck']))
+				$this->deleteCheck($moduleArr['deleteCheck'] , $referenceKeyList['id']);
 		}
 
 		//This function is used to check if the field is duplicate or not for master modules

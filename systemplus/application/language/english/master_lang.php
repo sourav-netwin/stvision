@@ -112,7 +112,14 @@
 	$lang['manage_master_activity_details']['dbName'] = TABLE_FIXED_DAY_ACTIVITY_DETAILS;
 	$lang['manage_master_activity_details']['key'] = 'fixed_day_activity_details_id';
 	$lang['manage_master_activity_details']['foreignKey'] = 'fixed_day_activity_id';
+	$lang['manage_master_activity_details']['deleteCheck'] = 'manage_master_activity_managedby';
 /*---------------For manage master activity details(End)---------------*/
+
+/*---------------For manage master activity managed by(Start)---------------*/
+	$lang['manage_master_activity_managedby']['dbName'] = TABLE_FIXED_DAY_MANAGED_BY;
+	$lang['manage_master_activity_managedby']['key'] = 'fixed_day_managed_by_id';
+	$lang['manage_master_activity_managedby']['foreignKey'] = 'fixed_day_activity_details_id';
+/*---------------For manage master activity managed by(End)---------------*/
 
 /*---------------For manage Centre(Start)---------------*/
 	$lang['centre']['dbName'] = TABLE_CENTRE;
@@ -121,6 +128,7 @@
 		'key' => 'id',
 		'value' => 'nome_centri'
 	);
+	$lang['centre']['listWhere'] = '((attivo = 1) OR (is_mini_stay = 1 AND attivo = 0))';
 /*---------------For manage Centre(End)---------------*/
 
 /*---------------For manage student group module(Start)---------------*/

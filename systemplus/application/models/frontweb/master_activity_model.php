@@ -10,11 +10,11 @@
 		//This function is used to get the master activity details to show in the activity report
 		public function getActivityReport($whereCondition = NULL)
 		{
-			$this->db->select("b.date , c.program_name , c.location , c.activity , c.from_time , c.to_time , concat_ws(' ' ,  d.ta_firstname , d.ta_lastname) as managed_by" , FALSE);
+			$this->db->select("b.date , c.program_name , c.location , c.activity , c.from_time , c.to_time , d.managed_by_name as managed_by" , FALSE);
 			$this->db->from(TABLE_MASTER_ACTIVITY.' a');
 			$this->db->join(TABLE_FIXED_DAY_ACTIVITY.' b' , 'a.master_activity_id = b.master_activity_id' , 'left');
 			$this->db->join(TABLE_FIXED_DAY_ACTIVITY_DETAILS.' c' , 'b.fixed_day_activity_id = c.fixed_day_activity_id' , 'left');
-			$this->db->join(TABLE_TEACHER_APPLICATION.' d' , 'c.managed_by = d.ta_id' , 'left');
+			$this->db->join(TABLE_FIXED_DAY_MANAGED_BY.' d' , 'c.fixed_day_activity_details_id = d.fixed_day_activity_details_id' , 'left');
 			$this->db->where("cast(b.date as DATE) between '".date('Y-m-d' , strtotime($this->input->post('start_date')))."' AND '".date('Y-m-d' , strtotime($this->input->post('end_date')))."'");
 			$this->db->where('a.centre_id' , $this->input->post('centre_id'));
 			$this->db->where('a.student_group' , $this->input->post('student_group'));
@@ -82,11 +82,11 @@
 		public function getExportActivity()
 		{
 			$returnArr = array();
-			$this->db->select("b.date , c.program_name , c.location , c.activity , c.from_time , c.to_time , concat_ws(' ' ,  d.ta_firstname , d.ta_lastname) as managed_by" , FALSE);
+			$this->db->select("b.date , c.program_name , c.location , c.activity , c.from_time , c.to_time , d.managed_by_name as managed_by" , FALSE);
 			$this->db->from(TABLE_MASTER_ACTIVITY.' a');
 			$this->db->join(TABLE_FIXED_DAY_ACTIVITY.' b' , 'a.master_activity_id = b.master_activity_id' , 'left');
 			$this->db->join(TABLE_FIXED_DAY_ACTIVITY_DETAILS.' c' , 'b.fixed_day_activity_id = c.fixed_day_activity_id' , 'left');
-			$this->db->join(TABLE_TEACHER_APPLICATION.' d' , 'c.managed_by = d.ta_id' , 'left');
+			$this->db->join(TABLE_FIXED_DAY_MANAGED_BY.' d' , 'c.fixed_day_activity_details_id = d.fixed_day_activity_details_id' , 'left');
 			$this->db->where("cast(b.date as DATE) between '".date('Y-m-d' , strtotime($this->session->userdata('start_date')))."' AND '".date('Y-m-d' , strtotime($this->session->userdata('end_date')))."'");
 			$this->db->where('a.centre_id' , $this->session->userdata('centre_id'));
 			$this->db->where('a.student_group' , $this->session->userdata('student_group'));

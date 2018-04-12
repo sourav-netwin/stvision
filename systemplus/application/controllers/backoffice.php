@@ -615,7 +615,7 @@ class Backoffice extends Controller {
             $myFile = "/var/www/html/www.plus-ed.com/vision_ag/downloads/export_csv/allCSVBookings.csv";
             //$myFile = "./downloads/export_csv/allCSVBookings.csv";
             $fh = fopen($myFile, 'w+') or die("can't open file");
-            $intestData = '"Centro";"Booking number";"Agency";"Arrival date";"Departure date";"Weeks";"Pax type";"Accomodation";"Pax number";"Status";"Elapsing date";"Booking date and time";"Deposit invoice";"Full invoice";"Currency";"Account Manager";"Account Manager Email"' . PHP_EOL;
+            $intestData = '"Centro";"Booking number";"Agency";"Arrival date";"Departure date";"Weeks";"Pax type";"Accomodation";"Pax number";"Status";"Elapsing date";"Elapsed checked";"Elapsed checked note";"Booking date and time";"Deposit invoice";"Full invoice";"Currency";"Account Manager";"Account Manager Email"' . PHP_EOL;
             fwrite($fh, $intestData);
             foreach ($data["all_books"] as $singbk) {
                 //echo "<br />".$singbk["centro"].'";"'.$singbk["id_book"]."_".$singbk["id_year"].$singbk["agency"][0]["businessname"].'";"'.$singbk["arrival_date"].'";"'.$singbk["departure_date"].'";"'.$singbk["weeks"].'";"'.$singbk["status"].'";"'.$singbk["data_scadenza"].'";"'.$singbk["data_insert"].'";'.str_replace(".",",",$singbk["acconto_versato"]).';'.str_replace(".",",",$singbk["saldo_versato"]).';"'.$singbk["valuta"]."<br />";
@@ -631,7 +631,7 @@ class Backoffice extends Controller {
                         if(isset($singbk["agency"][0]["acc_manager_email"]))
                             $agencyAccMngrEmail = $singbk["agency"][0]["acc_manager_email"];
                         
-                        $rigaData = '"' . $singbk["centro"] . '";"' . $singbk["id_year"] . "_" . $singbk["id_book"] . '";"' . $agencyBusinessName . '";"' . $singacco->data_arrivo_campus /*$singbk["arrival_date"]*/ . '";"' . $singacco->data_partenza_campus /*$singbk["departure_date"]*/ . '";"' . $singbk["weeks"] . '";"' . $singacco->tipo_pax . '";"' . $singacco->accomodation . '";"' . $singacco->contot . '";"' . $singbk["status"] . '";"' . $singbk["data_scadenza"] . '";"' . $singbk["data_insert"] . '";' . str_replace(".", ",", $singbk["acconto_versato"]) . ';' . str_replace(".", ",", $singbk["saldo_versato"]) . ';"' . $singbk["valuta"] . '";"'.$agencyAccMngrName.'";"'.$agencyAccMngrEmail.'"' . PHP_EOL;
+                        $rigaData = '"' . $singbk["centro"] . '";"' . $singbk["id_year"] . "_" . $singbk["id_book"] . '";"' . $agencyBusinessName . '";"' . $singacco->data_arrivo_campus /*$singbk["arrival_date"]*/ . '";"' . $singacco->data_partenza_campus /*$singbk["departure_date"]*/ . '";"' . $singbk["weeks"] . '";"' . $singacco->tipo_pax . '";"' . $singacco->accomodation . '";"' . $singacco->contot . '";"' . $singbk["status"] . '";"' . $singbk["data_scadenza"] . '";"' . ($singbk["flag_elapsed"] == 1 ? 'Checked' : '' ) . '";"' . $singbk["flag_elapsed_comment"] . '";"' . $singbk["data_insert"] . '";' . str_replace(".", ",", $singbk["acconto_versato"]) . ';' . str_replace(".", ",", $singbk["saldo_versato"]) . ';"' . $singbk["valuta"] . '";"'.$agencyAccMngrName.'";"'.$agencyAccMngrEmail.'"' . PHP_EOL;
                         //echo "<br />".$rigaData."<br />";
                         fwrite($fh, $rigaData);
                     }
@@ -650,8 +650,6 @@ class Backoffice extends Controller {
 
             $objPHPExcel = $objReader->load($inputFileName);
 
-
-
             $filename = 'export.xls';
             header('Content-Type: application/vnd.ms-excel');
             header('Content-Disposition: attachment;filename="' . $filename . '"');
@@ -659,7 +657,6 @@ class Backoffice extends Controller {
 
             $objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel5');
             $objWriter->save('php://output');
-
             die();
         } else {
             redirect('backoffice', 'refresh');
@@ -4223,8 +4220,8 @@ class Backoffice extends Controller {
             $statusArray = array("confirmed", "active");
             $datein = "2016-06-01";
             $dateout = "2016-09-01";
-            //$campus = $campusArray[0];
-
+            $campus = $campusArray[0];
+            
 
             foreach ($campusArray as $campus) {
                 $simcalendar = array();
@@ -4355,8 +4352,8 @@ class Backoffice extends Controller {
                 $campusArray[] = array('id' => $cmp["id"], 'campus_name' => $cmp["nome_centri"]);
 
             $statusArray = array("confirmed", "active");
-            $datein = "2017-06-01";
-            $dateout = "2017-09-01";
+            $datein = "2018-04-01";
+            $dateout = "2018-09-01";
 
             foreach ($campusArray as $campus) {
                 $simbooking = array();
@@ -4373,7 +4370,7 @@ class Backoffice extends Controller {
                         $contaBooked = array();
                         $simcalendar = array();
 
-                        $testata = "Campus;Booking;Status;Accomodation;";
+                        $testata = PHP_EOL."Campus;Nationality;Booking;Status;Accomodation;";
 
                         $current = strtotime($datein);
                         $last = strtotime($dateout);
@@ -4388,20 +4385,22 @@ class Backoffice extends Controller {
 
                             $simcalendar[] = $this->mbackoffice->get_total_available($campus['id'], $accomoArray[$key], $date);
                         }
-
+                        $testata .= "Total;";
                         $testata .= PHP_EOL;
                         fwrite($fh, $testata);
 
                         foreach ($sb as $book) {
-                            $rigaBk = $campus['campus_name'] . ";" . $book["id_year"] . "_" . $book["id_book"] . ";" . $book["status"] . ";" . ucfirst($accomoArray[$key]) . ";";
+                            $rigaBk = $campus['campus_name'] . ";" . $book['nazionalita'] . ";" . $book["id_year"] . "_" . $book["id_book"] . ";" . $book["status"] . ";" . ucfirst($accomoArray[$key]) . ";";
 
                             $datecycle = date("Y-m-d", strtotime("+0 day", strtotime($datein)));
                             $contadays = 0;
+                            $bkRowSum = 0;
                             while (strtotime($datecycle) <= strtotime($dateout)) {
                                 $datecycle = $datecycle . " 00:00:00";
                                 $numAttuale = $contaBooked[$contadays];
                                 if ($datecycle >= $book["arrival_date"] and $datecycle < $book["departure_date"]) {
                                     $rigaBk .= $book["num_in"] . ";";
+                                    $bkRowSum += $book["num_in"];
                                     $contaBooked[$contadays] = $numAttuale * 1 + $book["num_in"] * 1;
                                 } else {
                                     $rigaBk .= "0;";
@@ -4410,25 +4409,26 @@ class Backoffice extends Controller {
                                 $datecycle = date("Y-m-d", strtotime("+1 day", strtotime($datecycle)));
                                 $contadays++;
                             }
+                            $rigaBk .= $bkRowSum . ";";
                             $rigaBk .= PHP_EOL;
                             fwrite($fh, $rigaBk);
                         }
 
-                        $rigaAva = "Allotment;;;;";
+                        $rigaAva = "Allotment;;;;;";
                         foreach ($simcalendar as $cAva) {
                             $rigaAva.=$cAva["totale"] . ";";
                         }
                         $rigaAva.=PHP_EOL;
                         fwrite($fh, $rigaAva);
 
-                        $rigaBoo = "Booked;;;;";
+                        $rigaBoo = "Booked;;;;;";
                         foreach ($contaBooked as $cBoo) {
                             $rigaBoo.=$cBoo . ";";
                         }
                         $rigaBoo.=PHP_EOL;
                         fwrite($fh, $rigaBoo);
 
-                        $rigaTot = "Availability;;;;";
+                        $rigaTot = "Availability;;;;;";
                         $gira = 0;
                         foreach ($simcalendar as $cAva) {
                             $rigaTot.= ($cAva["totale"] * 1 - $contaBooked[$gira] * 1) . ";";
@@ -4458,7 +4458,7 @@ class Backoffice extends Controller {
             redirect('backoffice', 'refresh');
         }
     }
-
+    
     function getAccoByCampus($idCampus) {
         if ($this->session->userdata('role')) {
             authSessionMenu($this);

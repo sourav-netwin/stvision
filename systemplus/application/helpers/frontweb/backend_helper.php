@@ -200,7 +200,9 @@
 		function getContractPersonDropdown()
 		{
 			$returnArr = array(
-				'' => 'Please select'
+				'All staff' => 'All staff',
+				'Academic staff' => 'Academic staff',
+				'Operational staff' => 'Operational staff'
 			);
 			$CI = &get_instance();
 			$result = $CI->db->select("ta_id as id , concat_ws(' ' ,  ta_firstname , ta_lastname) as name" , FALSE)
@@ -210,7 +212,7 @@
 			if(!empty($result))
 			{
 				foreach($result as $value)
-					$returnArr[$value['id']] = $value['name'];
+					$returnArr[$value['name']] = $value['name'];
 			}
 			return $returnArr;
 		}
