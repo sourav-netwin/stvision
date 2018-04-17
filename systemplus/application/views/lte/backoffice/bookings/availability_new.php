@@ -407,8 +407,12 @@ function aggiornaAcco(campusId){
             });
             
         });
-    
-    
         
+        
+        $('body').on('click',"#backToList",function(e){
+            e.preventDefault();
+            //$('#dialog_modal_retrive_data').modal('hide');
+            $('#viewDashboardDetailModal').modal('hide');
+        });
     });
 </script>

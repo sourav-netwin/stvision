@@ -1145,14 +1145,18 @@
             var id = $("#bkDetBookId").val();
             var elapsedNote = $("#txtElapsedNote").val();
             var elapsedChecked = $("#chkElapsedChecked").prop('checked');
+            if(elapsedChecked)
+                elapsedChecked = 1;
+            else
+                elapsedChecked = 0;
             if(elapsedChecked && elapsedNote != ""){
                 $.post(siteUrl + "backoffice/updateElapsedMarkedNote",
                     {'id':id,'elapsedNote':elapsedNote,'elapsedChecked':elapsedChecked},function(data){
                         if(data.result){
                             swal("Success","Booking elapsed note updated.");
-                            $("#txtElapsedNote").attr('disabled','disabled');
+                            /*$("#txtElapsedNote").attr('disabled','disabled');
                             $("#chkElapsedChecked").attr('disabled','disabled');
-                            $("#btnElapsedMarked").attr('disabled','disabled');
+                            $("#btnElapsedMarked").attr('disabled','disabled');*/
                         }
                     },'json');
             }else{

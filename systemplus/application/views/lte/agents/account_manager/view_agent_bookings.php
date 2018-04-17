@@ -158,26 +158,32 @@
             var year = $(this).attr('data-year');
             var elapsedNote = $("#txtElapsedNote").val();
             var elapsedChecked = $("#chkElapsedChecked").prop('checked');
-            if(elapsedChecked && elapsedNote != ""){
-                $.post(siteUrl + "backoffice/updateElapsedMarkedNote",
-                    {'id':id,'elapsedNote':elapsedNote,'elapsedChecked':elapsedChecked},function(data){
-                        if(data.result){
-                            swal("Success","Booking elapsed note updated.");
-                            $("#dialog_modal_btn_"+year+"_"+id).attr('data-elapsed-note',elapsedNote);
-                            if(elapsedChecked)
-                                elapsedChecked = 1;
-                            else
-                                elapsedChecked = 0;
-                            $("#dialog_modal_btn_"+year+"_"+id).attr('data-bk-checked',elapsedChecked);
-                        }
-                    },'json');
+            if(elapsedChecked)
+                elapsedChecked = 1;
+            else
+                elapsedChecked = 0;
+            $.post(siteUrl + "backoffice/updateElapsedMarkedNote",
+            {'id':id,'elapsedNote':elapsedNote,'elapsedChecked':elapsedChecked},function(data){
+                if(data.result){
+                    swal("Success","Booking elapsed note updated.");
+                    $("#dialog_modal_btn_"+year+"_"+id).attr('data-elapsed-note',elapsedNote);
+                    $("#dialog_modal_btn_"+year+"_"+id).attr('data-bk-checked',elapsedChecked);
+                    if(elapsedChecked)
+                        $("#dialog_modal_btn_"+year+"_"+id).parent().siblings('.n_elapsed').html('elapsed (checked)'); 
+                    else
+                        $("#dialog_modal_btn_"+year+"_"+id).parent().siblings('.n_elapsed').html('elapsed'); 
+                }
+            },'json');
+            
+            /*if(elapsedChecked && elapsedNote != ""){
             }else{
                 swal("Warning","Please mark checkbox as checked and enter note text.");
-            }
+            }*/
         });
         
     });
     function disableElapsedChecked(dis){
+        return 0;
         if(dis){
             $("#txtElapsedNote").attr('disabled','disabled');
             $("#chkElapsedChecked").attr('disabled','disabled');

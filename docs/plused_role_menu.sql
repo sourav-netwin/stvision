@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: 127.0.0.1
--- Generation Time: Mar 28, 2018 at 02:14 PM
+-- Generation Time: Apr 17, 2018 at 09:46 AM
 -- Server version: 5.7.9
 -- PHP Version: 5.6.16
 
@@ -291,13 +291,13 @@ INSERT INTO `plused_role_menu` (`mnu_menuid`, `mnu_parent_menu_id`, `mnu_menu_na
 (278, 277, 'Add ministay program', 'Internal link', 'frontweb/ministay_program/add_edit,frontweb/ministay_program/process,frontweb/ministay_program/delete', 1, 3, 'Left', 1, '', '2018-02-13 00:00:00', 1, '2018-02-13 00:00:00', 1, 0),
 (279, 249, 'Manage Adult Course', '', 'frontweb/master/index/manage_adult_course', 1, 2, 'Left', 11, '', '2018-02-14 00:00:00', 1, '2018-02-14 00:00:00', 1, 0),
 (280, 279, 'Add Adult course', 'Internal link', 'frontweb/master/add_edit/manage_adult_course,frontweb/master/process,frontweb/master/delete/manage_adult_course', 1, 3, 'Left', 1, '', '2018-02-14 00:00:00', 1, '2018-02-14 00:00:00', 1, 0),
-(281, 249, 'Manage master activity', '', 'frontweb/master/index/manage_fixed_activity', 1, 2, 'Left', 12, '', '2018-02-27 00:00:00', 1, '2018-02-27 00:00:00', 1, 0),
+(281, 249, 'Manage master activity', '', 'frontweb/master/index/manage_fixed_activity', 1, 2, 'Left', 14, '', '2018-02-27 00:00:00', 1, '2018-02-27 00:00:00', 1, 0),
 (287, 131, 'Campus videos', '', 'agents/videoGallery', 1, 2, 'Left', 4, '', '2018-03-16 00:00:00', 1, '2018-03-16 00:00:00', 1, 0),
-(283, 249, 'Manage extra activity', '', 'frontweb/extra_activity', 1, 2, 'Left', 14, '', '2018-03-01 00:00:00', 1, '2018-03-01 00:00:00', 1, 0),
+(283, 249, 'Manage extra activity', '', 'frontweb/extra_activity', 1, 2, 'Left', 15, '', '2018-03-01 00:00:00', 1, '2018-03-01 00:00:00', 1, 0),
 (284, 283, 'Update extra activity', 'Internal link', 'frontweb/extra_activity/update', 1, 3, 'Left', 1, '', '2018-03-02 00:00:00', 1, '2018-03-02 00:00:00', 1, 0),
 (285, 281, 'Add master activity', 'Internal link', 'frontweb/master_activity/add_edit,frontweb/master_activity/export_to_excel,frontweb/master_activity/copy', 1, 3, 'Left', 1, '', '2018-03-06 00:00:00', 1, '2018-03-06 00:00:00', 1, 0),
-(286, 249, 'Activity report', '', 'frontweb/master_activity/report', 1, 2, 'Left', 15, '', '2018-03-08 00:00:00', 1, '2018-03-08 00:00:00', 1, 0),
-(288, 249, 'Manage student group', '', 'frontweb/master/index/manage_student_group', 1, 2, 'Left', 16, '', '2018-03-20 00:00:00', 1, '2018-03-20 00:00:00', 1, 0);
+(286, 249, 'Activity report', '', 'frontweb/master_activity/report', 1, 2, 'Left', 16, '', '2018-03-08 00:00:00', 1, '2018-03-08 00:00:00', 1, 0),
+(288, 249, 'Manage student group', '', 'frontweb/master/index/manage_student_group', 1, 2, 'Left', 12, '', '2018-03-20 00:00:00', 1, '2018-03-20 00:00:00', 1, 0);
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;

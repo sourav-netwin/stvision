@@ -156,7 +156,7 @@ class BookingStatus{
 class EmailTemplateIds{
     static $BOOKING_CONFIRMATION_TEMPLATE = 7; // BOOKING CONFIRMED
     static $STUDENTS_LOGIN_DETAIL = 8; // EMAIL TO AGENTS
-    
+
 }
 
 //Database table names
@@ -221,6 +221,7 @@ define('TABLE_JOB_POSITION' , 'plused_job_positions');
 define('TABLE_JOB_CONTRACT' , 'pulsed_job_contract');
 define('TABLE_FIXED_DAY_MANAGED_BY' , 'frontweb_fixed_day_managed_by');
 define('TABLE_EXTRA_DAY_MANAGED_BY' , 'frontweb_extra_day_managed_by');
+define('ACTIVITY_REPORT_PROGRAM' , 'activity_report_program');
 
 //Constant for create folder permission
 define('DIR_PERMISSION' , 0755);

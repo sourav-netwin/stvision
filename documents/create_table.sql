@@ -421,8 +421,6 @@ ALTER TABLE `frontweb_extra_day_activity` DROP `group_name`;
 ALTER TABLE `frontweb_extra_day_activity` CHANGE `centre_id` `extra_master_activity_id` INT(11) NULL DEFAULT NULL COMMENT 'foreign key'; 
 
 
-/* ----------------------------Not Executed---------------------------- */
-
 /* Date: 10-Apr-2018 | Sourav Dhara */
 
 CREATE TABLE `vision_plus`.`frontweb_fixed_day_managed_by` ( `fixed_day_managed_by_id` INT NOT NULL AUTO_INCREMENT COMMENT 
@@ -438,3 +436,25 @@ CREATE TABLE `vision_plus`.`frontweb_extra_day_managed_by` ( `extra_day_managed_
 `extra_day_activity_details_id` INT NOT NULL COMMENT 'foreign key' , PRIMARY KEY (`extra_day_managed_by_id`)) ENGINE = MyISAM; 
 
 ALTER TABLE `frontweb_extra_day_activity_details` DROP `managed_by`;
+
+/* ----------------------------Not Executed---------------------------- */
+
+/* Date: 16-Apr-2018 | Sourav Dhara */
+
+CREATE OR REPLACE VIEW activity_report_program AS
+(select a.centre_id , e.group_name , NULL as group_reference , b.date , c.program_name , c.location , c.activity , c.from_time , c.to_time , d.managed_by_name
+from frontweb_master_activity a
+left join frontweb_fixed_day_activity b on a.master_activity_id=b.master_activity_id
+left join frontweb_fixed_day_activity_details c on b.fixed_day_activity_id=c.fixed_day_activity_id
+left join frontweb_fixed_day_managed_by d on c.fixed_day_activity_details_id=d.fixed_day_activity_details_id
+left join frontweb_student_group e on e.student_group_id=a.student_group
+)
+UNION
+(select a.centre_id , e.group_name , concat(id_year , '_' , id_book) as group_reference , b.date , c.program_name , c.location , c.activity , c.from_time , c.to_time , d.managed_by_name
+from frontweb_extra_master_activity a
+left join frontweb_extra_day_activity b on a.extra_master_activity_id=b.extra_master_activity_id
+left join frontweb_extra_day_activity_details c on b.extra_day_activity_id=c.extra_day_activity_id
+left join frontweb_extra_day_managed_by d on c.extra_day_activity_details_id=d.extra_day_activity_details_id
+left join frontweb_student_group e on e.student_group_id=a.student_group
+left join plused_book f on f.id_book=a.group_reference_id
+)

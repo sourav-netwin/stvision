@@ -944,9 +944,9 @@ class Mbackoffice extends Model {
         return true;
     }
     
-    function add_flag_elapsed_complete($id,$elapsedComment) {
+    function add_flag_elapsed_complete($id,$elapsedComment,$elapsedChecked) {
         $data = array(
-            'flag_elapsed' => 1,
+            'flag_elapsed' => $elapsedChecked,
             'flag_elapsed_comment' => $elapsedComment
         );
         $this->db->where('id_book', $id);

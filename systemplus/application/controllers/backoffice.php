@@ -908,7 +908,8 @@ class Backoffice extends Controller {
     function updateElapsedMarkedNote(){
         $id = $this->input->post("id");
         $elapsedNote = $this->input->post("elapsedNote");
-        $result = $this->mbackoffice->add_flag_elapsed_complete($id,$elapsedNote);
+        $elapsedChecked = $this->input->post("elapsedChecked");
+        $result = $this->mbackoffice->add_flag_elapsed_complete($id,$elapsedNote,$elapsedChecked);
         echo json_encode(array('result'=>1));
     }
 
@@ -4341,7 +4342,7 @@ class Backoffice extends Controller {
         }
     }
 
-    function exportAvailabilityDetailNew() {
+    function exportAvailabilityDetailNew_OLD_CSV_FUNCTION_NOT_IN_USE() {
         if ($this->session->userdata('role')) {
             authSessionMenu($this);
             $myFile = AVAILABILITY_DWNLD;
@@ -4457,6 +4458,179 @@ class Backoffice extends Controller {
         } else {
             redirect('backoffice', 'refresh');
         }
+    }
+    
+    function exportAvailabilityDetailNew() {
+        if ($this->session->userdata('role')) {
+            authSessionMenu($this);
+            $this->load->library('excel_180');
+            $sheetno = 0;
+            $rowCount = 1;
+            $sheetname = "Campus availability";
+            $newsheet = $this->excel_180->createSheet($sheetno);
+            $this->excel_180->setActiveSheetIndex($sheetno);
+            
+            $centri = $this->mbackoffice->getAllCampus(1);
+            foreach ($centri as $cmp)
+                $campusArray[] = array('id' => $cmp["id"], 'campus_name' => $cmp["nome_centri"]);
+
+            $statusArray = array("confirmed", "active");
+            $datein = "2018-04-01";
+            $dateout = "2018-09-01";
+
+            foreach ($campusArray as $campus) {
+                $simbooking = array();
+                $accomoArray = array();
+
+                $accos = $this->gestione_centri_model->findAccoByCenter($campus['id']);
+                foreach ($accos as $key => $value) {
+                    $accomoArray[] = $accos[$key]["sistemazione"];
+                    $simbooking[] = $this->mbackoffice->NA_getSimBooking_backoffice($campus['id'], $accomoArray[$key], $datein, $dateout, $statusArray);
+                }
+
+                if (!empty($simbooking)) {
+                    foreach ($simbooking as $key => $sb) {
+                        if(!empty($sb))
+                        {
+                            $contaBooked = array();
+                            $simcalendar = array();
+
+                            $testata = PHP_EOL."Campus;Nationality;Booking;Status;Accomodation;";
+
+                            $current = strtotime($datein);
+                            $last = strtotime($dateout);
+                            $date = $datein;
+
+                            while ($current <= $last) {
+                                $date = date("Y-m-d", strtotime("+1 day", strtotime($date)));
+
+                                $testata .= date("d/m", $current) . ";";
+                                $current = strtotime("+1 day", $current);
+                                $contaBooked[] = 0;
+
+                                $simcalendar[] = $this->mbackoffice->get_total_available($campus['id'], $accomoArray[$key], $date);
+                            }
+                            $testata .= "Total;";
+                            $headArray = explode(";", $testata);
+                            $newsheet->fromArray($headArray, NULL, 'A' . $rowCount); //heading place at first row
+                            $newsheet->getStyle("A".$rowCount.":".$newsheet->getHighestDataColumn().$rowCount."")->getFont()->setBold(true);
+                            $newsheet->setTitle($sheetname);
+                            $rowCount++;
+
+                            foreach ($sb as $book) {
+                                $rigaBk = $campus['campus_name'] . ";" . $book["businesscountry"] . ";" . $book["id_year"] . "_" . $book["id_book"] . ";" . $book["status"] . ";" . ucfirst($accomoArray[$key]) . ";";
+                                $datecycle = date("Y-m-d", strtotime("+0 day", strtotime($datein)));
+                                $contadays = 0;
+                                $bkRowSum = 0;
+                                while (strtotime($datecycle) <= strtotime($dateout)) {
+                                    $datecycle = $datecycle . " 00:00:00";
+                                    $numAttuale = $contaBooked[$contadays];
+                                    if ($datecycle >= $book["arrival_date"] and $datecycle < $book["departure_date"]) {
+                                        $rigaBk .= $book["num_in"] . ";";
+                                        $bkRowSum += $book["num_in"];
+                                        $contaBooked[$contadays] = $numAttuale * 1 + $book["num_in"] * 1;
+                                    } else {
+                                        $rigaBk .= "0;";
+                                        $contaBooked[$contadays] = $numAttuale * 1;
+                                    }
+                                    $datecycle = date("Y-m-d", strtotime("+1 day", strtotime($datecycle)));
+                                    $contadays++;
+                                }
+                                $rigaBk .= $bkRowSum . ";";
+                                $xlsRow = explode(';', $rigaBk);
+                                $newsheet->fromArray($xlsRow, NULL, 'A' . $rowCount);
+                                $rowCount++;
+                            }
+
+                            // ALLOTMENT ROW FOR CAMPUS
+                            $rigaAva = "Allotment;;;;;";
+                            foreach ($simcalendar as $cAva) {
+                                $rigaAva.=$cAva["totale"] . ";";
+                            }
+                            $xlsRow = explode(';', $rigaAva);
+                            $newsheet->fromArray($xlsRow, NULL, 'A' . $rowCount);
+                            $rowCount++;
+
+                            // BOOKED ROW FOR CAMPUS
+                            $rigaBoo = "Booked;;;;;";
+                            foreach ($contaBooked as $cBoo) {
+                                $rigaBoo.=$cBoo . ";";
+                            }
+                            $xlsRow = explode(';', $rigaBoo);
+                            $newsheet->fromArray($xlsRow, NULL, 'A' . $rowCount);
+                            $rowCount++;
+
+                            // AVAILABILITY ROW FOR CAMPUS
+                            $rigaTot = "Availability;;;;;";
+                            $gira = 0;
+                            foreach ($simcalendar as $cAva) {
+                                $rigaTot.= ($cAva["totale"] * 1 - $contaBooked[$gira] * 1) . ";";
+                                $gira++;
+                            }
+                            $xlsRow = explode(';', $rigaTot);
+                            $xlsRow = $this->_formateNegative($xlsRow,$newsheet,$rowCount);
+                            $newsheet->fromArray($xlsRow, NULL, 'A' . $rowCount);
+                            $rowCount++;
+                        }
+                    }
+                }
+            }
+            $newsheet->getColumnDimension("A")->setWidth(20);
+            $newsheet->getColumnDimension("B")->setWidth(12);
+            $newsheet->getColumnDimension("C")->setWidth(10);
+            $newsheet->getColumnDimension("D")->setWidth(10);
+            $newsheet->getColumnDimension("E")->setWidth(15);
+            
+            $newsheet->freezePane('F2');
+            
+            $styleArray = array(
+                'borders' => array(
+                    'allborders' => array(
+                        'style' => PHPExcel_Style_Border::BORDER_THIN
+                    )
+                )
+            );
+            $newsheet->getDefaultStyle()->applyFromArray($styleArray);
+            $filename = 'CampusAvailability.xls';
+            $writeObj = PHPExcel_IOFactory::createWriter($this->excel_180, 'Excel5');
+            header('Content-type: application/application/vnd.ms-excel');
+            header('Content-Disposition: attachment; filename="' . $filename . '"');
+            $writeObj->save('php://output'); //download file via browser
+            die();
+        } else {
+            redirect('backoffice', 'refresh');
+        }
+    }
+    
+    function _formateNegative($xlsRow,$newsheet,$rowCount){
+        if($xlsRow){
+            $row = "A";
+            foreach($xlsRow as $xlsKey => $xlsValue){
+                if($xlsValue < 0)
+                {
+                    //$xlsRow[$xlsKey] = "(".$xlsValue.")";
+                    $styleArray = array(
+                      'font'  => array(
+                        'color' => array('rgb' => 'FF0000')
+                    ));
+                    $newsheet->getStyle($row . $rowCount)->applyFromArray($styleArray);
+                    $newsheet->getStyle($row . $rowCount)->getNumberFormat()->setFormatCode("_(* #,##0_);_(* \(#,##0\);_(* \"-\"??_);_(@_)");
+                    /*$newsheet->getStyle($row . $rowCount)->applyFromArray(
+                        array(
+                            'fill' => array(
+                                'type' => PHPExcel_Style_Fill::FILL_SOLID,
+                                'color' => array('rgb' => 'FF0000')
+                            )
+                        )
+                    );*/
+                }
+                else{
+                    
+                }
+                $row++;
+            }
+        }
+        return $xlsRow;
     }
     
     function getAccoByCampus($idCampus) {
