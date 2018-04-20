@@ -93,11 +93,15 @@
 						elseif($fieldValue['type'] == 'text')
 							$resultData[$key][$fieldValue['columnNo']] = $value[$fieldKey];
 						elseif($fieldValue['type'] == 'image')
-							$resultData[$key][$fieldValue['columnNo']] = "<img src = '".base_url().$fieldValue['uploadPath'].getThumbnailName($value[$fieldKey])."' width = 180 height = 50 />";
+							$resultData[$key][$fieldValue['columnNo']] = "<img src = '".base_url().$fieldValue['uploadPath'].getThumbnailName($value[$fieldKey])."' width = ".$fieldValue['thumbWidth']." height = ".$fieldValue['thumbHeight']." />";
 						elseif($fieldValue['type'] == 'date')
 							$resultData[$key][$fieldValue['columnNo']] = date('d-m-Y' , strtotime($value[$fieldKey]));
 						elseif($fieldValue['type'] == 'dropdown')
 							$resultData[$key][$fieldValue['columnNo']] = $this->dropdown($fieldValue['module'] , 1 , $value[$fieldKey]);
+						elseif($fieldValue['type'] == 'link')
+							$resultData[$key][$fieldValue['columnNo']] = '<a href = "'.$value[$fieldKey].'" target="_blank">'.$value[$fieldKey].'</a>';
+						elseif($fieldValue['type'] == 'datetime')
+							$resultData[$key][$fieldValue['columnNo']] = date('d-m-Y H:i:s' , strtotime($value[$fieldKey]));
 					}
 				}
 			}
@@ -195,7 +199,7 @@
 					$fieldStr.= '<input type="hidden" name="'.$fieldKey.'_oldImg" id="'.$fieldKey.'_oldImg" value="'.$oldImageName.'" />';
 					$fieldStr.= '<label for="'.$fieldKey.'">';
 					$imagePath = isset($post[$fieldKey]) ? base_url().$fieldValue['uploadPath'].getThumbnailName($post[$fieldKey]) : LTE.'frontweb/no_flag.jpg';
-					$fieldStr.= '<img height="50" width="180" class="uploadImageProgramClass" id="'.$fieldKey.'_onChangeImage" src="'.$imagePath.'"/>';
+					$fieldStr.= '<img height="'.$fieldValue['thumbHeight'].'" width="'.$fieldValue['thumbWidth'].'" class="uploadImageProgramClass" id="'.$fieldKey.'_onChangeImage" src="'.$imagePath.'"/>';
 					$fieldStr.= '</label>';
 					$data = array(
 						'name' => $fieldKey,
@@ -205,7 +209,7 @@
 					);
 					$fieldStr.= form_input($data);
 					$fieldStr.= '<small style="display:block">';
-					$fieldStr.= '( Note: Only JPG|JPEG|PNG images are allowed <br> &amp; Image dimension should be greater or equal to '.$fieldValue['width'].' X '.$fieldValue['height'].' pixel )';
+					$fieldStr.= '( Note: Only JPG|JPEG images are allowed <br> &amp; Image dimension should be greater or equal to '.$fieldValue['width'].' X '.$fieldValue['height'].' pixel )';
 					$errorMessage = (!empty($fileUploadError)) ? implode("<br>" , $fileUploadError) : '';
 					$fieldStr.= '</small><span id="'.$fieldKey.'_customErrorMessage" style="color:#ff0000">'.$errorMessage.'</span>';
 				}

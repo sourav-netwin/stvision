@@ -43,6 +43,7 @@
 
 				if(isset($extraActivityId['extra_master_activity_id']) && $extraActivityId['extra_master_activity_id'] != '')
 				{
+					$post['id'] = $extraActivityId['extra_master_activity_id'];
 					$tempArr = array();
 					$result = $this->admin_model->commonGetData("extra_day_activity_id as id , date_format(date , '%d-%m-%Y') as date" , 'extra_master_activity_id = '.$extraActivityId['extra_master_activity_id'] , TABLE_EXTRA_DAY_ACTIVITY , 2 , 'cast(date as DATE)' , 'asc');
 					if(!empty($result))

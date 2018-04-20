@@ -1342,3 +1342,11 @@ ALTER TABLE `plused_book` ADD `flag_elapsed` TINYINT(1) NOT NULL DEFAULT '0' AFT
 ALTER TABLE `plused_book` ADD `flag_elapsed_comment` VARCHAR(255) NOT NULL AFTER `flag_elapsed`;
 
 /* ----------------------------Not Executed---------------------------- */
+
+/* Date: 19-Apr-2018 | Sourav Dhara */
+
+UPDATE `plused_role_menu` SET `mnu_url` = 'frontweb/master/index/manage_walking_tour' WHERE `plused_role_menu`.`mnu_menuid` = 273; 
+
+/* Date: 20-Apr-2018 | Sourav Dhara */
+
+INSERT INTO `plused_role_menu` (`mnu_menuid`, `mnu_parent_menu_id`, `mnu_menu_name`, `mnu_caption`, `mnu_url`, `mnu_status`, `mnu_level`, `mnu_type`, `mnu_sequence`, `mnu_icon_class`, `mnu_created_on`, `mnu_created_by`, `mnu_modified_on`, `mnu_modified_by`, `is_deleted`) VALUES (NULL, '249', 'Manage activity photogallery', '', 'frontweb/master/index/manage_activity_photogallery', '1', '2', 'Left', '17', '', '2018-04-20 00:00:00', '1', '2018-04-20 00:00:00', '1', '0');

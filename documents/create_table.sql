@@ -437,7 +437,6 @@ CREATE TABLE `vision_plus`.`frontweb_extra_day_managed_by` ( `extra_day_managed_
 
 ALTER TABLE `frontweb_extra_day_activity_details` DROP `managed_by`;
 
-/* ----------------------------Not Executed---------------------------- */
 
 /* Date: 16-Apr-2018 | Sourav Dhara */
 
@@ -458,3 +457,20 @@ left join frontweb_extra_day_managed_by d on c.extra_day_activity_details_id=d.e
 left join frontweb_student_group e on e.student_group_id=a.student_group
 left join plused_book f on f.id_book=a.group_reference_id
 )
+
+/* ----------------------------Not Executed---------------------------- */
+
+/* Date: 18-Apr-2018 | Sourav Dhara */
+
+ALTER TABLE `frontweb_plus_walking_tour` ADD `video_image` VARCHAR(255) NULL AFTER `description`; 
+
+ALTER TABLE `frontweb_plus_walking_tour` ADD `status` TINYINT(1) NOT NULL DEFAULT '1' COMMENT '1:Active , 0:inactive' 
+AFTER `video_image`, ADD `delete_flag` TINYINT(1) NOT NULL DEFAULT '0' COMMENT '0:not delete and 1:deleted' AFTER `status`; 
+
+/* Date: 20-Apr-2018 | Sourav Dhara */
+
+CREATE TABLE `vision_plus`.`frontweb_activity_photo_gallery` ( `activity_photo_gallery_id` INT NOT NULL AUTO_INCREMENT COMMENT
+ 'primary key' , `centre_id` INT NULL , `image_name` VARCHAR(255) NULL , `added_date` DATETIME NULL , `status` TINYINT(1) NOT 
+ NULL DEFAULT '1' COMMENT '1:Active , 0:inactive' , `delete_flag` TINYINT(1) NOT NULL DEFAULT '0' COMMENT '0:not delete and 
+ 1:deleted' , PRIMARY KEY (`activity_photo_gallery_id`)) ENGINE = MyISAM; 
+

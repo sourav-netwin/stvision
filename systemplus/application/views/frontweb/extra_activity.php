@@ -7,12 +7,12 @@
 <script src="<?php echo LTE; ?>frontweb/bootstrap-multiselect.js"></script>
 
 <script>
+	var baseUrl = "<?php echo base_url(); ?>";
 	var please_enter_dynamic = "<?php echo $this->lang->line("please_enter_dynamic"); ?>";
 	var please_select_dynamic = "<?php echo $this->lang->line("please_select_dynamic"); ?>";
 	var delete_confirmation = "<?php echo $this->lang->line("delete_confirmation"); ?>";
 </script>
-<script src="<?php echo LTE; ?>frontweb/custom/extra_activity.js?v=1.7"></script>
-
+<script src="<?php echo LTE; ?>frontweb/custom/extra_activity.js?v=1.9"></script>
 <div class="right_col" role="main">
 	<div class="row">
 		<div class="col-md-12 col-sm-12 col-xs-12">
@@ -63,6 +63,16 @@
 									<button type="submit" class="btn btn-info" id="generateTable" style="margin-left: 15px;">
 										<i class="fa fa-plus"></i>&nbsp;&nbsp;Generate Table
 									</button>
+<?php
+									if(!empty($post) && isset($post['id']))
+									{
+?>
+										<button type="button" class="btn btn-danger" style="margin-left: 15px;" onclick="deleteExtraActivity('<?php echo $post['id']; ?>')">
+											<i class="fa fa-trash"></i>&nbsp;&nbsp;Delete Table
+										</button>
+<?php
+									}
+?>
 								</div>
 								<div class="clearfix"></div>
 								<div class="col-lg-6 form-group">

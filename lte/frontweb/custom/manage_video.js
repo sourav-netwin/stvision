@@ -9,7 +9,7 @@ $(document).ready(function(){
 
 	//Generate password for student and manager , campus wise
 	$('.passwordGenerator').click(function(){
-		confirmAction("<?php echo $this->lang->line('generate_password_confirmation'); ?>" , function(c){
+		confirmAction(generate_password_confirmation , function(c){
 			if(c){
 				$.ajax({
 					url : 'manage_video/generate_password',

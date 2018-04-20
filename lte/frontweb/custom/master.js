@@ -165,6 +165,18 @@ $(document).ready(function(){
 							checkImageWidth : true
 						});
 					}
+					else if(alowedTypes == 'url')
+					{
+						$('#'+fieldKey).rules('add' , {
+							url : true
+						});
+					}
+					else if(alowedTypes == 'validVimeoUrl')
+					{
+						$('#'+fieldKey).rules('add' , {
+							validVimeoUrl : true
+						});
+					}
 					else if(alowedTypes.indexOf('duplicate') != -1)
 					{
 						var arr = alowedTypes.split(':');
@@ -259,7 +271,7 @@ $(document).ready(function(){
 		jQuery.validator.addMethod("checkImageExt" , function (value , element){
 			if(value)
 			{
-				if(splitByLastDot(value) == 'jpg' || splitByLastDot(value) == 'png' || splitByLastDot(value) == 'jpeg')
+				if(splitByLastDot(value) == 'jpg' || splitByLastDot(value) == 'jpeg')
 					return true;
 				else
 					return false;
@@ -267,6 +279,14 @@ $(document).ready(function(){
 			else
 				return true;
 		} , image_type_error_msg);
+
+		//Add custimize validation to check the entered url is video url or not
+		jQuery.validator.addMethod('validVimeoUrl' , function(value , element){
+			if(value.indexOf('vimeo.com') == -1)
+				return false;
+			else
+				return true;
+		} , enter_vimeo_url);
 
 		$.each(fieldObject , function(fieldKey , fieldValue){
 			if(fieldValue.type == 'file' && fieldValue.fileType == 'image')

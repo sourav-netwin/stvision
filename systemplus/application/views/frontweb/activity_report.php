@@ -12,7 +12,7 @@
 	var please_select_dynamic = "<?php echo $this->lang->line("please_select_dynamic"); ?>";
 	var start_end_date_validation = "<?php echo $this->lang->line("start_end_date_validation"); ?>";
 </script>
-<script src="<?php echo LTE; ?>frontweb/custom/master_activity.js?v=1.7"></script>
+<script src="<?php echo LTE; ?>frontweb/custom/master_activity.js?v=1.9"></script>
 
 <div class="right_col" role="main">
 	<div class="row">

@@ -134,6 +134,10 @@
 					{
 						if($this->input->post('flag') == 'as')
 						{
+							//Save the added date and time(If required)
+							if(isset($moduleArr['addedDateField']))
+								$post[$moduleArr['addedDateField']] = date('Y-m-d H:i:s');
+
 							$insertId = $this->admin_model->commonAdd($moduleArr['dbName'] , $post);
 							$this->session->set_flashdata('success_message', str_replace('**module**' , $moduleArr['title'] , $this->lang->line('add_success_message')));
 						}
@@ -226,9 +230,13 @@
 				);
 				$this->admin_model->commonUpdate($moduleArr['dbName'] , $moduleArr['key'].' = '.$id , $updateData);
 			}
-
-			$this->session->set_flashdata('success_message', str_replace('**module**' , $moduleArr['title'] , $this->lang->line('delete_success_message')));
-			redirect('/frontweb/master/index/'.$module);
+			if($module == 'manage_extra_activity')
+				redirect('/frontweb/extra_activity/index');
+			else
+			{
+				$this->session->set_flashdata('success_message', str_replace('**module**' , $moduleArr['title'] , $this->lang->line('delete_success_message')));
+				redirect('/frontweb/master/index/'.$module);
+			}
 		}
 
 		/**

@@ -8,7 +8,7 @@
 	$lang['inactive_confirmation'] = 'Do you want to inactive this **module** ?';
 	$lang['valid_data_error_msg'] = 'Please enter valid data.';
 	$lang['exact_image_size'] = 'Image size should be exact **width** X **height** pixel';
-	$lang['image_type_error_msg'] = 'Please upload JPG|PNG|JPEG image.';
+	$lang['image_type_error_msg'] = 'Please upload JPG|JPEG image.';
 	$lang['required_upload_image'] = 'Please upload image';
 	$lang['delete_confirmation'] = 'Are you sure to delete this **module** ?';
 	$lang['minimum_image_dimension'] = 'Image dimension should be greater or equal to **width** X **height** pixel';

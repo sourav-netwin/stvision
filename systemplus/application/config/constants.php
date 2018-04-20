@@ -222,6 +222,7 @@ define('TABLE_JOB_CONTRACT' , 'pulsed_job_contract');
 define('TABLE_FIXED_DAY_MANAGED_BY' , 'frontweb_fixed_day_managed_by');
 define('TABLE_EXTRA_DAY_MANAGED_BY' , 'frontweb_extra_day_managed_by');
 define('ACTIVITY_REPORT_PROGRAM' , 'activity_report_program');
+define('TABLE_ACTIVITY_PHOTO_GALLERY' , 'frontweb_activity_photo_gallery');
 
 //Constant for create folder permission
 define('DIR_PERMISSION' , 0755);
@@ -376,6 +377,20 @@ define('ADULT_COURSE_WIDTH' , 1920);
 define('ADULT_COURSE_HEIGHT' , 500);
 define('ADULT_COURSE_THUMB_WIDTH' , 250);
 define('ADULT_COURSE_THUMB_HEIGHT' , 65);
+
+//Define image location , height , width , thumb details for plus walking tour video images
+define('WALKING_TOUR_VIDEO_IMAGE_PATH' , 'uploads/walking_tour_video/');
+define('WALKING_TOUR_VIDEO_IMAGE_WIDTH' , 435);
+define('WALKING_TOUR_VIDEO_IMAGE_HEIGHT' , 245);
+define('WALKING_TOUR_VIDEO_IMAGE_THUMB_WIDTH' , 250);
+define('WALKING_TOUR_VIDEO_IMAGE_THUMB_HEIGHT' , 140);
+
+//Define image location , height , width , thumb details for activity photo gallery images
+define('ACTIVITY_PHOTOGALLERY_IMAGE_PATH' , 'uploads/activity_photogallery/');
+define('ACTIVITY_PHOTOGALLERY_IMAGE_WIDTH' , 400);
+define('ACTIVITY_PHOTOGALLERY_IMAGE_HEIGHT' , 300);
+define('ACTIVITY_PHOTOGALLERY_IMAGE_THUMB_WIDTH' , 100);
+define('ACTIVITY_PHOTOGALLERY_IMAGE_THUMB_HEIGHT' , 75);
 
 /* End of file constants.php */
 /* Location: ./system/application/config/constants.php */

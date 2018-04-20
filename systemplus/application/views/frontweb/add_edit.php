@@ -59,6 +59,7 @@
 	var image_type_error_msg = "<?php echo $this->lang->line("image_type_error_msg"); ?>";
 	var minimum_image_dimension = "<?php echo $this->lang->line("minimum_image_dimension"); ?>";
 	var duplicate_dynamic = "<?php echo $this->lang->line("duplicate_dynamic"); ?>";
+	var enter_vimeo_url = "<?php echo $this->lang->line("enter_vimeo_url"); ?>";
 </script>
 <script src="<?php echo LTE; ?>frontweb/custom/master.js?v=1.1"></script>
 
@@ -104,7 +105,7 @@
 												<label class="control-label custom-control-label col-md-3 col-sm-3 col-xs-12">
 <?php
 													echo $fieldValue['fieldLabel'];
-													if(strpos($fieldValue['validation'] , 'required') !== FALSE)
+													if(strpos($fieldValue['validation'] , 'required') !== FALSE || strpos($fieldValue['validation'] , 'imageRequired') !== FALSE)
 														echo '<span class="required">*</span>';
 ?>
 												</label>

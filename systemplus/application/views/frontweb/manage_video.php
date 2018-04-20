@@ -10,8 +10,9 @@
 <script>
 	var please_enter_dynamic = "<?php echo $this->lang->line("please_enter_dynamic"); ?>";
 	var password_validation = "<?php echo $this->lang->line("password_validation"); ?>";
+	var generate_password_confirmation = "<?php echo $this->lang->line('generate_password_confirmation'); ?>";
 </script>
-<script src="<?php echo LTE; ?>frontweb/custom/manage_video.js?v=1.1"></script>
+<script src="<?php echo LTE; ?>frontweb/custom/manage_video.js?v=1.3"></script>
 
 <div class="right_col" role="main">
 	<div class="row">
