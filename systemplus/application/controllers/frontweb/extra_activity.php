@@ -154,6 +154,7 @@
 				);
 				if($this->input->post('activityDetailsFlag') == 'as')
 				{
+					$insertData['extra_flag'] = 2;
 					$activityDetailsId = $this->admin_model->commonAdd(TABLE_EXTRA_DAY_ACTIVITY_DETAILS , $insertData);
 					//For managd by dropdown value(save into the database)
 					if(!empty($managedByDropdownArr))

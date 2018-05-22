@@ -1760,7 +1760,7 @@ class Magenti extends Model {
     function listPax($book, $type = "GL", $locked = NULL) {
         $data = array();
         $locked == 1 ? $this->db->where('lockPax', 1) : '';
-        $this->db->select('id_prenotazione,nome, cognome, sesso, pax_dob, numero_documento, template, template_date');
+        $this->db->select('id_prenotazione,nome, cognome, sesso, pax_dob,nazionalita, numero_documento, template, template_date');
         $this->db->where('id_book', $book);
         $this->db->where('tipo_pax', $type);
         $this->db->order_by("gl_rif", "asc");

@@ -274,6 +274,7 @@
                                                         <label class="text-danger">Elapsed</label><br />A payment for this booking has been registered!
                                                         <select class="form-control" id="statusBooking">
                                                             <option value="B_confirm">Confirm booking</option>
+                                                            <option value="B_elapsed_rejected">Elapsed - Rejected</option>
                                                         </select>
                                                     </div>
                                                     <div class="col-md-3 text-right">
@@ -287,6 +288,7 @@
                                                             <label class="text-danger">Elapsed</label>
                                                             <select class="form-control" id="statusBooking">
                                                                 <option value="B_activate">Activate booking</option>
+                                                                <option value="B_elapsed_rejected">Elapsed - Rejected</option>
                                                             </select>
                                                         </div>
                                                         <div class="col-md-2">
@@ -315,6 +317,11 @@
                                                     <?php } ?>
                                                 <?php } ?>
                                             <?php } ?>
+                                        <?php } ?>
+                                        <?php if ($book[0]["status"] == "elapsed_rejected") { ?>
+                                            <div class="col-md-12">
+                                                <label style="color:#c00;">Elapsed - Rejected</label>
+                                            </div>
                                         <?php } ?>
                                         <?php if ($book[0]["status"] == "confirmed") { ?>
                                             <?php if ($this->session->userdata('ruolo') == "contabile") { ?>
@@ -383,11 +390,11 @@
                                         <th class="text-center">Citizenship</th>
                                         <th class="text-center">Accomodation</th>
                                         <th>Group leader</th>
-                                        <th>Info</th>
+                                        <th>Health info</th>
                                         <th>Share room</th>
                                         <th class="text-center">Campus dates</th>
-                                        <th class="text-center">Arrival flight Info</th>
-                                        <th class="text-center">Departure flight Info</th>
+                                        <th class="text-center">Arrival flight info</th>
+                                        <th class="text-center">Departure flight info</th>
                                         <th class="text-center"></th>
                                         <th class="text-center">Remove pax</th>
                                     </tr>
@@ -445,6 +452,19 @@
                     <div class="box">
                         <div class="box-header with-border box-header-small">
                             <h3 class="box-title">Transfers and excursions - <strong><?php echo $yearId; ?>_<?php echo $storeId; ?></strong></h3>
+                            <div class="row-fluid pull-right" id="transer_status_div">
+                            <?php
+                            if (null === $book[0]['flag_transfer'] || (0 != $book[0]['flag_transfer'] && 1 != $book[0]['flag_transfer'])) {$transfer_status = -1;?>
+                                    <label class="control-label">Do you want to request transfer for all pax in your booking?</label>
+                                    <label><input type="radio" class="changeTransferStatus" name="transer_facility" value='1' data-status='1' data-book='<?php echo $storeId; ?>'>Yes</label>
+                                    <label><input type="radio" class="changeTransferStatus" name="transer_facility" value='0' data-status='0' data-book='<?php echo $storeId; ?>'>No</label>
+                            <?php } elseif (0 == $book[0]['flag_transfer']) {$transfer_status = 0;?>
+                                    <label class="control-label">You have selected "No" to transfer for all pax in your booking.</label>
+                            <?php } elseif (1 == $book[0]['flag_transfer']) {$transfer_status = 1;?>
+                                    <label class="control-label">You have selected "Yes" to transfer for all pax in your booking.</label>
+                            <?php }
+                            ?>
+                        </div>
                         </div>
                         <div class="box-body">
 
@@ -1165,5 +1185,70 @@
             }
         });
         
+        
+        $(document).on('click','.changeTransferStatus', function(){
+            var status = $(this).attr('data-status');
+            var bookId = $(this).attr('data-book');
+            var message = '';
+            var btn_title = '';
+
+            if(status == 1){
+                message = "You want transfer for pax in your booking";
+                btn_title = 'Book';
+
+            }else{
+                message = "You don't want transfer for pax in your booking";
+                btn_title = 'Not book';
+                status = 0;
+            }
+
+            swal({
+              title: "Are you sure?",
+              text: message,
+              type: "warning",
+              showCancelButton: true,
+              confirmButtonClass: "btn-danger",
+              confirmButtonText: btn_title,
+              closeOnConfirm: false
+            },
+            function(){
+                changeTransferStatusFunction(status, bookId);
+            });
+        });
+        
     });
+    function changeTransferStatusFunction(status, bookId)
+        {
+            $.ajax({
+                url: siteUrl + 'agents/updateTransferStatus',
+                type: 'POST',
+                data: {
+                    status: status,
+                    bookId: bookId
+                },
+                success: function(data){
+                    if(data == '1'){
+                        var success_label = '';
+                        var message = '';
+                        if(status == 1){
+                            //$("#transfer_status").val('1');
+                            $("input[id=transfer_status]").val('1');
+                            message = "Transfer booked for pax in your booking";
+                            success_label = '<label class="control-label">You have selected "Yes" to transfer for all pax in your booking.</label>';
+                        }else{
+                            //$("#transfer_status").val('0');
+                            $("input[id=transfer_status]").val('0');
+                            message = "Transfer not booked for pax in your booking";
+                            success_label = '<label class="control-label">You have selected "No" to transfer for all pax in your booking.</label>';
+                        }
+                        $("#transer_status_div").html(success_label);
+                        swal("Success!", message, "success");
+                        return true;
+                    }
+                    else{
+                        swal("Error",'Error occured. Please try again.');
+                    }
+                }
+            });
+        }
 </script>

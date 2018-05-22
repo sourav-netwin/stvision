@@ -2493,7 +2493,7 @@ class Agents extends Controller {
      * Purpose: To change the transfer status for particular booking for all pax
      */
     public function updateTransferStatus() {
-        if ($this->session->userdata('role') == 99) {
+        if ($this->session->userdata('role') != "") { //== 99 || $this->session->userdata('role') == 100
             $bookId = $this->input->post('bookId');
             $status = $this->input->post('status');
             $this->magenti->updateTransferStatus($bookId, $status);
@@ -2503,30 +2503,50 @@ class Agents extends Controller {
         }
     }
 
-	/**
-	*This function is used to show the video gallery in the agents area inside media gallery page
-	*
-	*@param NONE
-	*@return NONE
-	*/
-	public function videoGallery()
-	{
-		if($this->session->userdata('username') && $this->session->userdata('role') != 200)
-		{
-			$data['title'] = "plus-ed.com | Campus videos";
-			$data['breadcrumb1'] = 'Media gallery';
-			$data['breadcrumb2'] = "Campus videos";
-			$data['pageHeader'] = $data['breadcrumb2'];
-			$data['optionalDescription'] = "";
-			$data['campusDetails'] = $this->gestione_centri_model->getCampusWithVideos();
-			$this->ltelayout->view('lte/agents/video_gallery' , $data);
-		}
-		else
-		{
-			$this->session->sess_destroy();
-			redirect('agents' , 'refresh');
-		}
-	}
+
+    /**
+    *This function is used to show the video gallery in the agents area inside media gallery page
+    *
+    *@param NONE
+    *@return NONE
+    */
+    public function videoGallery()
+    {
+        if($this->session->userdata('username') && $this->session->userdata('role') != 200)
+        {
+            $data['title'] = "plus-ed.com | Campus videos";
+            $data['breadcrumb1'] = 'Media gallery';
+            $data['breadcrumb2'] = "Campus videos";
+            $data['pageHeader'] = $data['breadcrumb2'];
+            $data['optionalDescription'] = "";
+            $data['campusDetails'] = $this->gestione_centri_model->getCampusWithVideos();
+            $this->ltelayout->view('lte/agents/video_gallery' , $data);
+        }
+        else
+        {
+            $this->session->sess_destroy();
+            redirect('agents' , 'refresh');
+        }
+    }
+
+    /**
+    *This function is used to download the images from agent's area
+    *
+    *@access public
+    *@param Integer $id : The image id
+    *@return NONE
+    */
+    public function download_image($id = NULL)
+    {
+            if($id != '')
+            {
+                    $this->load->helper('download');
+                    $this->load->model('frontweb/admin_model' , '' , TRUE);
+                    $data = $this->admin_model->commonGetData('image_path' , 'campus_image_id = '.$id , 'plused_campus_image' , 1);
+                    force_download($data['image_path'] , file_get_contents('./'.CAMPUS_IMAGE_PATH.$data['image_path']));
+            }
+    }
+
 }
 
 /* End of file agents.php */

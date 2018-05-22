@@ -27,6 +27,8 @@ class Mapbookings extends Controller {
      */
     function index($campusId = 0, $strYear = "")
     {
+        // check user session and menus with their access.
+        authSessionMenu($this);
         $data = array();
         if($strYear == "")
             $strYear = date("Y");
@@ -153,12 +155,14 @@ class Mapbookings extends Controller {
             
             // get free gl
             $freeGL = 0;
+            $freeGlPerPax = 0;
             if($booking_composition)
             {
                 $freeGlPerPax = $booking_composition[0]['pack_free_gl_per_pax'];
                 $freeGL = (int)($booking['students_count'] / $freeGlPerPax);
             }
             
+            $booking_composition = $this->splitGLRows($booking_composition,$freeGL);
             $freeGLsIds = 0;
             if($freeGL)
                 $freeGLsIds = $this->mapbookmodel->getFreeGLsIds($enrollId,$freeGL);
@@ -218,6 +222,57 @@ class Mapbookings extends Controller {
         else
             return $resultData;
         exit();
+    }
+    
+    function splitGLRows($booking_composition,$freeGL){
+        foreach ($booking_composition as $key => $bc){
+            if($bc['tipo_pax'] == 'GL'){
+                $glRowMaster = $bc;
+                //remove old row 
+                unset($booking_composition[$key]);
+                $glCount = $glRowMaster['cnt'];
+                $proRataGL = 0 ;
+                $extrGL = 0;
+                if($freeGL){
+                    if($freeGL >= $glCount)
+                    {
+                        $proRataGL = 0;
+                        $extrGL = 0;
+                    }
+                    else // FREE GL ARE LESS THANT TOTAL GL
+                    {
+                        $proRataGL = 1;
+                        $extrGL = $glCount - ($proRataGL + $freeGL);
+                    }
+                }else{ // FREE GL IS ZERO 0
+                    $proRataGL = 1;
+                    $extrGL = $glCount - $proRataGL;
+                }
+                
+                if($freeGL)
+                {
+                    $glRowMaster['cnt'] = $freeGL;
+                    $glRowMaster['glPaidType'] = "Free";
+                    array_push($booking_composition, $glRowMaster);
+                }
+                
+                if($proRataGL)
+                {
+                    $glRowMaster['cnt'] = $proRataGL;
+                    $glRowMaster['glPaidType'] = "Prorate";
+                    array_push($booking_composition, $glRowMaster);
+                }
+                
+                if($extrGL)
+                {
+                    $glRowMaster['cnt'] = $extrGL;
+                    $glRowMaster['glPaidType'] = "Extra";
+                    array_push($booking_composition, $glRowMaster);
+                }
+                break;
+            }
+        }
+        return $booking_composition;
     }
     
 }/* End of file positions.php */

@@ -66,6 +66,19 @@ $valoreAcconto = $book[0]["tot_pax"] * 1 * $book[0]["valore_acconto"] * 1;
                         <h3 class="panel-title">Booking details - <strong><?php echo $yearId; ?>_<?php echo $storeId; ?></strong></h3>
                     </div>
                     <div class="panel-body">
+                        <div class="row-fluid pull-right" id="transer_status_div">
+                            <?php                               
+                            if (null === $book[0]['flag_transfer'] || (0 != $book[0]['flag_transfer'] && 1 != $book[0]['flag_transfer'])) {$transfer_status = -1;?>
+                                    <label class="control-label">Do you want to request transfer for all pax in your booking?</label>
+                                    <label><input type="radio" class="changeTransferStatus" name="transer_facility" value='1' data-status='1' data-book='<?php echo $storeId; ?>'>Yes</label>
+                                    <label><input type="radio" class="changeTransferStatus" name="transer_facility" value='0' data-status='0' data-book='<?php echo $storeId; ?>'>No</label>
+                            <?php } elseif (0 == $book[0]['flag_transfer']) {$transfer_status = 0;?>
+                                    <label class="control-label">You have selected "No" to transfer for all pax in your booking.</label>
+                            <?php } elseif (1 == $book[0]['flag_transfer']) {$transfer_status = 1;?>
+                                    <label class="control-label">You have selected "Yes" to transfer for all pax in your booking.</label>
+                            <?php } ?>
+                        </div>
+                        <input type="hidden" id='transfer_status' value="<?php echo $transfer_status; ?>" />
                         <div class="row">
                             <div class="col-md-3">
                                 <address>
@@ -112,20 +125,6 @@ if (1 != $book[0]["lockPax"]) {
                         </h3>
                     </div>
                     <div class="panel-body visa-panel-body">
-                        <div class="row-fluid pull-right" id="transer_status_div">
-                            <?php
-if (null === $book[0]['flag_transfer'] || (0 != $book[0]['flag_transfer'] && 1 != $book[0]['flag_transfer'])) {$transfer_status = -1;?>
-                                    <label class="control-label">Do you want to request transfer for all pax in your booking?</label>
-                                    <label><input type="radio" class="changeTransferStatus" name="transer_facility" value='1' data-status='1' data-book='<?php echo $storeId; ?>'>Yes</label>
-                                    <label><input type="radio" class="changeTransferStatus" name="transer_facility" value='0' data-status='0' data-book='<?php echo $storeId; ?>'>No</label>
-                            <?php } elseif (0 == $book[0]['flag_transfer']) {$transfer_status = 0;?>
-                                    <label class="control-label">You have selected "No" to transfer for all pax in your booking.</label>
-                            <?php } elseif (1 == $book[0]['flag_transfer']) {$transfer_status = 1;?>
-                                    <label class="control-label">You have selected "Yes" to transfer for all pax in your booking.</label>
-                            <?php }
-?>
-                        </div>
-                        <input type="hidden" id='transfer_status' value="<?php echo $transfer_status; ?>" />
                         <div class="row-fluid">
                             <div class="col-12">
                                 <table id="NA_Roster" class="table table-bordered table-condensed table-striped">
@@ -638,45 +637,7 @@ $counter++;
             var totalPax = $("#totalPax").val();
             totalPax = totalPax - 1 ;
 
-            if(totalPax  == totalLockedPax){
-                var transfer_status = $("#transfer_status").val();
-                if(transfer_status == -1 || (transfer_status != 1 && transfer_status != 0)){
-                    swal("Please choose whether you want transfer for the booking or not?");
-                    return false;
-                }
-                else{
-                    swal({
-                      title: "Do you want to change transfer?",
-                      type: "warning",
-                      showCancelButton: true,
-                      confirmButtonClass: "btn-success",
-                      confirmButtonText: 'Change',
-                      closeOnConfirm: false
-                    },
-                    function(isConfirm){
-                        if(isConfirm){
-                            if(transfer_status == 1){
-                                transfer_status = 0;
-                            }else{
-                                transfer_status = 1;
-                            }
-
-                            changeTransferStatusFunction(transfer_status, bookId);
-                            setTimeout(function(){
-                                lockRosterFunction(elm, parent, rowId, centroId, totalLockedPax);
-                            },2000);
-
-
-                        } else{
-                            setTimeout(function(){
-                                lockRosterFunction(elm, parent, rowId, centroId, totalLockedPax);
-                            },200);
-                        }
-                    });
-                }
-            }else{
-                lockRosterFunction(elm, parent, rowId, centroId, totalLockedPax);
-            }
+            lockRosterFunction(elm, parent, rowId, centroId, totalLockedPax);
         });
 
         function lockWholeRosterFunction(bookId, yearId, centroId){
@@ -726,42 +687,7 @@ $counter++;
             var bookId = elm.attr('data-id');
             var yearId = elm.attr('data-year');
             var centroId = elm.attr('data-centro');
-
-            var transfer_status = $("#transfer_status").val();
-            if(transfer_status == -1 || (transfer_status != 1 && transfer_status != 0)){
-                swal("Please choose whether you want transfer for the booking or not?");
-                return false;
-            }
-            else{
-                swal({
-                  title: "Do you want to change tranfer?",
-                  type: "warning",
-                  showCancelButton: true,
-                  confirmButtonClass: "btn-success",
-                  confirmButtonText: 'Change',
-                  closeOnConfirm: false
-                },
-                function(isConfirm){
-                    if(isConfirm){
-                        if(transfer_status == 1){
-                            transfer_status = 0;
-                        }else{
-                            transfer_status = 1;
-                        }
-
-                        changeTransferStatusFunction(transfer_status, bookId);
-                        setTimeout(function(){
-                            lockWholeRosterFunction(bookId, yearId, centroId)
-                        },2000);
-
-
-                    } else{
-                        setTimeout(function(){
-                            lockWholeRosterFunction(bookId, yearId, centroId)
-                        },200);
-                    }
-                });
-            }
+            lockWholeRosterFunction(bookId, yearId, centroId);
         });
 
         $(document).on('click', ".dialogbtn_visa", function() {

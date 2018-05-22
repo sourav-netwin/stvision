@@ -19,7 +19,7 @@
 <?php
 $campi = $booking_detail[0];
 $agency = $agency[0];
-//print_r($detSTD);
+$printableAddress = getPrintableAddress($campi);
 ?>
 <body>
 	<?php
@@ -51,7 +51,7 @@ $agency = $agency[0];
 						<br /><br />
 						From: <?php echo date("d/m/Y", strtotime($campi["arrival_date"])); ?><br/>
 						To: <?php echo date("d/m/Y", strtotime($campi["departure_date"])); ?><br /><br />
-						Campus address: <?php echo $campi["address"].','.$campi['post_code']; ?><br /><br />
+						Campus address: <?php echo $printableAddress; ?><br /><br />
 						The course is inclusive of full – board residence accommodation, English Lessons (15 hours a week) and an afternoon, evening and weekend leisure programme.  The payment is being made.<br /><br />
 						Upon arrival date <?php echo date("d/m/Y", strtotime($campi["arrival_date"])); ?>, the group will be met by a PLUS representative at the Airport and transferred to <?php echo $campi["school_name"]; ?>. <br /><br />
 						Students will be met at <?php echo $campi["school_name"]; ?> by the residential campus manager and be allocated a room.<br /><br />

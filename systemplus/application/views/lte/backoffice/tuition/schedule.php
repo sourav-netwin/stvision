@@ -12,7 +12,7 @@
 <script src="<?php echo base_url();?>js/jquery.browser.min.js"></script> 
 <script src="<?php echo base_url(); ?>js/jquery.printElement.min.js"></script>
 <script src="<?php echo base_url(); ?>js/tuition/jquery_validations1.9.0.js"></script>
-<script src="<?php echo LTE;?>custom/tuition_schedule_for_lte.js?v=1.3"></script>
+<script src="<?php echo LTE;?>custom/tuition_schedule_for_lte.js?v=1.4"></script>
 <section class="">
     <div class="row">
         <div class="col-xs-12">

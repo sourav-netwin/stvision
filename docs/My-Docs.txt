@@ -228,6 +228,7 @@ Tiffin upto 31st December , 2017 : 500/-(Paid) : Balance - 50/-
 Tiffin upto 31st January , 2018 : 425/-(Paid) : Balance - 75/-
 Tiffin upto 28th February , 2018 : 400/-(Paid)
 Tiffin upto 31st March , 2018 : 525/-(Paid)
+Tiffin upto 31st April , 2018 : 525/-
 
 ===============================================================================================================================
 
@@ -268,10 +269,11 @@ Your password: l35dacw
 
 ==================================Short Task(for PMS)=============================================================================================
 
-(1)Completed plus walking tour implementation in front end .
-(2)Created one sample page to test image picker plugin .
-(3)Completed the manage activity photo galley functionality in admin panel .
-(4)Started working on the daily activity management section .
+(1)Changed in the survey details webservice and documents .
+(2)Completed the webservice for save student survey and update documents .
+(3)Completed the webservice for submit survey and update documents .
+(4)Completed the changes for user dashboard .
+
 
 ===============================================================================================================================
 
@@ -282,24 +284,15 @@ Your password: l35dacw
 
 Today I have done following tasks in Plus Education Development Project :
 
-(1)In front end , campus manager's login , started working on the plus walking tour section . The walking tour videos uploaded from admin panel should
-show in the front end . We have checked the status and delete flag condition to show the plus walking tour videos . Before we have shown the video image
-by generating from the original video . Now we have taken the image from management and show accordingly . Also before we have shown the videos in the popup
-and stored in our server . Now instead of the direct video we have only stored the vimeo link . After click on any video we have opened that video in new tab
-to show the video . Also there is option to download the particular video . Completed the functionality and tested properly .
+(1)Started working on the survey details webservice . We have changed the response of the pending and completed array . Also in the questions array ,
+we have make it section wise . Also we have added the status and message in the success response . Completed the changes and tested properly .
+Also updated the webservice documents accordingly .
 
-(2)As per the discussion with Stefano , we need one photo gallery option , so that campus manager can pick any image from the photo gallery . I have searched 
-for one free and light weighted plugin . Then finally found jquery image picker plugin . Created one sample page to implement the same and tested .
+(2)Completed the webservice for save survey details after click on any options . Also updated the documents accordingly and tested properly .
 
-(3)Started working on the manage activity photogalley section . First we have created the database table as per our new requirement . Then we have created one listing
-page to show the centre name , image and added date . Also we have shown the edit , delete and change status icon in the action column . After click
-on the  change status icon , admin can change the status of the photo . In add/edit page we have shown the centre name and image . We have applied the required validation
-to all the fields . After successfully validation done , we have saved the record in the database . Also we have completed the delete functionality . Basically we have 
-performed soft delete functionality .
+(3)Completed the webservice for submit survey where we have saved the details of survey . Also updated the documents accordingly and tested properly .
 
-(4)Started implementing the imagepicker plugin in the daily activity management . Before we have shown the upload image option before multiple file upload . Now have shifted that
-next to the upload multiple file . Also we have changed the label choose picture . We have removed the upload file option from there and applied the image picker instead of that . 
-As of now we have applied the static one . THe dynamic one and further functionality is remaining .
+(4)On user dashboard page , we have changed the designing as per the provided work file . Completed the changes and tested properly .
 
 
 =================================================================================================================================
@@ -313,6 +306,13 @@ http://localhost/drupal_seven_test/crm-core/contact
 =================================================================================================================================
 
 
-alert(select);console.log(select);alert(select.data("picker"));
+
+plused_test_answers
+plused_test_options
+plused_test_question
+plused_test_student
+plused_test_submited
+
+ABC2115_31
 
 

@@ -31,7 +31,7 @@
 
 		<!-- Here goes the content. -->
 		<section id="content" class="container_12 clearfix" data-sort=true>
-			<h1 class="grid_12 margin-top no-margin-top-phone"><?php echo $escursione["exc_excursion"] ?> from <?php echo $campus ?> for <?php echo $tot_pax ?> pax</h1>
+			<h1 class="grid_12 margin-top no-margin-top-phone"><?php echo $escursione["exc_excursion_name"] ?> from <?php echo $campus ?> for <?php echo $tot_pax ?> pax</h1>
 			<form name="allbuses" id="allbuses" method="POST" action="<?php echo base_url(); ?>index.php/backoffice/plusedConfirmBuses">
 			<input type="hidden" name="id_exc_join" id="id_exc_join" value="<?php echo $escursione["exc_id"] ?>" />
 			<?php if(count($otherExc) > 0){ ?>
@@ -202,7 +202,10 @@
 								</tr>
 							</thead>
 							<tbody>
-							<?php foreach($bus as $bb){
+							<?php 
+                                                        $jnCurrency = '';
+                                                        if($bus)
+                                                        foreach($bus as $bb){
 							?>
 								<tr>
 									<td>
@@ -230,18 +233,19 @@
 									<input type="hidden" class="tpax" name="totpax_<?php echo $bb["jn_id_bus"] ?>" id="totpax_<?php echo $bb["jn_id_bus"] ?>" value="0" />									
 								</tr>
 							<?php
+                                                            $jnCurrency = $bb["jn_currency"];
 								}
 							?>
 								<tr>
 									<td colspan="2">&nbsp;</td>
 									<td class="center"><input style="text-align:center;" type="text" readonly value="0" name="suppax" id="suppax" /></td>
-									<td style="text-align:right;"><input style="text-align:right;" type="text" readonly value="0" name="supcost" id="supcost" /> <?php echo $bb["jn_currency"]?></td>
+									<td style="text-align:right;"><input style="text-align:right;" type="text" readonly value="0" name="supcost" id="supcost" /> <?php echo $jnCurrency;?></td>
 									<td></td>
 								</tr>	
 								<tr>
 									<td colspan="2">&nbsp;</td>
 									<td class="center"><input style="text-align:center;border:none;box-shadow:none;background-color:transparent;width:150px;" type="text" readonly value="" name="exppax" id="exppax" /></td>
-									<td colspan="2"><input style="text-align:right;border:none;box-shadow:none;background-color:transparent;width:150px;color:#5E6267;padding-right:0;" type="text" readonly value="" name="pricepax" id="pricepax" /> <?php echo $bb["jn_currency"]?> @pax</td>
+									<td colspan="2"><input style="text-align:right;border:none;box-shadow:none;background-color:transparent;width:150px;color:#5E6267;padding-right:0;" type="text" readonly value="" name="pricepax" id="pricepax" /> <?php echo $jnCurrency?> @pax</td>
 								</tr>									
 							</tbody>
 								<input type="hidden" name="pppax" id="pppax" value="<?php echo $tot_pax?>" />

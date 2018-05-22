@@ -7,6 +7,7 @@ it will load all required resources
 <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="google" content="notranslate" />
   <title>
       <?php
         if(isset($title)){

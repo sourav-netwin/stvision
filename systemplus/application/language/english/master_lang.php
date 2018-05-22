@@ -25,7 +25,13 @@
 	);
 	$lang['manage_adult_course']['list']['actionColumn'] = array(
 		'columnNo' => 4,
-		'actionType' => array('edit' , 'delete' , 'status')
+		'actionType' => array('edit' , 'delete' , 'status'),
+		'subModule' => array(
+			'module' => 'adult_course_feature',
+			'buttonClass' => 'btn-warning',
+			'title' => 'Course Feature',
+			'iconClass' => 'fa-cogs'
+		)
 	);
 	$lang['manage_adult_course']['listWhere'] = 'delete_flag = 0';
 	$lang['manage_adult_course']['statusField'] = 'status';
@@ -62,6 +68,59 @@
 		)
 	);
 /*---------------For manage adult course module(End)---------------*/
+
+/*---------------For manage adult course feature module(Start)---------------*/
+	$lang['adult_course_feature']['dbName'] = TABLE_ADULT_COURSE_FEATURE;
+	$lang['adult_course_feature']['key'] = 'feature_id';
+	$lang['adult_course_feature']['title'] = 'Adult Course Feature';
+	$lang['adult_course_feature']['parentModule'] = 'manage_adult_course';
+	$lang['adult_course_feature']['foreignKey'] = 'adult_course_id';
+	$lang['adult_course_feature']['list'] = array(
+		'feature_image' => array(
+			'columnTitle' => 'Image',
+			'type' => 'image',
+			'uploadPath' => ADULT_COURSE_FEATURE_IMAGE_PATH,
+			'columnNo' => 1,
+			'thumbHeight' => ADULT_COURSE_FEATURE_IMAGE_THUMB_HEIGHT,
+			'thumbWidth' => ADULT_COURSE_FEATURE_IMAGE_THUMB_WIDTH
+		),
+		'feature_title' => array(
+			'columnTitle' => 'Feature title',
+			'type' => 'text',
+			'columnNo' => 2
+		)
+	);
+	$lang['adult_course_feature']['list']['actionColumn'] = array(
+		'columnNo' => 3,
+		'actionType' => array('edit' , 'delete')
+	);
+	$lang['adult_course_feature']['field'] = array(
+		'feature_title' => array(
+			'fieldLabel' => 'Title',
+			'type' => 'text',
+			'validation' => 'required|validData|maxlength:200',
+			'placeholder' => 'Title'
+		),
+		'feature_description' => array(
+			'fieldLabel' => 'Description',
+			'type' => 'textarea',
+			'rows' => 2,
+			'validation' => 'required',
+			'tinymce' => 1
+		),
+		'feature_image' => array(
+			'fieldLabel' => 'Upload image',
+			'type' => 'file',
+			'fileType' => 'image',
+			'validation' => 'imageRequired|checkImageExt|checkImageWidth',
+			'uploadPath' => ADULT_COURSE_FEATURE_IMAGE_PATH,
+			'width' => ADULT_COURSE_FEATURE_IMAGE_WIDTH,
+			'height' => ADULT_COURSE_FEATURE_IMAGE_HEIGHT,
+			'thumbHeight' => ADULT_COURSE_FEATURE_IMAGE_THUMB_HEIGHT,
+			'thumbWidth' => ADULT_COURSE_FEATURE_IMAGE_THUMB_WIDTH
+		)
+	);
+/*---------------For manage adult course feature module(End)---------------*/
 
 /*---------------For manage fixed activity module(Start)---------------*/
 	$lang['manage_fixed_activity']['dbName'] = TABLE_MASTER_ACTIVITY;
@@ -190,6 +249,37 @@
 /*---------------For manage fixed activity module(Start)---------------*/
 	$lang['manage_extra_activity']['dbName'] = TABLE_EXTRA_MASTER_ACTIVITY;
 	$lang['manage_extra_activity']['key'] = 'extra_master_activity_id';
+	$lang['manage_extra_activity']['title'] = 'Extra activity';
+	$lang['manage_extra_activity']['list'] = array(
+		'centre_id' => array(
+			'columnTitle' => 'Centre',
+			'type' => 'dropdown',
+			'module' => 'centre',
+			'columnNo' => 1
+		),
+		'student_group' => array(
+			'columnTitle' => 'Student\'s group',
+			'type' => 'dropdown',
+			'module' => 'manage_student_group',
+			'columnNo' => 2
+		),
+		'group_reference_id' => array(
+			'columnTitle' => 'Group reference',
+			'type' => 'dropdown',
+			'module' => 'group_reference',
+			'columnNo' => 3
+		)
+	);
+	$lang['manage_extra_activity']['list']['actionColumn'] = array(
+		'columnNo' => 4,
+		'actionType' => array('delete')
+	);
+	$lang['manage_extra_activity']['join'] = array(
+		'tableName' => TABLE_STUDENT_GROUP,
+		'joinCondition' => 'student_group = student_group_id',
+		'joinType' => 'left',
+		'selectColumn' => TABLE_STUDENT_GROUP.'.delete_flag'
+	);
 	$lang['manage_extra_activity']['deleteCheck'] = 'manage_extra_activity_dates';
 /*---------------For manage fixed activity module(End)---------------*/
 
@@ -334,4 +424,13 @@
 	);
 	$lang['manage_activity_photogallery']['addedDateField'] = 'added_date';
 /*---------------For manage activity photo gallery module(End)---------------*/
+
+/*---------------For manage Group reference(Start)---------------*/
+	$lang['group_reference']['dbName'] = TABLE_PLUS_BOOK;
+	$lang['group_reference']['key'] = 'id_book';
+	$lang['group_reference']['dropdown'] = array(
+		'key' => 'id_book',
+		'value' => "concat(id_year , '_' , id_book)"
+	);
+/*---------------For manage Group reference(End)---------------*/
 ?>

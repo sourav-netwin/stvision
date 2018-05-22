@@ -168,7 +168,7 @@ function unloading() {
 }
 
 $( document ).ajaxSend(function(e, xhr, opt) {
-    if(!(opt.url.indexOf("students/logquesanswer") != -1 
+    if(!(opt.url.indexOf("students/logquesanswer") != -1
     || opt.url.indexOf("students/upatetimer") != -1))
     	loading();
 });

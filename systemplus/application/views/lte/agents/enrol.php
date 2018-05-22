@@ -58,7 +58,9 @@ span.datearrivo {
                                         <?php
 if (count($centri)) {
     foreach ($centri as $key => $item) {
-        if (1 == $item["attivo"]) {
+        // THIS IS HARD CODE CONDITION 
+                                        // FOR TESTING PURPOSE:2018-04-17
+        if (1 == $item["attivo"] && $item['nome_centri'] != "LONDON TWICKENHAM") {
             ?>
                                                     <option value="<?php echo $item['id']; ?>" <?php echo (isset($form['data']['center_select']) && $item['id'] == $form['data']['center_select'] ? 'selected' : ''); ?>><?php echo $item['nome_centri']; ?></option>
                                                     <?php

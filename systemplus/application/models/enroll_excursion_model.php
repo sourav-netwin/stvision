@@ -1,7 +1,6 @@
 <?php
-class Enroll_excursion_model extends Model {
-    
-    
+class Enroll_excursion_model extends Model 
+{
     function listAllExcursions($campus, $tipo, $to, $from) {
         $data = array();
         if ($campus) {

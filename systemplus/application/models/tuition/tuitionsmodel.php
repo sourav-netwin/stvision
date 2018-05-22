@@ -102,7 +102,7 @@ Class Tuitionsmodel extends Model {
         $resultData = array();
         try {
             if (!empty($campusId) && !empty($classDate)) {
-                $this->db->select("plused_book.weeks,plused_rows.id_book,'' as class_name,'' as already_assigned,plused_rows.id_year,plused_rows.uuid,plused_rows.nome,plused_rows.cognome,plused_rows.sesso,plused_rows.pax_dob,plused_rows.nazionalita,lk_lang_knowledge", false);
+                $this->db->select("plused_book.weeks,plused_rows.id_book,'' as class_name,'' as already_assigned,plused_rows.id_year,plused_rows.uuid,plused_rows.nome,plused_rows.cognome,plused_rows.sesso,plused_rows.pax_dob,plused_rows.data_arrivo_campus,plused_rows.data_partenza_campus,plused_rows.nazionalita,lk_lang_knowledge", false);
                 $this->db->where('id_centro', $campusId);
                 $this->db->where('data_arrivo_campus <= ', $classDate);
                 $this->db->where('data_partenza_campus >= ', $classDate);
@@ -127,7 +127,7 @@ Class Tuitionsmodel extends Model {
                     $this->db->select('cs_id,class_name,class_id,class_type');
                     $this->db->join('plused_class_students', 'plused_classes.class_id = plused_class_students.cs_class_id');
                     $this->db->where('plused_class_students.cs_booking_id', $uuid);
-                    $this->db->where('plused_classes.class_id !=', $classId);
+                    //$this->db->where('plused_classes.class_id !=', $classId);
                     $this->db->where('plused_classes.class_date', $classDate);
                     $this->db->where('plused_class_students.cs_is_deleted', 0);
                     $presentRow = $this->db->get('plused_classes');
@@ -144,6 +144,7 @@ Class Tuitionsmodel extends Model {
                                 $classIdToPass = $row->class_id;
                             }
                             else{
+                                $classIdToPass = $row->class_id;
                                 // Add all classes for into a array for supplement classes 
                                 array_push($supplementClasses, $row->class_name . ' #'.$row->class_id);
                             }
@@ -160,6 +161,7 @@ Class Tuitionsmodel extends Model {
         } catch (Exception $exp) {
             throw $exp;
         }
+        
         return $resultData;
     }
 
@@ -565,8 +567,8 @@ Class Tuitionsmodel extends Model {
                 $this->db->join('plused_language_knowledge', 'plused_rows.uuid = plused_language_knowledge.lk_uuid', 'left');
                 $this->db->select("class_id,count(cs_id) as numberofbookings,MIN(TIMESTAMPDIFF(YEAR,pax_dob,CURDATE())) AS min_age,MAX(TIMESTAMPDIFF(YEAR,pax_dob,CURDATE())) AS max_age, class_campus_course_id,class_date,class_name,class_room_number,class_type,cc_course_name,cc_campus_id,cc_course_type,cc_total_hours,nome_centri,
                 GROUP_CONCAT(DISTINCT(CONCAT('<img class=\"nationality-flags\" data-toggle=\"tooltip\" title=\"',nazionalita,'\" ','src=\"" . base_url() . NATIONALITY_FILES_PATH . "',nat_flag,'\" />')) SEPARATOR ' ') as htmlImg,
-                CONCAT(min(lk_lang_knowledge),' - ',max(lk_lang_knowledge)) AS lang_min_max
-                ", false);
+                CONCAT(min(lk_lang_knowledge),' - ',max(lk_lang_knowledge)) AS lang_min_max,
+                GROUP_CONCAT(CONCAT(nome, ' ', cognome) SEPARATOR ' ') as paxName", false);
                 $this->db->where('cc_campus_id', $campusId);
                 $this->db->where('date(class_date)', $classDate);
                 $this->db->where('class_is_deleted', 0);
@@ -947,7 +949,7 @@ Class Tuitionsmodel extends Model {
      * @return array
      * @throws Exception 
      */
-    public function getCampusTeachers($campusId = 0, $durationDate) {
+    public function getCampusTeachers($campusId = 0, $durationDate, $showAll = false) {
         $result = 0;
         try {
             if (!empty($campusId)) {
@@ -956,11 +958,21 @@ Class Tuitionsmodel extends Model {
                 $this->db->join('plused_job_positions jp', 'jc.joc_position_id = jp.pos_id');
                 $this->db->select("joc_id as teach_id,concat_ws(' ',ta_firstname,ta_lastname) as teach_fullname,joc_staff_priority", false);
                 $this->db->where('jp.pos_position', 'Teacher');
-                $this->db->where('joc_campus_id', $campusId);
+                
                 $this->db->where('joc_is_deleted', 0);
                 $this->db->where('joc_is_active', 1);
-                $this->db->where('date(joc_from_date) <= ', $durationDate);
-                $this->db->where('date(joc_to_date) >= ', $durationDate);
+                if($showAll)
+                {
+                    $yearF = date("Y",  strtotime($durationDate));
+                    $this->db->where("(year(joc_from_date) = ".$yearF." OR year(joc_to_date) = ".$yearF." )");
+                    $this->db->group_by('jc.joc_application_id');
+                }
+                else if($campusId && !empty($durationDate))
+                {
+                    $this->db->where('joc_campus_id', $campusId);
+                    $this->db->where('date(joc_from_date) <= ', $durationDate);
+                    $this->db->where('date(joc_to_date) >= ', $durationDate);
+                }
                 $this->db->order_by('joc_staff_priority', 'desc');
                 $res = $this->db->get();
                 //echo $this->db->last_query();die;
@@ -1273,6 +1285,34 @@ Class Tuitionsmodel extends Model {
                 $res = $this->db->get('pulsed_class_lessons');
                 if ($res->num_rows()) {
                     $result = $res->row();
+                }
+                $res->free_result();
+            }
+        } catch (Exception $exp) {
+            throw $exp;
+        }
+        return $result;
+    }
+    
+    /**
+     * getTeacherOfClass
+     * @param type $classId
+     * @return type
+     * @throws Exception 
+     */
+    public function getTeacherOfClass($classId = 0) {
+        $result = "";
+        try {
+            if (!empty($classId)) {
+                $this->db->join('plused_classes', 'pulsed_class_lessons.cl_class_id = plused_classes.class_id', 'left');
+                $this->db->join('pulsed_job_contract', 'pulsed_class_lessons.cl_teacher_id = pulsed_job_contract.joc_id', 'left'); // here contract id is refer as teachers id 
+                $this->db->join('plused_teacher_application', 'pulsed_job_contract.joc_application_id = plused_teacher_application.ta_id', 'left'); // here joc_id is mapped with teachers application table.
+                $this->db->select("group_concat(distinct(concat_ws(' ',ta_firstname,ta_lastname))) as teacher_name", false);
+                $this->db->where('class_id', $classId);
+                $this->db->where('cl_is_deleted', 0);
+                $res = $this->db->get('pulsed_class_lessons');
+                if ($res->num_rows()) {
+                    $result = $res->row()->teacher_name;
                 }
                 $res->free_result();
             }

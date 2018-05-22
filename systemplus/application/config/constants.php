@@ -146,17 +146,28 @@ define('CAMPUS_WEBSITE_THUMB_HEIGHT',100);
 
 define('CAMPUS_CONTENT_PDF_FILE','uploads/campus_content_pdf/');
 
+define('ENGLISH_GRAMMAR_TEST',3);// THIS IS STATIC ID FOR : ENGLISH GRAMMAR TEST
+define('ENGLISH_GRAMMAR_TEST_TIMER',"30:00"); //Minutes, THIS IS STATIC TIME FOR : ENGLISH GRAMMAR TEST
+
 class BookingStatus{
     static $TBC = 1; // TO BE CONFIRMED
     static $ACTIVE = 2; // ACTIVE
     static $CONFIRMED = 3; // confirmed
     static $REJECTED = 4; // rejected
     static $ELAPSED = 5; // elapsed
+    static $ELAPSED_REJECTED = 6; // elapsed_rejected
+    static $TBC_STR = 'tbc'; // TO BE CONFIRMED
+    static $ACTIVE_STR = 'active'; // ACTIVE
+    static $CONFIRMED_STR = 'confirmed'; // confirmed
+    static $REJECTED_STR = 'rejected'; // rejected
+    static $ELAPSED_STR = 'elapsed'; // elapsed
+    static $ELAPSED_REJECTED_STR = 'elapsed_rejected'; // elapsed_rejected
 }
+
 class EmailTemplateIds{
     static $BOOKING_CONFIRMATION_TEMPLATE = 7; // BOOKING CONFIRMED
     static $STUDENTS_LOGIN_DETAIL = 8; // EMAIL TO AGENTS
-
+    static $BOOKING_ELAPSED_REJECTED_TEMPLATE = 9; // BOOKING ELAPSED REJECTED
 }
 
 //Database table names
@@ -223,6 +234,7 @@ define('TABLE_FIXED_DAY_MANAGED_BY' , 'frontweb_fixed_day_managed_by');
 define('TABLE_EXTRA_DAY_MANAGED_BY' , 'frontweb_extra_day_managed_by');
 define('ACTIVITY_REPORT_PROGRAM' , 'activity_report_program');
 define('TABLE_ACTIVITY_PHOTO_GALLERY' , 'frontweb_activity_photo_gallery');
+define('TABLE_ADULT_COURSE_FEATURE' , 'frontweb_adult_course_feature');
 
 //Constant for create folder permission
 define('DIR_PERMISSION' , 0755);
@@ -231,6 +243,8 @@ define('DIR_PERMISSION' , 0755);
 define('UPLOAD_IMAGE_SIZE' , 10000);
 
 //Google API Key
+/*  I used it for google map API .
+    I have used the following account :SD*/
 define('GOOGLE_API_KEY' , 'AIzaSyAxAOuX6VZ3411GsROuhn-SxYbNC0skt9M');
 
 //Define image location , height , width , thumb details for program banner module images
@@ -391,6 +405,13 @@ define('ACTIVITY_PHOTOGALLERY_IMAGE_WIDTH' , 400);
 define('ACTIVITY_PHOTOGALLERY_IMAGE_HEIGHT' , 300);
 define('ACTIVITY_PHOTOGALLERY_IMAGE_THUMB_WIDTH' , 100);
 define('ACTIVITY_PHOTOGALLERY_IMAGE_THUMB_HEIGHT' , 75);
+
+//Define image location , height , width , thumb details for activity photo gallery images
+define('ADULT_COURSE_FEATURE_IMAGE_PATH' , 'uploads/adult_course_feature/');
+define('ADULT_COURSE_FEATURE_IMAGE_WIDTH' , 800);
+define('ADULT_COURSE_FEATURE_IMAGE_HEIGHT' , 500);
+define('ADULT_COURSE_FEATURE_IMAGE_THUMB_WIDTH' , 180);
+define('ADULT_COURSE_FEATURE_IMAGE_THUMB_HEIGHT' , 112);
 
 /* End of file constants.php */
 /* Location: ./system/application/config/constants.php */

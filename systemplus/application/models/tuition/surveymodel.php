@@ -17,7 +17,7 @@ class Surveymodel extends Model {
      * @param string $userFirstName
      * @param string $userSurname
      * @param string $userDOB
-     * @return mixed 
+     * @return mixed
      */
     public function verifyGLUser($userFirstName, $userSurname, $userDOB, $bookingId = '') {
         $this->db->where('cognome', $userSurname);
@@ -86,7 +86,7 @@ class Surveymodel extends Model {
      * @param int $suId
      * @param int $quesId
      * @param string $myVal
-     * @return int 
+     * @return int
      */
     public function logSurveyAnswer($type, $suId, $quesId, $myVal) {
         $insertArray = array();
@@ -120,7 +120,7 @@ class Surveymodel extends Model {
                 $ansId = $result->row()->ans_id;
                 $this->db->flush_cache();
                 $this->db->where('ans_id', $ansId);
-                $this->db->update('plused_survey_answers', $insertArray); // UDPATE EXISTING 
+                $this->db->update('plused_survey_answers', $insertArray); // UDPATE EXISTING
                 $lastId = $ansId;
             } else {
                 $this->db->flush_cache();
@@ -177,22 +177,22 @@ class Surveymodel extends Model {
             if ($selAgent != 'all') {
                 $agentQuery = "AND `pb`.`id_agente` = " . $selAgent;
             }
-            $strSQL = "SELECT COUNT(yes) as yes_count, count(no) as no_count, count(comment_count) as comment_count from 
-                        (	
-                        SELECT 
-                                CASE WHEN `ans_yes_no` = 1 THEN '1' END AS yes, 
+            $strSQL = "SELECT COUNT(yes) as yes_count, count(no) as no_count, count(comment_count) as comment_count from
+                        (
+                        SELECT
+                                CASE WHEN `ans_yes_no` = 1 THEN '1' END AS yes,
                                 CASE WHEN `ans_yes_no` = 0 THEN '1' END AS no,
 								CASE WHEN `ans_comment` IS NOT NULL AND `ans_comment` != '' THEN 1 ELSE 0 END AS comment_count
-                                FROM (`plused_survey_answers` sa) 
-                                JOIN `plused_survey_users` su ON `sa`.`ans_su_id` = `su`.`su_id` 
-                                JOIN `plused_rows` pr ON `su`.`su_group_leader_uuid` = `pr`.`uuid` 
-                                JOIN `plused_book` pb ON `pb`.`id_book` = `pr`.`id_book` 
+                                FROM (`plused_survey_answers` sa)
+                                JOIN `plused_survey_users` su ON `sa`.`ans_su_id` = `su`.`su_id`
+                                JOIN `plused_rows` pr ON `su`.`su_group_leader_uuid` = `pr`.`uuid`
+                                JOIN `plused_book` pb ON `pb`.`id_book` = `pr`.`id_book`
                                 WHERE ((data_arrivo_campus >= '" . $txtCalFromDate . "' AND data_arrivo_campus <= '" . $txtCalToDate . "') OR (data_partenza_campus >= '" . $txtCalFromDate . "' AND data_partenza_campus <= '" . $txtCalToDate . "'))
-                                AND `ans_que_id` = " . $questionId . " " . $agentQuery . " 
-                                AND `su_survey_status` = 'Completed' 
-                                AND `su_campus_id` = " . $campusId . "  
+                                AND `ans_que_id` = " . $questionId . " " . $agentQuery . "
+                                AND `su_survey_status` = 'Completed'
+                                AND `su_campus_id` = " . $campusId . "
                         ) as Tcount";
-            //((su_survey_date >= '".$txtCalFromDate."' AND su_survey_date <= '".$txtCalToDate."')) 
+            //((su_survey_date >= '".$txtCalFromDate."' AND su_survey_date <= '".$txtCalToDate."'))
             //                   AND
             //echo $strSQL;die;
             $result = $this->db->query($strSQL);
@@ -522,7 +522,7 @@ class Surveymodel extends Model {
         } else
             return 0;
     }
-    
+
     public function getGroupLeader($campusId,$survey,$agentId, $fd, $td){
         //$this->db->where('tipo_pax', 'GL');
         if(!empty($agentId) && $agentId != "all")
@@ -544,7 +544,7 @@ class Surveymodel extends Model {
         } else
             return 0;
     }
-    
+
     function getStudentSurveyDetails($hidd_GlId,$selGroupLeaderName,$hidd_survey, $fd, $td, $campusId, $agentId) {
         if ($agentId != 'all') {
             $this->db->where('c.id', $agentId);
@@ -554,8 +554,8 @@ class Surveymodel extends Model {
                     b.id_year,
                     d.uuid,
                     d.id_prenotazione,
-                    a.nome_centri, DATE(e.ts_submitted_on) as submitted_date, 
-                    SUBSTRING_INDEX(SUBSTRING_INDEX(`ts_week`, '_', 1), '_', -1) as week_no, 
+                    a.nome_centri, DATE(e.ts_submitted_on) as submitted_date,
+                    SUBSTRING_INDEX(SUBSTRING_INDEX(`ts_week`, '_', 1), '_', -1) as week_no,
                     SUBSTRING_INDEX(SUBSTRING_INDEX(`ts_week`, '_', 2), '_', -1) as week_start", false)
                 ->from('centri as a')
                 ->join('plused_book as b', 'b.id_centro = a.id')

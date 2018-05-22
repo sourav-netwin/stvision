@@ -35,9 +35,9 @@ class Student_survey extends Controller {
 	 */
 	function view($date = '') {
 		if ($this -> session -> userdata('role') == 502) {
-			$data['title'] = "plus-ed.com | Take student survey";
+			$data['title'] = "plus-ed.com | End of course student survey";
 			$data['breadcrumb1'] = 'Test / Survey';
-			$data['breadcrumb2'] = 'Take student survey';
+			$data['breadcrumb2'] = 'End of course student survey';
 			$data['userId'] = $this -> session -> userdata('id');
 			$data['userDetails'] = $this -> studentsmodel -> getUserdata($data['userId']);
 			$data['GLName'] = $this -> studentsmodel -> getGLName($data['userId']);
@@ -48,9 +48,13 @@ class Student_survey extends Controller {
 			$data['testId'] = $testDetails['test_id'];
 			$data['week'] = $data['userDetails']['weeks'];
 			$weekNo = $this -> diffInWeeks($data['userDetails']['data_arrivo_campus'], date('Y-m-d', strtotime($data['userDetails']['data_partenza_campus'] . ' -1 day')));
+
+
 			$data['weekStart'] = array();
 			$weekDay = 7;
 			$currDate = date("Y-m-d");
+
+
 
 			//Split the weeks from the date range and save in an array
 			for ($i = 1; $i <= $weekNo; $i++) {
@@ -66,6 +70,9 @@ class Student_survey extends Controller {
 					}
 				}
 			}
+
+
+
 			if (!empty($date) && !in_array($date, $data['weekStart'])) {
 				redirect('student_survey', 'refresh');
 				exit(0);
@@ -80,6 +87,8 @@ class Student_survey extends Controller {
 					$filledDates[] = $dateArr[1];
 				}
 			}
+
+
 
 			//checking if there is any unfilled weeks available
 			foreach ($data['weekStart'] as $key => $val) {
@@ -101,7 +110,7 @@ class Student_survey extends Controller {
 					$data['weekSend'] = $data['week'] . '_' . $data['weekStart'][$data['week']];
 					$data['fromDate'] = $date;
 					$data['toDate'] = date('Y-m-d', strtotime($date . ' +6 days'));
-				} 
+				}
 			}//If no date is provided, then show the links for previous survey or the current survey
 			else if (($data['fromDate'] <= $currDate) || $data['isDateMatch']) {
 				if ($currDate >= date('Y-m-d', strtotime($data['fromDate'] . ' +5 days')) && $currDate <= date('Y-m-d', strtotime($data['toDate']))) {
@@ -123,6 +132,7 @@ class Student_survey extends Controller {
 					}
 				}
 			}
+
 			$data['surveyStatus'] = array();
 			if ($isFillError == 0) {
 				$data['isFilledAll'] = TRUE;
@@ -130,9 +140,11 @@ class Student_survey extends Controller {
 			else {
 				$data['surveyStatus'] = $this -> studentsmodel -> getSurveyStatus($data['userDetails']['uuid'], $data['weekStart']);
 			}
-			foreach ($data['weekStart'] as $wStart) { 
+
+
+			foreach ($data['weekStart'] as $wStart) {
 				if ((date('Y-m-d') > $wStart) && (date('Y-m-d', strtotime($wStart . ' +5 days')) <= date('Y-m-d'))) {
-					if (!$date) { 
+					if (!$date) {
 						$toDate = date('Y-m-d', strtotime($wStart . ' +6 days'));
 						$fromDate = $wStart;
 						$week = array_search($wStart, $data['weekStart']);
@@ -157,11 +169,14 @@ class Student_survey extends Controller {
 			}
 			$data['questionArray'] = $questionArray;
 
+
+
+//echo "<pre>";print_r($data);die('pop = '.$weekNo);
                         if(APP_THEME == "OLD")
                             $this -> load -> view('tuition/plused_student_survey', $data);
                         else // if(APP_THEME == "LTE")
-                        { 
-                            $data['pageHeader'] = "Take student survey";
+                        {
+                            $data['pageHeader'] = "End of course student survey";
                             $data['optionalDescription'] = "";
                             $this->ltelayout->view('lte/students/survey', $data);
                         }
@@ -171,7 +186,7 @@ class Student_survey extends Controller {
 			redirect('students', 'refresh');
 		}
 	}
-        
+
         function ajax_view_survey($date,$userId,$ispdf = 0){
             $data['userId'] = $userId;
             $data['userDetails'] = $this -> studentsmodel -> getUserdata($data['userId']);
@@ -201,7 +216,7 @@ class Student_survey extends Controller {
                             }
                     }
             }
-            
+
             if (!empty($date) && !in_array($date, $data['weekStart'])) {
                     echo "This page is empty.";
                     exit(0);
@@ -237,7 +252,7 @@ class Student_survey extends Controller {
                             $data['weekSend'] = $data['week'] . '_' . $data['weekStart'][$data['week']];
                             $data['fromDate'] = $date;
                             $data['toDate'] = date('Y-m-d', strtotime($date . ' +6 days'));
-                    } 
+                    }
             }//If no date is provided, then show the links for previous survey or the current survey
             else if (($data['fromDate'] <= $currDate) || $data['isDateMatch']) {
                     if ($currDate >= date('Y-m-d', strtotime($data['fromDate'] . ' +5 days')) && $currDate <= date('Y-m-d', strtotime($data['toDate']))) {
@@ -266,9 +281,9 @@ class Student_survey extends Controller {
             else {
                     $data['surveyStatus'] = $this -> studentsmodel -> getSurveyStatus($data['userDetails']['uuid'], $data['weekStart']);
             }
-            foreach ($data['weekStart'] as $wStart) { 
+            foreach ($data['weekStart'] as $wStart) {
                     if ((date('Y-m-d') > $wStart) && (date('Y-m-d', strtotime($wStart . ' +5 days')) <= date('Y-m-d'))) {
-                            if (!$date) { 
+                            if (!$date) {
                                     $toDate = date('Y-m-d', strtotime($wStart . ' +6 days'));
                                     $fromDate = $wStart;
                                     $week = array_search($wStart, $data['weekStart']);
@@ -300,7 +315,7 @@ class Student_survey extends Controller {
                 $this->load->view('lte/students/survey_detail_modal_view', $data);
         }
         function print_pdf_survey_details($date,$userId){
-            
+
             $this->load->helper("mpdf6");
             // LOAD PDF FILE TEMPLATE AND GENRATE .PDF FILE
             ob_start(); // start output buffer
@@ -400,7 +415,7 @@ class Student_survey extends Controller {
 		return $weeks;
 	}
 
-	
+
 
 	function logout() { {
 			$this -> session -> sess_destroy();

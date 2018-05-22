@@ -13,7 +13,7 @@
             // load students for the campus
             var loadingDiv = "<div class='showloading'></div>";
             $(".view_students_placed_" + classId).html(loadingDiv);
-            $.post(SITE_PATH + "tuitions/getCampusStudents", {'campusId': hiddCampusId, 'toview': toview, 'dateOfClass': hiddMyClassDate, 'courseId': courseId}, function (data) {
+            $.post(SITE_PATH + "tuitions/getCampusStudents", {'campusId': hiddCampusId, 'toview': toview, 'dateOfClass': hiddMyClassDate, 'courseId': courseId,'seqClass':classId}, function (data) {
                 $(".view_students_placed_" + classId).html(data);
             });
 
@@ -56,11 +56,12 @@
         //        }
         //$('table.dynamic').table();
         initDataTable("dataTableClassesModal");
+        $("#dataTableClassesModal_filter label").prepend("<small>(You can search classes by using students name) </small>");
     });
 </script>
 <div class="row">
     <div class="col-sm-12">
-        <table id="dataTableClassesModal" class="table table-bordered table-striped">
+        <table id="dataTableClassesModal" class="table table-bordered table-striped" style="width:99.98%">
             <thead>
                 <tr>
                     <th>Class level</th>
@@ -71,7 +72,7 @@
                     <th>Nationality</th>
                     <th>Testing score</th>
                     <th>Teachers<br /><span class="agerange">(From time - to time)</span></th>
-                    <th class="no-sort">Action</th>
+                    <th width="90" class="no-sort">Action</th>
                 </tr>
             </thead>
             <tbody>
@@ -158,7 +159,7 @@
                             <td class="text-center">
                                 <?php echo htmlspecialchars($class["cc_course_name"]); ?>
                             </td>
-                            <td class="text-center">
+                            <td class="text-center" data-filter="<?php echo htmlspecialchars($class["paxName"]);?>">
                                 <?php
                                 echo $class["numberofbookings"] . "<br />";
                                 echo "<span class='agerange'>(" . $class['min_age'] . ' - ' . $class['max_age'] . ")</span>";
@@ -199,6 +200,9 @@
                                 </div>
                                 <div class="btn-group">
                                     <a data-original-title="Print" data-toggle="tooltip" href="javascript:void(0);" data-course-id="<?php echo $class['class_campus_course_id']; ?>" data-id="<?php echo $class['class_id']; ?>" class="dialogbtnprint min-wd-24 btn btn-xs btn-info">
+                                        <i class="fa fa-print"></i>
+                                    </a>
+                                    <a data-original-title="Print register" data-toggle="tooltip" href="javascript:void(0);" data-course-id="<?php echo $class['class_campus_course_id']; ?>" data-id="<?php echo $class['class_id']; ?>" class="dialogbtnprintRegister min-wd-24 btn btn-xs btn-primary">
                                         <i class="fa fa-print"></i>
                                     </a>
                                     <a data-original-title="Add students and edit class" data-toggle="tooltip" class="editClass min-wd-24 btn btn-xs btn-warning" data-id="<?php echo $class['class_id']; ?>" href="javascript:void(0);">

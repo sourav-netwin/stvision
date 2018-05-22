@@ -251,7 +251,7 @@ class Mbackoffice extends Model {
         if ($Q->num_rows() > 0) {
             foreach ($Q->result_array() as $row) {
                 $data2 = array();
-                $this->db->select('valuta, valore_acconto');
+                $this->db->select('valuta, valore_acconto',TRUE);
                 $nomedelcentro = $row["id_centro"];
                 $this->db->where('id', $nomedelcentro);
                 $queryvaluta = $this->db->get('centri');
@@ -268,11 +268,29 @@ class Mbackoffice extends Model {
                 $row['centro'] = $this->centerNameById($row["id_centro"]);
                 $row['all_acco'] = $this->magenti->getBookAccomodations($row["id_book"]);
                 $row['agency'] = $this->magenti->plused_get_ag_details($row["id_agente"]);
+                $row['booking_note'] = $this->getBookingNote($row["id_book"]);
                 $data[] = $row;
             }
         }
         $Q->free_result();
         return $data;
+    }
+    
+    /**
+     * This function collects entered notes for the booking
+     * and print in xls file | Booking download xls report
+     * @param type $id_book 
+     */
+    function getBookingNote($id_book = 0){
+        $note = "";
+        $this->db->where("n_bkid",$id_book);
+        $this->db->select("group_concat(concat_ws(' ','\\n',n_datetime,'- User:',n_userid,'\\n',n_testo) separator ';') as bookingNote",FALSE);
+        $result = $this->db->get('plused_book_notes');
+        if($result->num_rows()){
+            $note = $result->row()->bookingNote;
+        }
+        $result->free_result();
+        return $note;
     }
     
     function exportCSVBookingsToBeElapsedReport($campus, $agent, $status, $whereCls = "") {
@@ -1048,6 +1066,7 @@ class Mbackoffice extends Model {
         $this->db->join('plused_account-manager','agenti.account = plused_account-manager.id','left');
         $this->db->select('agenti.*,plused_account-manager.firstname as acc_manager_firstname,plused_account-manager.familyname as acc_manager_lastname,plused_account-manager.email as acc_manager_email');
         $Q = $this->db->get();
+        echo $this->db->last_query();die;
         if ($Q->num_rows() > 0) {
             $data = $Q->row();
         }
@@ -1667,36 +1686,61 @@ class Mbackoffice extends Model {
         if ($accomodation == "") {
             // tolto dalla prossima riga il >= per departure date per togliere dai conti l'ultimo giorno di permanenza oncampus
             // plused_rows.data_arrivo_campus, plused_rows.data_partenza_campus
-            $querya = "SELECT COUNT(plused_rows.id_prenotazione) as totale FROM plused_book, plused_rows 
+            /*$querya = "SELECT COUNT(plused_rows.id_prenotazione) as totale 
+            FROM plused_book, plused_rows 
             WHERE plused_book.id_centro = $campus 
             AND plused_rows.data_arrivo_campus <= '$date' 
             AND plused_rows.data_partenza_campus >= '$date' 
             AND plused_book.id_book = plused_rows.id_book 
-            AND plused_book.id_year = plused_rows.id_year";
+            AND plused_book.id_year = plused_rows.id_year";*/
+            $this->db->select("COUNT(plused_rows.id_prenotazione) as totale");
+            $this->db->from("plused_book");
+            $this->db->join("plused_rows","plused_book.id_book = plused_rows.id_book and plused_book.id_year = plused_rows.id_year");
+            $this->db->where("plused_rows.data_arrivo_campus <=", $date);
+            $this->db->where("plused_rows.data_partenza_campus >= ", $date);
+            $this->db->where("plused_book.id_centro", $campus);
         } else {
             // tolto dalla prossima riga il >= per departure date per togliere dai conti l'ultimo giorno di permanenza oncampus
-            $querya = "SELECT COUNT(plused_rows.id_prenotazione) as totale FROM plused_book, plused_rows WHERE plused_book.id_centro = $campus AND plused_book.arrival_date <= '$date' AND plused_book.departure_date > '$date' AND plused_book.id_book = plused_rows.id_book AND plused_book.id_year = plused_rows.id_year AND plused_rows.accomodation = '$accomodation'";
+            /*$querya = "SELECT COUNT(plused_rows.id_prenotazione) as totale 
+            FROM plused_book, plused_rows WHERE plused_book.id_centro = $campus 
+            AND plused_book.arrival_date <= '$date' 
+            AND plused_book.departure_date > '$date' 
+            AND plused_book.id_book = plused_rows.id_book 
+            AND plused_book.id_year = plused_rows.id_year 
+            AND plused_rows.accomodation = '$accomodation'";*/
+            $this->db->select("COUNT(plused_rows.id_prenotazione) as totale");
+            $this->db->from("plused_book");
+            $this->db->join("plused_rows","plused_book.id_book = plused_rows.id_book and plused_book.id_year = plused_rows.id_year");
+            $this->db->where("plused_rows.data_arrivo_campus <=", $date);
+            $this->db->where("plused_rows.data_partenza_campus >= ", $date);
+            $this->db->where("plused_book.id_centro", $campus);
+            $this->db->where("plused_rows.accomodation", $accomodation);
         }
         if ($glIncluded == 0)
-            $querya .= " AND plused_rows.tipo_pax <> 'GL'";
+            $this->db->where("plused_rows.tipo_pax <>","GL");
+            //$querya .= " AND plused_rows.tipo_pax <> 'GL'";
         $contastati = 0;
+        $strWQuery = "";
         if (count($multistatus)) {
-            $querya .= " AND(";
+            $strWQuery = "(";
             foreach ($multistatus as $stato) {
                 if ($contastati > 0) {
-                    $querya .= " OR";
+                    $strWQuery .= " OR";
                 }
-                $querya .= " plused_book.status = '$stato'";
+                $strWQuery .= " plused_book.status = '$stato'";
                 $contastati++;
             }
-            $querya .= " )";
+            $strWQuery .= " )";
         }
-        if ($accomodation == "")
-            $querya .= " ";
-        else
-            $querya .= " GROUP BY plused_rows.accomodation";
+        if(!empty($strWQuery)){
+            $this->db->where($strWQuery);
+        }
+        if ($accomodation != "")
+            $this->db->group_by("plused_rows.accomodation");
+            //$querya .= " GROUP BY plused_rows.accomodation";
         //echo "<br />-".$querya."<br />";
-        $Q = $this->db->query($querya);
+        //$Q = $this->db->query($querya);
+        $Q = $this->db->get();
         // write_my_log("call mbackoffice getTotBk function");
         if ($Q->num_rows() > 0) {
             foreach ($Q->result_array() as $row) {
@@ -1712,14 +1756,28 @@ class Mbackoffice extends Model {
     }
 
     function getTotBk($campus, $accomodation = "", $date, $multistatus, $glIncluded = 1) {
+        return $this->getTotBkAsPerPaxRows($campus, $accomodation, $date, $multistatus, $glIncluded);
+        /*
         $bkok = "";
         //print_r($multistatus);
         if ($accomodation == "") {
             // tolto dalla prossima riga il >= per departure date per togliere dai conti l'ultimo giorno di permanenza oncampus
-            $querya = "SELECT COUNT(plused_rows.id_prenotazione) as totale FROM plused_book, plused_rows WHERE plused_book.id_centro = $campus AND plused_book.arrival_date <= '$date' AND plused_book.departure_date > '$date' AND plused_book.id_book = plused_rows.id_book AND plused_book.id_year = plused_rows.id_year";
+            $querya = "SELECT COUNT(plused_rows.id_prenotazione) as totale 
+            FROM plused_book, plused_rows WHERE plused_book.id_centro = $campus 
+            AND plused_book.arrival_date <= '$date' 
+            AND plused_book.departure_date > '$date' 
+            AND plused_book.id_book = plused_rows.id_book 
+            AND plused_book.id_year = plused_rows.id_year";
         } else {
             // tolto dalla prossima riga il >= per departure date per togliere dai conti l'ultimo giorno di permanenza oncampus
-            $querya = "SELECT COUNT(plused_rows.id_prenotazione) as totale FROM plused_book, plused_rows WHERE plused_book.id_centro = $campus AND plused_book.arrival_date <= '$date' AND plused_book.departure_date > '$date' AND plused_book.id_book = plused_rows.id_book AND plused_book.id_year = plused_rows.id_year AND plused_rows.accomodation = '$accomodation'";
+            $querya = "SELECT COUNT(plused_rows.id_prenotazione) as totale 
+            FROM plused_book, plused_rows 
+            WHERE plused_book.id_centro = $campus 
+            AND plused_book.arrival_date <= '$date' 
+            AND plused_book.departure_date > '$date' 
+            AND plused_book.id_book = plused_rows.id_book 
+            AND plused_book.id_year = plused_rows.id_year 
+            AND plused_rows.accomodation = '$accomodation'";
         }
         if ($glIncluded == 0)
             $querya .= " AND plused_rows.tipo_pax <> 'GL'";
@@ -1753,6 +1811,7 @@ class Mbackoffice extends Model {
         }
         $Q->free_result();
         return $bkok + 0;
+        */
     }
 
     function getD2DBk($campus, $accomodation, $date, $status) {
@@ -1929,7 +1988,23 @@ class Mbackoffice extends Model {
           }
           $querya .= ") GROUP BY plused_rows.accomodation, plused_book.id_book ORDER BY num_in DESC";
          */
-        $querya = "SELECT DISTINCT plused_rows.id_book,plused_rows.nazionalita, plused_rows.id_year,plused_book.id_agente,agenti.businessname, COUNT(plused_rows.id_book) as num_in, plused_rows.data_arrivo_campus as arrival_date, plused_rows.data_partenza_campus as departure_date, plused_book.status, agenti.businesscountry, COUNT(CASE WHEN plused_rows.cognome IS NOT NULL AND plused_rows.cognome <> '' THEN 1 END) as contaPieni FROM plused_book, plused_rows, agenti WHERE plused_book.id_agente = agenti.id AND plused_book.id_centro = $campus AND plused_rows.data_arrivo_campus <= '$dateout' AND plused_rows.data_partenza_campus >= '$datein' AND plused_book.id_book = plused_rows.id_book AND plused_book.id_year = plused_rows.id_year AND plused_rows.accomodation = '$accomodation' AND ( ";
+        $querya = "SELECT DISTINCT plused_rows.id_book,plused_rows.nazionalita, 
+        plused_rows.id_year,plused_book.id_agente,agenti.businessname, 
+        COUNT(plused_rows.id_book) as num_in, 
+        date(plused_rows.data_arrivo_campus) as arrival_date, 
+        date(plused_rows.data_partenza_campus) as departure_date, 
+        plused_book.status, agenti.businesscountry, 
+        COUNT(CASE WHEN plused_rows.cognome IS NOT NULL 
+        AND plused_rows.cognome <> '' THEN 1 END) as contaPieni 
+        FROM plused_book, plused_rows, agenti 
+        WHERE plused_book.id_agente = agenti.id 
+        AND plused_book.id_centro = $campus 
+        AND date(plused_rows.data_arrivo_campus) <= '$dateout' 
+        AND date(plused_rows.data_partenza_campus) >= '$datein' 
+        AND plused_book.id_book = plused_rows.id_book 
+        AND plused_book.id_year = plused_rows.id_year 
+        AND plused_rows.accomodation = '$accomodation' 
+        AND ( ";
         $contastati = 1;
         //echo count($arrayStatus);
         foreach ($arrayStatus as $stat) {
@@ -1938,7 +2013,10 @@ class Mbackoffice extends Model {
                 $querya .= " OR ";
             $contastati++;
         }
-        $querya .= ") GROUP BY plused_rows.accomodation, plused_rows.data_partenza_campus, plused_rows.data_arrivo_campus, plused_book.id_book ORDER BY plused_book.id_book, num_in DESC";
+        $querya .= ") GROUP BY plused_rows.accomodation, 
+            date(plused_rows.data_partenza_campus), 
+            date(plused_rows.data_arrivo_campus), 
+            plused_book.id_book ORDER BY plused_book.id_book, num_in DESC";
         $Q = $this->db->query($querya);
         //echo $this->db->last_query();die;
         if ($Q->num_rows() > 0) {
@@ -1977,7 +2055,22 @@ class Mbackoffice extends Model {
         //con date e accomodation da rows
         //$querya="SELECT DISTINCT plused_rows.id_book, plused_rows.id_year, agenti.businessname, COUNT(plused_rows.id_book) as num_in, plused_book_overnights.arrival_date as arrival_date, plused_book_overnights.departure_date as departure_date, plused_book_overnights.status, agenti.businesscountry, COUNT(CASE WHEN plused_rows.cognome IS NOT NULL AND plused_rows.cognome <> '' THEN 1 END) as contaPieni FROM plused_book_overnights, plused_rows, agenti WHERE plused_book_overnights.id_agente = agenti.id AND plused_book_overnights.id_centro = $campus AND plused_rows.data_arrivo_campus <= '$dateout' AND plused_rows.data_partenza_campus >= '$datein' AND plused_book_overnights.id_book = plused_rows.id_book AND plused_book_overnights.id_year = plused_rows.id_year AND plused_rows.accomodation = '$accomodation' AND ( ";
         //con date e accomodation da book_overnight
-        $querya = "SELECT DISTINCT plused_rows.id_book, plused_rows.id_year, agenti.businessname, COUNT(plused_rows.id_book) as num_in, plused_book_overnights.arrival_date as arrival_date, plused_book_overnights.departure_date as departure_date, plused_book_overnights.status, agenti.businesscountry, COUNT(CASE WHEN plused_rows.cognome IS NOT NULL AND plused_rows.cognome <> '' THEN 1 END) as contaPieni FROM plused_book_overnights, plused_rows, agenti WHERE plused_book_overnights.id_agente = agenti.id AND plused_book_overnights.id_centro = $campus AND plused_book_overnights.arrival_date <= '$dateout' AND plused_book_overnights.departure_date >= '$datein' AND plused_book_overnights.id_book = plused_rows.id_book AND plused_book_overnights.id_year = plused_rows.id_year AND plused_book_overnights.accomodation = '$accomodation' AND ( ";
+        $querya = "SELECT DISTINCT plused_rows.id_book, plused_rows.id_year, 
+        agenti.businessname, COUNT(plused_rows.id_book) as num_in, 
+        plused_book_overnights.arrival_date as arrival_date, 
+        plused_book_overnights.departure_date as departure_date, 
+        plused_book_overnights.status, agenti.businesscountry, 
+        COUNT(CASE WHEN plused_rows.cognome IS NOT NULL 
+        AND plused_rows.cognome <> '' THEN 1 END) as contaPieni 
+        FROM plused_book_overnights, plused_rows, agenti 
+        WHERE plused_book_overnights.id_agente = agenti.id 
+        AND plused_book_overnights.id_centro = $campus 
+        AND plused_book_overnights.arrival_date <= '$dateout' 
+        AND plused_book_overnights.departure_date >= '$datein' 
+        AND plused_book_overnights.id_book = plused_rows.id_book 
+        AND plused_book_overnights.id_year = plused_rows.id_year 
+        AND plused_book_overnights.accomodation = '$accomodation' 
+        AND ( ";
         $contastati = 1;
         //echo count($arrayStatus);
         foreach ($arrayStatus as $stat) {
@@ -1989,7 +2082,11 @@ class Mbackoffice extends Model {
         //con date e accomodation da rows
         //$querya .= ") GROUP BY plused_rows.accomodation, plused_rows.data_partenza_campus, plused_rows.data_arrivo_campus, plused_book_overnights.id_book ORDER BY plused_book_overnights.id_book, num_in DESC";
         //con date e accomodation da book_overnight
-        $querya .= ") GROUP BY plused_book_overnights.accomodation, plused_book_overnights.departure_date, plused_book_overnights.arrival_date, plused_book_overnights.id_book ORDER BY plused_book_overnights.id_book, num_in DESC";
+        $querya .= ") GROUP BY plused_book_overnights.accomodation, 
+            plused_book_overnights.departure_date, 
+            plused_book_overnights.arrival_date, 
+            plused_book_overnights.id_book 
+            ORDER BY plused_book_overnights.id_book, num_in DESC";
         $Q = $this->db->query($querya);
         //echo $this->db->last_query();
         if ($Q->num_rows() > 0) {
@@ -2013,11 +2110,18 @@ class Mbackoffice extends Model {
         $backbkg = array();
         $contagiri = 0;
         
-        $dateFilters = "plused_book.departure_date >= '$datein' AND plused_book.arrival_date <= '$dateout'";
+        $dateFilters = "plused_book.departure_date >= '$datein' 
+        AND plused_book.arrival_date <= '$dateout'";
         
-        $querya = "SELECT DISTINCT plused_book.id_book, plused_book.id_year, agenti.businessname, COUNT(plused_book.id_book) as num_in, plused_book.arrival_date, plused_book.departure_date, plused_book.status, agenti.businesscountry FROM plused_book, plused_rows, agenti WHERE plused_book.id_agente = agenti.id AND plused_book.id_centro = $campus 
+        $querya = "SELECT DISTINCT plused_book.id_book, plused_book.id_year, 
+        agenti.businessname, COUNT(plused_book.id_book) as num_in, 
+        plused_book.arrival_date, plused_book.departure_date, 
+        plused_book.status, agenti.businesscountry FROM plused_book, 
+        plused_rows, agenti WHERE plused_book.id_agente = agenti.id 
+        AND plused_book.id_centro = $campus 
         AND ".$dateFilters." 
-        AND plused_book.id_book = plused_rows.id_book AND plused_book.id_year = plused_rows.id_year AND ( ";
+        AND plused_book.id_book = plused_rows.id_book 
+        AND plused_book.id_year = plused_rows.id_year AND ( ";
         $contastati = 1;
         //echo count($arrayStatus);
         foreach ($arrayStatus as $stat) {
@@ -2330,10 +2434,46 @@ class Mbackoffice extends Model {
             $toarray = explode("/", $to);
             $frommysql = $fromarray[2] . "-" . $fromarray[1] . "-" . $fromarray[0];
             $tomysql = $toarray[2] . "-" . $toarray[1] . "-" . $toarray[0];
-            $queryt = "SELECT id_year, id_book, exb_id, exc_excursion, businessname, businesscountry, nome_centri, exb_tot_pax, exc_weeks, plused_book.status as statopre, arrival_date, departure_date, exc_id, exc_length FROM plused_exc_bookings, plused_exc_all, plused_book, agenti, centri WHERE (plused_book.status = 'confirmed' OR plused_book.status = 'active') AND exc_id = exb_id_excursion and centri.id = exb_campus_id and agenti.id = id_agente and exb_id_book = id_book and exc_type = '" . $tipo . "' and centri.id = $campus AND exb_confirmed = 'NO' AND (plused_book.arrival_date <= '$tomysql' AND plused_book.departure_date >= '$frommysql') ORDER BY exb_id_excursion, exc_weeks, arrival_date, departure_date";
+            /*echo $queryt = "SELECT id_year, id_book, exb_id, exc_excursion, businessname, 
+                businesscountry, nome_centri, exb_tot_pax, exc_weeks, 
+                plused_book.status as statopre, arrival_date, departure_date, 
+                exc_id, exc_length FROM 
+                plused_exc_bookings, 
+                plused_exc_all, 
+                plused_book, agenti, 
+                centri 
+                WHERE 
+                (plused_book.status = 'confirmed' 
+                OR plused_book.status = 'active') 
+                AND exc_id = exb_id_excursion and centri.id = exb_campus_id 
+                AND agenti.id = id_agente AND exb_id_book = id_book 
+                AND exc_type = '" . $tipo . "' and centri.id = $campus 
+                AND exb_confirmed = 'NO' 
+                AND (plused_book.arrival_date <= '" . $tomysql . "' 
+                AND plused_book.departure_date >= '" . $frommysql . "') 
+                ORDER BY exb_id_excursion, exc_weeks, arrival_date, departure_date";
+            die;
             //$queryt = "SELECT id_year, id_book, exb_id, exc_excursion, businessname, nome_centri, exb_tot_pax, exc_weeks, plused_book.status as statopre, arrival_date, departure_date FROM plused_exc_bookings, plused_exc_all, plused_book, agenti, centri WHERE (plused_book.status = 'confirmed' OR plused_book.status = 'active') AND exc_id = exb_id_excursion and centri.id = exb_campus_id and agenti.id = id_agente and exb_id_book = id_book and exc_type = '".$tipo."' and centri.id = $campus ORDER BY exb_id_excursion, exc_weeks";
-            $Q = $this->db->query($queryt);
-            //echo $this->db->last_query();
+            $Q = $this->db->query($queryt);*/
+            $this->db->select("pb.id_year, pb.id_book, peb.exb_id, exc.exc_excursion_name as exc_excursion, ag.businessname,
+                ag.businesscountry, c.nome_centri, peb.exb_tot_pax, peb.exb_weeks as exc_weeks,
+                pb.status as statopre, pb.arrival_date, pb.departure_date,
+                exc.exc_id, exc_day_type as exc_length");
+            $this->db->from('agnt_pack_exc_bookings peb');
+            $this->db->join('plused_book pb','peb.exb_id_book = pb.id_book');
+            $this->db->join('agnt_excursions exc','peb.exb_id_excursion = exc.exc_id');
+            $this->db->join('agenti ag','pb.id_agente = ag.id');            
+            $this->db->join('centri c','peb.exb_campus_id = c.id');            
+            
+            $this->db->where("(pb.status = 'confirmed' 
+                OR pb.status = 'active')");
+            //$this->db->where("exc.exc_type",$tipo);
+            $this->db->where("c.id",$campus);
+            $this->db->where("pb.arrival_date <= ",$tomysql);
+            $this->db->where("pb.departure_date >= ",$frommysql);
+            $this->db->order_by("peb.exb_id_excursion, exc.exc_weeks, pb.arrival_date, pb.departure_date");
+            $Q = $this->db->get();
+            //echo $this->db->last_query();die;
             if ($Q->num_rows() > 0) {
                 foreach ($Q->result_array() as $row) {
                     $data[] = $row;
@@ -2355,7 +2495,14 @@ class Mbackoffice extends Model {
         $frommysql = $fromarray[2] . "-" . $fromarray[1] . "-" . $fromarray[0];
         $tomysql = $toarray[2] . "-" . $toarray[1] . "-" . $toarray[0];
         //$queryt2 = "SELECT SUM(exb_tot_pax) as allpax, exb_excursion_date, exb_buscompany_code, nome_centri, exb_confirmed, exc_excursion, exc_length, pbe_cm_done, pbe_cm_ok, pbe_cm_notes FROM plused_exc_bookings, plused_exc_all, centri, plused_bus_exc WHERE exb_buscompany_code = pbe_rndcode AND exb_campus_id = centri.id AND exb_id_excursion = exc_id AND exc_type = '".$tipo."' AND";
-        $queryt2 = "SELECT SUM(exb_tot_pax) as allpax, exb_excursion_date, exb_buscompany_code, nome_centri, exb_confirmed, exc_excursion, exc_length FROM plused_exc_bookings, plused_exc_all, centri WHERE exb_campus_id = centri.id AND exb_id_excursion = exc_id AND exc_type = '" . $tipo . "' AND";
+ /* REMOVED FOR PACKAGE INTEGRATION.
+  *        $queryt2 = "SELECT SUM(exb_tot_pax) as allpax, exb_excursion_date, 
+            exb_buscompany_code, nome_centri, exb_confirmed, exc_excursion, 
+            exc_length 
+            FROM plused_exc_bookings, plused_exc_all,centri 
+            WHERE exb_campus_id = centri.id 
+            AND exb_id_excursion = exc_id 
+            AND exc_type = '" . $tipo . "' AND";
         if ($status != "all")
             $queryt2 .= " exb_confirmed = '" . $status . "' AND";
         else
@@ -2364,21 +2511,36 @@ class Mbackoffice extends Model {
             $queryt2 .= " exb_campus_id = $campus  AND";
         }
         $queryt2 .= "(exb_excursion_date <= '$tomysql' AND exb_excursion_date >= '$frommysql') GROUP BY exb_buscompany_code ORDER BY exb_excursion_date, nome_centri";
-
-        /*
-          if($campus)
-          $queryt = "SELECT SUM(exb_tot_pax) as allpax, exb_excursion_date, exb_buscompany_code, nome_centri FROM plused_exc_bookings, plused_exc_all, centri WHERE exb_campus_id = centri.id AND exb_campus_id = $campus AND exb_id_excursion = exc_id AND exc_type = '".$tipo."' AND exb_confirmed = '".$status."' AND (exb_excursion_date <= '$tomysql' AND exb_excursion_date >= '$frommysql') GROUP BY exb_buscompany_code ORDER BY exb_excursion_date, nome_centri";
-          else
-          $queryt = "SELECT SUM(exb_tot_pax) as allpax, exb_excursion_date, exb_buscompany_code, nome_centri FROM plused_exc_bookings, plused_exc_all, centri WHERE exb_campus_id = centri.id AND exb_id_excursion = exc_id AND exc_type = '".$tipo."' AND exb_confirmed = '".$status."' AND (exb_excursion_date <= '$tomysql' AND exb_excursion_date >= '$frommysql') GROUP BY exb_buscompany_code ORDER BY exb_excursion_date, nome_centri";
-         */
-        $Q = $this->db->query($queryt2);
+*/
+        // NEW QUERY TO MAP WITH NEW PACKAGE TABLE.
+        $this->db->select("SUM(peb.exb_tot_pax) as allpax, peb.exb_excursion_date, 
+            peb.exb_buscompany_code, c.nome_centri, peb.exb_confirmed, 
+            exc.exc_excursion_name as exc_excursion, exc.exc_day_type as exc_length");
+        $this->db->from("agnt_pack_exc_bookings peb");
+        $this->db->join("agnt_excursions exc","peb.exb_id_excursion = exc.exc_id");
+        $this->db->join("centri c","peb.exb_campus_id = c.id");
+        // $this->db->where("exc.exc_type",$tipo);
+        if ($status != "all")
+            $this->db->where("peb.exb_confirmed",$status);
+        else
+            $this->db->where("(exb_confirmed = 'STANDBY' OR exb_confirmed = 'YES')");
+        if ($campus) {
+            $this->db->where("exb_campus_id",$campus);
+        }
+        $this->db->where("exb_excursion_date <=",$tomysql);
+        $this->db->where("exb_excursion_date >=",$frommysql);
+        $this->db->group_by("exb_buscompany_code");
+        $this->db->order_by("peb.exb_excursion_date, c.nome_centri");
+        $Q = $this->db->get();
         //echo "<br><br><br><br>".$this->db->last_query();
         if ($Q->num_rows() > 0) {
             foreach ($Q->result_array() as $row) {
                 $posti = 0;
                 $posti = $this->busSeatsForExcursion($row["exb_buscompany_code"]);
                 $row["totPosti"] = $posti;
-                $queryNotes = "SELECT pbe_cm_done, pbe_cm_ok, pbe_cm_notes FROM plused_bus_exc WHERE pbe_rndcode = '" . $row["exb_buscompany_code"] . "'";
+                $queryNotes = "SELECT pbe_cm_done, pbe_cm_ok, pbe_cm_notes 
+                    FROM plused_bus_exc 
+                    WHERE pbe_rndcode = '" . $row["exb_buscompany_code"] . "'";
                 $QNotes = $this->db->query($queryNotes);
                 if ($QNotes->num_rows() > 0) {
                     foreach ($QNotes->result_array() as $rowNotes) {
@@ -2612,9 +2774,11 @@ class Mbackoffice extends Model {
         return $data;
     }
 
+    // Changed for package integration
     function excursionById($id) {
+        $data = array();
         $this->db->where('exc_id', $id);
-        $Q = $this->db->get('plused_exc_all');
+        $Q = $this->db->get('agnt_excursions');
         if ($Q->num_rows() > 0) {
             foreach ($Q->result_array() as $row) {
                 $data = $row;
@@ -2623,12 +2787,27 @@ class Mbackoffice extends Model {
         $Q->free_result();
         return $data;
     }
-
+    
+    // Changed for package integration
     function bkgDetailsForExcursion($arr_key) {
         $data = array();
         foreach ($arr_key as $key => $value) {
-            $querybk = "SELECT exb_id_book, exb_id_year, arrival_date, departure_date, agenti.businessname, agenti.businesscountry, tot_pax, exb_id FROM plused_exc_bookings, plused_book, agenti WHERE plused_book.id_book = exb_id_book AND exb_id = " . $value . " AND plused_book.id_agente = agenti.id";
-            $Q2 = $this->db->query($querybk);
+            /*$querybk = "SELECT exb_id_book, exb_id_year, arrival_date, departure_date, 
+                agenti.businessname, agenti.businesscountry, tot_pax, exb_id 
+                FROM plused_exc_bookings, 
+                plused_book, 
+                agenti 
+                WHERE plused_book.id_book = exb_id_book 
+                AND exb_id = " . $value . " 
+                AND plused_book.id_agente = agenti.id";*/
+            $this->db->select("exb_id_book, exb_id_year, arrival_date, departure_date, 
+                ag.businessname, ag.businesscountry, tot_pax, exb_id");
+            $this->db->where("exb_id",$value);
+            $this->db->from("agnt_pack_exc_bookings peb");
+            $this->db->join("plused_book pb","pb.id_book = peb.exb_id_book");
+            $this->db->join("agenti ag","pb.id_agente = ag.id");
+            $Q2 = $this->db->get();
+            //$Q2 = $this->db->query($querybk);
             if ($Q2->num_rows() > 0) {
                 foreach ($Q2->result_array() as $row) {
                     $data[] = $row;
@@ -2637,10 +2816,20 @@ class Mbackoffice extends Model {
         }
         return $data;
     }
-
+    
+    // Changed for package integration
     function getOtherExcursions($excId, $campusId, $from, $to) {
         $data = array();
-        $querybk = "SELECT exb_buscompany_code, exb_excursion_date, SUM(exb_tot_pax) as all_tot_pax FROM plused_exc_bookings WHERE exb_id_excursion = " . $excId . " AND exb_campus_id = " . $campusId . " AND exb_excursion_date <= '" . $to . "' AND exb_excursion_date >= '" . $from . "' AND exb_buscompany_code <> '' AND exb_confirmed = 'STANDBY' GROUP BY exb_buscompany_code";
+        $querybk = "SELECT exb_buscompany_code, exb_excursion_date, 
+            SUM(exb_tot_pax) as all_tot_pax 
+            FROM agnt_pack_exc_bookings 
+            WHERE exb_id_excursion = " . $excId . " 
+                AND exb_campus_id = " . $campusId . " 
+                    AND exb_excursion_date <= '" . $to . "' 
+                        AND exb_excursion_date >= '" . $from . "' 
+                            AND exb_buscompany_code <> '' 
+                            AND exb_confirmed = 'STANDBY' 
+                            GROUP BY exb_buscompany_code";
         //echo $querybk;
         $Q2 = $this->db->query($querybk);
         if ($Q2->num_rows() > 0) {
@@ -2697,7 +2886,13 @@ class Mbackoffice extends Model {
 
     function busListForExcursion($exc_id) {
         $data = array();
-        $querybk = "SELECT jn_id, jn_id_bus, jn_price, cur_codice as jn_currency, tra_cp_name, tra_bus_name, tra_bus_seat FROM plused_tb_currency, plused_exc_join, plused_tra_companies, plused_tra_bus WHERE jn_currency = cur_id AND jn_id_bus = tra_bus_id AND tra_bus_cp_id = tra_cp_id AND jn_id_exc = " . $exc_id;
+        $querybk = "SELECT jn_id, jn_id_bus, jn_price, cur_codice as jn_currency, 
+            tra_cp_name, tra_bus_name, tra_bus_seat FROM plused_tb_currency, 
+            plused_exc_join, plused_tra_companies, plused_tra_bus 
+            WHERE jn_currency = cur_id 
+            AND jn_id_bus = tra_bus_id 
+            AND tra_bus_cp_id = tra_cp_id 
+            AND jn_id_exc = " . $exc_id;
         $Q = $this->db->query($querybk);
         if ($Q->num_rows() > 0) {
             foreach ($Q->result_array() as $row) {
@@ -2747,8 +2942,9 @@ class Mbackoffice extends Model {
         return $string;
     }
 
+    // Changed for package integration
     function standbyCodeExcursion($busCode, $vnum, $excDate) {
-        $qUpdNum = "UPDATE plused_exc_bookings SET exb_buscompany_code = '" . $busCode . "', exb_confirmed = 'STANDBY', exb_excursion_date = '" . $excDate . "' WHERE exb_id = $vnum";
+        $qUpdNum = "UPDATE agnt_pack_exc_bookings SET exb_buscompany_code = '" . $busCode . "', exb_confirmed = 'STANDBY', exb_excursion_date = '" . $excDate . "' WHERE exb_id = $vnum";
         //echo $qUpdNum;
         $Q = $this->db->query($qUpdNum);
         return true;
@@ -2793,7 +2989,7 @@ class Mbackoffice extends Model {
             'pbe_hreturn' => $this->input->xss_clean($this->input->post('return_hour')),
             'pbe_pickupplace' => $this->input->xss_clean($this->input->post('pickup_place'))
         );
-        //print_r($data);
+        //print_r($data);die;
         $this->db->insert('plused_bus_exc', $data);
     }
 
@@ -2851,11 +3047,28 @@ class Mbackoffice extends Model {
         return $data;
     }
 
+    // Changed for package integration: 2924
     function excDetail($busCode) {
         $data = array();
-        $querybk = "SELECT DISTINCT pbe_jnidexc, pbe_excdate, pbe_hpickup, pbe_hreturn, pbe_pickupplace, exc_excursion, exc_type, exc_length, nome_centri, pbe_cm_ok, pbe_cm_notes, pbe_cm_done, exc_id_centro FROM plused_bus_exc, plused_exc_all, centri WHERE pbe_rndcode = '" . $busCode . "' AND pbe_jnidexc = exc_id AND exc_id_centro = centri.id";
-        $Q = $this->db->query($querybk);
-        //echo $this->db->last_query();
+        /*$querybk = "SELECT DISTINCT pbe_jnidexc, pbe_excdate, pbe_hpickup, 
+            pbe_hreturn, pbe_pickupplace, exc_excursion, exc_type, exc_length, 
+            nome_centri, pbe_cm_ok, pbe_cm_notes, pbe_cm_done, exc_id_centro 
+            FROM plused_bus_exc, plused_exc_all, centri 
+            WHERE pbe_rndcode = '" . $busCode . "' 
+                AND pbe_jnidexc = exc_id 
+                AND exc_id_centro = centri.id";
+        $Q = $this->db->query($querybk);*/
+        $this->db->select("DISTINCT pbe_jnidexc, pbe_excdate, pbe_hpickup, 
+            pbe_hreturn, pbe_pickupplace, exc_excursion_name as exc_excursion, 
+            exc_type, exc_day_type as exc_length, 
+            nome_centri, pbe_cm_ok, pbe_cm_notes, pbe_cm_done, excm_campus_id as exc_id_centro",FALSE);
+        $this->db->from("plused_bus_exc be");
+        $this->db->join("agnt_excursions exc","be.pbe_jnidexc = exc.exc_id");
+        $this->db->join("agnt_campus_excursion c_exc","exc.exc_id = c_exc.excm_exc_id");
+        $this->db->join("centri c","c_exc.excm_campus_id = c.id");
+        $this->db->where("pbe_rndcode",$busCode);
+        $Q = $this->db->get();
+        //echo $this->db->last_query();die;
         if ($Q->num_rows() > 0) {
             foreach ($Q->result_array() as $row) {
                 $data[] = $row;
@@ -2865,11 +3078,12 @@ class Mbackoffice extends Model {
         return $data;
     }
 
+    // Changed for package integration
     function getExcIdsFromBusCode($busCode) {
         $data = array();
         $this->db->select('exb_id');
         $this->db->where('exb_buscompany_code', $busCode);
-        $Q = $this->db->get('plused_exc_bookings');
+        $Q = $this->db->get('agnt_pack_exc_bookings');//agnt_pack_exc_bookings
         if ($Q->num_rows() > 0) {
             foreach ($Q->result_array() as $row) {
                 $data[] = $row["exb_id"];
@@ -2907,9 +3121,17 @@ class Mbackoffice extends Model {
         return $data;
     }
 
+    // Changed for package integration
     function getExcPaxForBusCode($busCode) {
-        $querybk = "SELECT SUM(exb_tot_pax) as allpax FROM plused_exc_bookings WHERE exb_buscompany_code = '$busCode' GROUP BY exb_buscompany_code";
-        $Q = $this->db->query($querybk);
+        $data = array();
+        /*$querybk = "SELECT SUM(exb_tot_pax) as allpax FROM agnt_pack_exc_bookings 
+        WHERE exb_buscompany_code = '$busCode' GROUP BY exb_buscompany_code";
+        $Q = $this->db->query($querybk);*/
+        $this->db->from("agnt_pack_exc_bookings");
+        $this->db->select("SUM(exb_tot_pax) as allpax");
+        $this->db->where("exb_buscompany_code",$busCode);
+        $this->db->group_by("exb_buscompany_code");
+        $Q = $this->db->get();
         if ($Q->num_rows() > 0) {
             foreach ($Q->result_array() as $row) {
                 $data = $row["allpax"];
@@ -2998,7 +3220,7 @@ class Mbackoffice extends Model {
         }
         //INVIO MAIL PER CANCELED BUS
         $a_email = "smarra@plus-ed.com";
-        $cc_email = "campus@plus-ed.com, l.pombo@plus-ed.com, e.bettoni@plus-ed.com";
+        $cc_email = "campus@plus-ed.com, j.roldan@plus-ed.com, e.bettoni@plus-ed.com";
         $bcc_email = "a.sudetti@gmail.com";
         $this->load->library('email');
         $mymessage = "<!DOCTYPE HTML PUBLIC =22-//W3C//DTD HTML 4.01 Transitional//EN=22 =22http://www.w3.org/TR/html4/loose.dtd=22>";
@@ -3070,7 +3292,7 @@ class Mbackoffice extends Model {
         }
         //INVIO MAIL PER CANCELED BUS
         $a_email = "smarra@plus-ed.com";
-        $cc_email = "campus@plus-ed.com, l.pombo@plus-ed.com, dos@plus-ed.com, e.bettoni@plus-ed.com";
+        $cc_email = "campus@plus-ed.com, j.roldan@plus-ed.com, dos@plus-ed.com, e.bettoni@plus-ed.com";
         $bcc_email = "a.sudetti@gmail.com";
         $this->load->library('email');
         $mymessage = "<!DOCTYPE HTML PUBLIC =22-//W3C//DTD HTML 4.01 Transitional//EN=22 =22http://www.w3.org/TR/html4/loose.dtd=22>";
@@ -3113,12 +3335,13 @@ class Mbackoffice extends Model {
         return true;
     }
 
+    // Changed for package integration
     function getExcStatusByBusCode($busCode) {
         $data = array();
         $this->db->select('exb_confirmed');
         $this->db->distinct();
         $this->db->where('exb_buscompany_code', $busCode);
-        $Q = $this->db->get('plused_exc_bookings');
+        $Q = $this->db->get('agnt_pack_exc_bookings');
         if ($Q->num_rows() > 0) {
             foreach ($Q->result_array() as $row) {
                 $data[] = $row["exb_confirmed"];
@@ -3409,7 +3632,7 @@ class Mbackoffice extends Model {
             $mymessage .= "<strong>Plus Sales Office</strong>" . "<br/><br/>";
             $mymessage .= "</body></html>";
             $this->load->library('email');
-            $mailccarray = array('operations@plus-ed.com', 'k.klosinska@plus-ed.com', 'm.marra@studytours.it', 'c.sironi@studytours.it', 'v.verta@studytours.it', 'dos@plus-ed.com');
+            $mailccarray = array('operations@plus-ed.com', 'j.mcconville@plus-ed.com','m.adnitt@plus-ed.com', 'm.marra@studytours.it', 'c.sironi@studytours.it', 'v.verta@studytours.it', 'dos@plus-ed.com');
             $this->email->from('info@plus-ed.com', 'Plus Sales Office');
             $this->email->to('smarra@plus-ed.com');
             //$this->email->to('a.sudetti@gmail.com');
@@ -3645,7 +3868,7 @@ class Mbackoffice extends Model {
         $mymessage .= "Roster for booking " . $year . "_" . $idBook . " has been changed @" . $nomeCampus . ". Pax " . $type . "<br />";
         $mymessage .= "<strong>Plus Sales Office</strong>" . "<br/><br/>";
         $mymessage .= "</body></html>";
-        $mailccarray = array('l.pombo@plus-ed.com', 'k.klosinska@plus-ed.com', 'a.kavak@plus-ed.com', 'n.shabanova@plus-ed.com', 'l.gorman@plus-ed.com', 'michelle.gloster@plus-ed.com', 'michael.hollinshead@plus-ed.com');
+        $mailccarray = array('j.roldan@plus-ed.com', 'j.mcconville@plus-ed.com','m.adnitt@plus-ed.com', 'a.kavak@plus-ed.com', 'n.shabanova@plus-ed.com', 'jbhim@plus-ed.com', 'michelle.gloster@plus-ed.com', 'michael.hollinshead@plus-ed.com');
         $this->email->from('info@plus-ed.com', 'Plus Sales Office');
         $this->email->to('smarra@plus-ed.com');
         $this->email->cc($mailccarray);
@@ -3997,13 +4220,37 @@ class Mbackoffice extends Model {
 
 //NUOVE FUNCTION TRANSPORTATION 2014
 
+    // Changed for package integration
     function otherGroupsForExc($idExc, $dateExc, $involvedBooks) {
         $data = array();
-        $queryProp = "SELECT id_year, id_book, businessname, businesscountry, tot_pax, arrival_date, departure_date, exb_id FROM plused_book, plused_exc_bookings, agenti WHERE id_agente = agenti.id AND exb_confirmed = 'NO' AND exb_id_book = id_book AND exb_id_excursion = " . $idExc . " and exb_excursion_date = '0000-00-00' AND arrival_date < '" . $dateExc . "' AND departure_date > '" . $dateExc . "' AND plused_book.status = 'confirmed' ";
+        /*$queryProp = "SELECT id_year, id_book, businessname, businesscountry, 
+            tot_pax, arrival_date, departure_date, exb_id 
+            FROM plused_book, plused_exc_bookings, agenti 
+            WHERE id_agente = agenti.id 
+            AND exb_confirmed = 'NO' 
+            AND exb_id_book = id_book 
+            AND exb_id_excursion = " . $idExc . " 
+                AND exb_excursion_date = '0000-00-00' 
+                AND arrival_date < '" . $dateExc . "' 
+                AND departure_date > '" . $dateExc . "' 
+                AND plused_book.status = 'confirmed' ";
         foreach ($involvedBooks as $sBook) {
             $queryProp.="AND id_book <> $sBook ";
         }
-        $qRows = $this->db->query($queryProp);
+        $qRows = $this->db->query($queryProp);*/
+        $this->db->select("id_year, id_book, businessname, businesscountry, 
+            tot_pax, arrival_date, departure_date, exb_id");
+        $this->db->from("plused_book pb");
+        $this->db->join("agnt_pack_exc_bookings peb","peb.exb_id_book = pb.id_book");
+        $this->db->join("agenti ag","pb.id_agente = ag.id");
+        $this->db->where("exb_confirmed","No");
+        $this->db->where("exb_id_excursion",$idExc);
+        $this->db->where("exb_excursion_date","0000-00-00");
+        $this->db->where("arrival_date < ",$dateExc);
+        $this->db->where("departure_date > ",$dateExc);
+        $this->db->where("pb.status",'confirmed');     
+        $this->db->where_not_in("id_book",$involvedBooks);
+        $qRows = $this->db->get();
         //echo $this->db->last_query();
         if ($qRows->num_rows() > 0) {
             foreach ($qRows->result_array() as $rowR) {
@@ -5862,14 +6109,18 @@ class Mbackoffice extends Model {
 
     function NA_getBookDet($id_book) {
         $data = array();
-        $sqlid = "SELECT id_centro, MIN(data_arrivo_campus) as mindatein, MAX(data_partenza_campus) as maxdateout FROM plused_book, plused_rows WHERE plused_rows.id_book = plused_book.id_book AND plused_book.id_book = $id_book";
+        $sqlid = "SELECT id_centro, MIN(data_arrivo_campus) as mindatein, 
+        MAX(data_partenza_campus) as maxdateout FROM plused_book, plused_rows 
+        WHERE plused_rows.id_book = plused_book.id_book 
+        AND plused_book.id_book = $id_book";
         $query = $this->db->query($sqlid);
         if ($query->num_rows() > 0) {
             foreach ($query->result() as $rowq) {
                 $data[] = $rowq;
             }
-            return $data;
         }
+        $query->free_result();
+        return $data;
     }
 
     function NA_getSimCalendar($campus, $accomodation, $datein, $dateout) {

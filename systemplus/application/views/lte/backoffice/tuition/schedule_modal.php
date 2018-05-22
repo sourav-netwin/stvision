@@ -191,6 +191,15 @@
                                         </div>
                                     </div>
                                     <div class="form-group row">
+                                        <label class="col-sm-4 control-label" for="selTeacher">Teacher from history</label>
+                                        <div class="col-sm-8">
+                                            <label style="cursor: pointer;"><input id="chkShowAllTeacher" type="checkbox" value="1" /> Show teachers from history (<?php echo date('Y');?>)</label>
+                                            <select class="required form-control" id="selTeacherFHistory" name="selTeacher"  >
+                                                <option value="">Select teacher</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
                                         <label class="col-sm-4 control-label" for="txtFromTime">From time</label>
                                         <div class="col-sm-8">
                                             <input type="text" style="position: absolute; width: 0px;border: none;padding: 0;" />

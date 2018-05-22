@@ -99,6 +99,9 @@ label.error{
     cursor: pointer!important;
 }
 
+.silverinputborder{
+    border: 1px solid #ccc;
+}
 
 @media(max-width: 770px){
 	.margin-bottom-responsive{
@@ -1098,4 +1101,15 @@ span.infoTipoPax {
 }
 .highlight-dark th{
     min-width: 40px;
+}
+
+.welcomeSpecification li{
+	margin-bottom : 10px;
+}
+.fullContactText{
+	font-weight: 600;
+}
+
+.noLeftPadding{
+	padding-left: 0;
 }

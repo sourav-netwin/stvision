@@ -46,7 +46,7 @@
 	}
 ?>
 
-<!------------custom javascript for program course------------>
+<!------------custom javascript for master modules------------>
 <script>
 	var pageType = 'add_edit';
 	var id = "<?php echo $id; ?>";
@@ -61,7 +61,7 @@
 	var duplicate_dynamic = "<?php echo $this->lang->line("duplicate_dynamic"); ?>";
 	var enter_vimeo_url = "<?php echo $this->lang->line("enter_vimeo_url"); ?>";
 </script>
-<script src="<?php echo LTE; ?>frontweb/custom/master.js?v=1.1"></script>
+<script src="<?php echo LTE; ?>frontweb/custom/master.js?v=1.9"></script>
 
 <div class="right_col" role="main">
 	<div class="row">
@@ -145,20 +145,3 @@
 		</div>
 	</div>
 </div>
-
-<?php
-	if($moduleName == 'manage_fixed_activity')
-	{
-?>
-		<!----------Timepicker CSS and JS--------->
-		<link rel="stylesheet" href="<?php echo LTE; ?>frontweb/bootstrap-combined.min.css">
-		<link rel="stylesheet" href="<?php echo LTE; ?>frontweb/bootstrap-datetimepicker.min.css">
-		<script src="<?php echo LTE; ?>frontweb/bootstrap-datetimepicker.min.js"></script>
-		<script type="text/javascript">
-			$('.timepicker').datetimepicker({
-				pickDate: false
-			});
-		</script>
-<?php
-	}
-?>

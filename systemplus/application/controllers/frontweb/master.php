@@ -16,7 +16,13 @@
 			$this->form_validation->set_error_delimiters('<span style="color:red">', '</span>');
 		}
 
-		//This function is used to show the listing page
+		/**
+		*This function is used to show the listing page
+		*
+		*@access public
+		*@param String $moduleName : The name of the module
+		*@return NONE
+		*/
 		public function index($moduleName = NULL)
 		{
 			$data['moduleName'] = $moduleName;
@@ -27,7 +33,13 @@
 			$this->ltelayout->view('frontweb/list' , $data);
 		}
 
-		//This function is used to get details from database and show in the datatable
+		/**
+		*This function is used to get details from database and show in the datatable
+		*
+		*@access public
+		*@param NONE
+		*@return NONE
+		*/
 		public function datatable()
 		{
 			if($this->input->post('draw'))
@@ -47,7 +59,14 @@
 			}
 		}
 
-		//This function is used to perform both add and edit operation for master module
+		/**
+		*This function is used to perform both add and edit operation for master module
+		*
+		*@access public
+		*@param String $moduleName : The name of the module
+		*@param Integer $id : The module id
+		*@return NONE
+		*/
 		function add_edit($moduleName = NULL , $id = NULL)
 		{
 			$fileUploadError = array();
@@ -138,6 +157,10 @@
 							if(isset($moduleArr['addedDateField']))
 								$post[$moduleArr['addedDateField']] = date('Y-m-d H:i:s');
 
+							//For sub module , save the foreign key value as reference
+							if($this->input->post('foreignKeyValue') != '')
+								$post[$moduleArr['foreignKey']] = $this->input->post('foreignKeyValue');
+
 							$insertId = $this->admin_model->commonAdd($moduleArr['dbName'] , $post);
 							$this->session->set_flashdata('success_message', str_replace('**module**' , $moduleArr['title'] , $this->lang->line('add_success_message')));
 						}
@@ -175,11 +198,20 @@
 							if($fieldValue['type'] == 'file' && $fieldValue['fileType'] == 'image')
 							{
 								if($this->input->post($fieldKey.'_changeFlag') == 2)
-									$this->_handleCropping($post[$fieldKey] , $fieldValue , $moduleName);
+								{
+									if($this->input->post('foreignKeyValue') != '')
+										$this->_handleCropping($post[$fieldKey] , $fieldValue , $moduleName , $this->input->post('foreignKeyValue'));
+									else
+										$this->_handleCropping($post[$fieldKey] , $fieldValue , $moduleName);
+								}
 							}
 						}
 					}
-					redirect('/frontweb/master/index/'.$moduleName);
+
+					if($this->input->post('foreignKeyValue') != '')
+						redirect('/frontweb/master/manage_submodule/'.$moduleName.'/'.$this->input->post('foreignKeyValue'));
+					else
+						redirect('/frontweb/master/index/'.$moduleName);
 				}
 			}
 			if($id != '')
@@ -198,7 +230,13 @@
 			$this->ltelayout->view('frontweb/add_edit' , $data);
 		}
 
-		//Function is used to update program status through ajax call
+		/**
+		*Function is used to update program status through ajax call
+		*
+		*@access public
+		*@param NONE
+		*@return NONE
+		*/
 		public function update_status()
 		{
 			if($this->input->post('id'))
@@ -212,12 +250,36 @@
 			}
 		}
 
-		//Function is used to perform delete operation for master module(soft delete)
-		function delete($module = NULL , $id = NULL)
+		/**
+		*Function is used to perform delete operation for master module(soft delete)
+		*
+		*@access public
+		*@param String $module : The name of the module
+		*@param Integer $id : The module id
+		*@param Integer $submoduleId : The submodule id
+		*@return NONE
+		*/
+		public function delete($module = NULL , $id = NULL , $submoduleId = NULL)
 		{
 			$moduleArr = $this->mastermodel->getModule($module);
+			if(isset($moduleArr['parentModule']))
+			{
+				foreach($moduleArr['field'] as $fieldKey => $fieldValue)
+				{
+					if($fieldValue['type'] == 'file')
+					{
+						$postData = $this->admin_model->commonGetData($fieldKey , $moduleArr['key'].' = '.$id , $moduleArr['dbName'] , 1);
+						if(file_exists('./'.$fieldValue['uploadPath'].$postData[$fieldKey]))
+							unlink('./'.$fieldValue['uploadPath'].$postData[$fieldKey]);
+						if(file_exists('./'.$fieldValue['uploadPath'].getThumbnailName($postData[$fieldKey])))
+							unlink('./'.$fieldValue['uploadPath'].getThumbnailName($postData[$fieldKey]));
+					}
+				}
+				$this->admin_model->commonDelete($moduleArr['dbName'] , $moduleArr['key'].' = '.$id);
+				redirect('/frontweb/master/manage_submodule/'.$module.'/'.$submoduleId);
+			}
 			//Hard delete from database with foreign key checking
-			if(isset($moduleArr['deleteCheck']))
+			elseif(isset($moduleArr['deleteCheck']))
 			{
 				$this->admin_model->commonDelete($moduleArr['dbName'] , $moduleArr['key'].' = '.$id);
 				$this->deleteCheck($moduleArr['deleteCheck'] , $id);
@@ -230,7 +292,7 @@
 				);
 				$this->admin_model->commonUpdate($moduleArr['dbName'] , $moduleArr['key'].' = '.$id , $updateData);
 			}
-			if($module == 'manage_extra_activity')
+			if($module == 'manage_extra_activity' && (strpos($_SERVER["HTTP_REFERER"] , 'manage_extra_activity') === FALSE))
 				redirect('/frontweb/extra_activity/index');
 			else
 			{
@@ -242,6 +304,7 @@
 		/**
 		*This function is used to delete the master module data recursively for the submodules
 		*
+		*@access private
 		*@param String $moduleName : Module name
 		*@param String $idList : The foreign key id list
 		*@return NONE
@@ -256,8 +319,14 @@
 				$this->deleteCheck($moduleArr['deleteCheck'] , $referenceKeyList['id']);
 		}
 
-		//This function is used to check if the field is duplicate or not for master modules
-		function check_duplicate()
+		/**
+		*This function is used to check if the field is duplicate or not for master modules
+		*
+		*@access public
+		*@param NONE
+		*@return NONE
+		*/
+		public function check_duplicate()
 		{
 			if($this->input->post('module'))
 			{
@@ -274,10 +343,38 @@
 			}
 		}
 
-		/***********Image Cropping functionality for master modules Start***********/
-		public function _handleCropping($fileName = NULL , $fileDetails = array() , $moduleName = NULL)
+		/**
+		*This function is used to manage submodule module (Both listing and add/edit)
+		*
+		*@access public
+		*@param String $moduleName : Module Name
+		*@param Integer $id : The foreign key id
+		*@return NONE
+		*/
+		public function manage_submodule($moduleName = NULL , $id = NULL , $subModuleId = NULL)
 		{
-			$this->cropInit($fileName , $fileDetails , $moduleName);
+			$post = array();
+			$moduleArr = $this->mastermodel->getModule($moduleName);
+			$listResult = $this->mastermodel->getDatatable($moduleName , NULL , NULL , NULL , NULL , NULL , $id);
+			if($subModuleId != '')
+				$post = $this->mastermodel->getFormData($moduleName , $subModuleId);
+			$data['listResult'] = $listResult['data'];
+			$data['moduleName'] = $moduleName;
+			$data['moduleArr'] = $moduleArr;
+			$data['id'] = $id;
+			$data['flag'] = ($subModuleId != '') ? 'es' : 'as';
+			$data['actionUrl'] = ($subModuleId != '') ? '/frontweb/master/add_edit/'.$moduleName.'/'.$subModuleId : '/frontweb/master/add_edit/'.$moduleName;
+			$data['post'] = $post;
+			$data['breadcrumb1'] = 'Website managements';
+			$data['pageHeader'] = $data['moduleArr']['title'];
+			$data['title'] = 'plus-ed.com | '.$data['pageHeader'];
+			$this->ltelayout->view('frontweb/manage_submodule' , $data);
+		}
+
+		/***********Image Cropping functionality for master modules Start***********/
+		public function _handleCropping($fileName = NULL , $fileDetails = array() , $moduleName = NULL , $foreignKeyValue = NULL)
+		{
+			$this->cropInit($fileName , $fileDetails , $moduleName , $foreignKeyValue);
 			$this->cropping->image();
 			exit();
 		}
@@ -288,8 +385,9 @@
 			$this->cropping->process($action);
 		}
 
-		public function cropInit($fileName = NULL , $fileDetails = array() , $moduleName = NULL)
+		public function cropInit($fileName = NULL , $fileDetails = array() , $moduleName = NULL , $foreignKeyValue = NULL)
 		{
+			$redirectUrl = ($foreignKeyValue != '') ? 'frontweb/master/manage_submodule/'.$moduleName.'/'.$foreignKeyValue : 'frontweb/master/index/'.$moduleName;
 			$param = array();
 			if(empty($fileName))
 				$param = $this->session->userdata("cropData");
@@ -305,7 +403,7 @@
 					'imageHeight' => $fileDetails['height'],
 					'thumbWidth' => $fileDetails['thumbWidth'],
 					'thumbHeight' => $fileDetails['thumbHeight'],
-					'redirectTo' => 'frontweb/master/index/'.$moduleName,
+					'redirectTo' => $redirectUrl,
 					'formCallbackAction' => 'frontweb/master/process'
 				);
 				$this->session->set_userdata("cropData" , $param);

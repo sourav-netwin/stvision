@@ -19,7 +19,7 @@
 <?php
 $campi = $booking_detail[0];
 $agency = $agency[0];
-//print_r($detSTD);
+$printableAddress = getPrintableAddress($campi);
 ?>
 <body>
 	<?php
@@ -47,7 +47,7 @@ $agency = $agency[0];
 							else {
 								echo 'MR/MS ';
 							}
-							?><?php echo $single["nome"] ?> <?php echo $single["cognome"] ?>, born on the <?php echo date("d/m/Y", strtotime($single["pax_dob"])); ?>, Passport no. <?php echo $single["numero_documento"] ?> is accompanying a group of students participating in an English language course for <?php echo $campi["weeks"] <= 1 ? $campi["weeks"].' week' : $campi["weeks"].' weeks'; ?>, taking place at <?php echo $campi["school_name"] . ', ' . $campi["located_in"]; ?>.<br /><br />From: <?php echo date("d/m/Y", strtotime($campi["arrival_date"])); ?> To: <?php echo date("d/m/Y", strtotime($campi["departure_date"])); ?><br /><br />Campus address: <?php echo $campi["school_name"]; ?><br /><br />The course is inclusive of full board accommodation, English lessons (15 hours a week) and an afternoon, evening and weekend leisure programme. The payment is being made.<br /><br />Type of visa: General Visitor<br /><br />Group Leaders are responsible for students’ participation in the activities.<br /><br />Plus UK summer courses are accredited by the British Council and ABLS.<br /><br />Yours sincerely,<br /><em>Stefano Marra<br /><img src="http://www.plus-ed.com/vision_ag/img/firma_stefano_marra.gif" border="0" /></em></td>
+							?><?php echo $single["nome"] ?> <?php echo $single["cognome"] ?>, born on the <?php echo date("d/m/Y", strtotime($single["pax_dob"])); ?>, Passport no. <?php echo $single["numero_documento"] ?> is accompanying a group of students participating in an English language course for <?php echo $campi["weeks"] <= 1 ? $campi["weeks"].' week' : $campi["weeks"].' weeks'; ?>, taking place at <?php echo $campi["school_name"] . ', ' . $campi["located_in"]; ?>.<br /><br />From: <?php echo date("d/m/Y", strtotime($campi["arrival_date"])); ?> To: <?php echo date("d/m/Y", strtotime($campi["departure_date"])); ?><br /><br />Campus address: <?php echo $printableAddress; ?><br /><br />The course is inclusive of full board accommodation, English lessons (15 hours a week) and an afternoon, evening and weekend leisure programme. The payment is being made.<br /><br />Type of visa: General Visitor<br /><br />Group Leaders are responsible for students’ participation in the activities.<br /><br />Plus UK summer courses are accredited by the British Council and ABLS.<br /><br />Yours sincerely,<br /><em>Stefano Marra<br /><img src="http://www.plus-ed.com/vision_ag/img/firma_stefano_marra.gif" border="0" /></em></td>
 					</tr>		
 				</table>
 				<?php
@@ -79,7 +79,7 @@ $agency = $agency[0];
 				else {
 					echo 'MR/MS';
 				}
-				?><?php echo $single["nome"] ?> <?php echo $single["cognome"] ?>, born on the <?php echo date("d/m/Y", strtotime($single["pax_dob"])); ?>, Passport no. <?php echo $single["numero_documento"] ?>, is part of a group of students participating in an English language course for <?php echo $campi["weeks"] <= 1 ? $campi["weeks"].' week' : $campi["weeks"].' weeks'; ?>, taking place at <?php echo $campi["school_name"] . ', ' . $campi["located_in"]; ?>.<br /><br />From:	<?php echo date("d/m/Y", strtotime($campi["arrival_date"])); ?>      To: <?php echo date("d/m/Y", strtotime($campi["departure_date"])); ?><br /><br />Campus address: <?php echo $campi["school_name"]; ?><br /><br />The course is inclusive of full board accommodation, English lessons (15 hours a week) and an afternoon, evening and weekend leisure programme. The payment is being made. <br /><br />Type of visa: Child Visitor<br /><br />Group leaders are responsible for students’ participation in the activities.<br /><br />Plus UK summer courses are accredited by the British Council and ABLS.<br /><br />Yours sincerely,<br /><em>Stefano Marra<br />Managing Director<br /><img src="http://www.plus-ed.com/vision_ag/img/firma_stefano_marra.gif" border="0" /></em></td>
+				?><?php echo $single["nome"] ?> <?php echo $single["cognome"] ?>, born on the <?php echo date("d/m/Y", strtotime($single["pax_dob"])); ?>, Passport no. <?php echo $single["numero_documento"] ?>, is part of a group of students participating in an English language course for <?php echo $campi["weeks"] <= 1 ? $campi["weeks"].' week' : $campi["weeks"].' weeks'; ?>, taking place at <?php echo $campi["school_name"] . ', ' . $campi["located_in"]; ?>.<br /><br />From:	<?php echo date("d/m/Y", strtotime($campi["arrival_date"])); ?>      To: <?php echo date("d/m/Y", strtotime($campi["departure_date"])); ?><br /><br />Campus address: <?php echo $printableAddress; ?><br /><br />The course is inclusive of full board accommodation, English lessons (15 hours a week) and an afternoon, evening and weekend leisure programme. The payment is being made. <br /><br />Type of visa: Child Visitor<br /><br />Group leaders are responsible for students’ participation in the activities.<br /><br />Plus UK summer courses are accredited by the British Council and ABLS.<br /><br />Yours sincerely,<br /><em>Stefano Marra<br />Managing Director<br /><img src="http://www.plus-ed.com/vision_ag/img/firma_stefano_marra.gif" border="0" /></em></td>
 					</tr>		
 				</table>
 				<?php

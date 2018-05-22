@@ -2,11 +2,6 @@
 <link rel="stylesheet" href="<?php echo LTE; ?>frontweb/datepicker.css">
 <script src="<?php echo LTE; ?>frontweb/bootstrap-datepicker.js"></script>
 
-<!----------Timepicker CSS and JS--------->
-<link rel="stylesheet" href="<?php echo LTE; ?>frontweb/bootstrap-combined.min.css">
-<link rel="stylesheet" href="<?php echo LTE; ?>frontweb/bootstrap-datetimepicker.min.css">
-<script src="<?php echo LTE; ?>frontweb/bootstrap-datetimepicker.min.js"></script>
-
 <!----------Form validation js----------->
 <script src="<?php echo base_url(); ?>js/tuition/jquery_validations1.9.0.js"></script>
 <link rel="stylesheet" href="<?php echo LTE; ?>frontweb/style.css?v=1.1">

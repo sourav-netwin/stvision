@@ -17,7 +17,7 @@ table.grande2{margin-left: auto; margin-right: auto;width:540pt;background-color
 <?php
 	$campi = $booking_detail[0];
 	$agency = $agency[0];
-	//print_r($detSTD);
+	$printableAddress = getPrintableAddress($campi);
 ?>
 <body>
 	<table cellpadding="0" cellspacing="0" class="grande">
@@ -101,7 +101,7 @@ table.grande2{margin-left: auto; margin-right: auto;width:540pt;background-color
 			<td>The programme is inclusive of full - board accommodation, English Lessons (20 Lessons a week) and an afternoon, evening and weekend Leisure Programmes.<br />From Monday to Friday the students will have English lessons in the morning and afternoon and evening activities after lunch. All activities will be supervised by the group leaders and the PLUS residential staff.<br /><br /></td>
 		</tr>
 		<tr>
-			<td>There is a PLUS emergency mobile number which is available 24 / 7. The number is 07956 218 226.<br />Accommodation address:<br /><?php echo $campi["school_name"]; ?><br />Departure date: <?php echo date("d/m/Y",strtotime($campi["departure_date"])); ?>.<br />Students and group leaders will be transferred from <?php echo $campi["school_name"]; ?>. This transfer has been arranged and organised by PLUS Ltd.<br /><br /></td>
+			<td>There is a PLUS emergency mobile number which is available 24 / 7. The number is 07956 218 226.<br />Accommodation address:<br /><?php echo $printableAddress; ?><br />Departure date: <?php echo date("d/m/Y",strtotime($campi["departure_date"])); ?>.<br />Students and group leaders will be transferred from <?php echo $campi["school_name"]; ?>. This transfer has been arranged and organised by PLUS Ltd.<br /><br /></td>
 		</tr>
 		<tr>
 			<td>Visa type for students: Child Visitor<br />Visa type for group leaders: General Visitor<br />PLUS is accredited by ABLS and the British Council.<br /><br />Yours sincerely,<br /><em>Stefano Marra<br /><img src="http://www.plus-ed.com/vision_ag/img/firma_stefano_marra.gif" border="0" /></em>
@@ -120,7 +120,7 @@ table.grande2{margin-left: auto; margin-right: auto;width:540pt;background-color
 			</tr>
 			<tr><td style="height:20px;">&nbsp;</td></tr>
 			<tr>
-				<td>This is to confirm that <?php echo $single["nome"] ?> <?php echo $single["cognome"] ?>, born on the <?php echo date("d/m/Y",strtotime($single["pax_dob"])); ?>, Passport no. <?php echo $single["numero_documento"] ?> is accompanying a Group of students participating in an English Language Course taking place at <?php echo $campi["school_name"]; ?>.<br /><br />From:	<?php echo date("d/m/Y",strtotime($campi["arrival_date"])); ?>      To: <?php echo date("d/m/Y",strtotime($campi["departure_date"])); ?><br /><br />Address: <?php echo $campi["school_name"]; ?><br /><br />The course is inclusive of full board accommodation, English Lessons (15 hours a week) and an afternoon, evening and weekend Leisure Programmes. The payment is being made.<br /><br />Type of visa: General Visitor<br /><br />Group Leaders are responsible for students’ participation in the activities.<br /><br />Plus is accredited by ABLS and the British Council.<br /><br />Yours sincerely,<br /><em>Stefano Marra<br /><img src="http://www.plus-ed.com/vision_ag/img/firma_stefano_marra.gif" border="0" /></em></td>
+				<td>This is to confirm that <?php echo $single["nome"] ?> <?php echo $single["cognome"] ?>, born on the <?php echo date("d/m/Y",strtotime($single["pax_dob"])); ?>, Passport no. <?php echo $single["numero_documento"] ?> is accompanying a Group of students participating in an English Language Course taking place at <?php echo $campi["school_name"]; ?>.<br /><br />From:	<?php echo date("d/m/Y",strtotime($campi["arrival_date"])); ?>      To: <?php echo date("d/m/Y",strtotime($campi["departure_date"])); ?><br /><br />Address: <?php echo $printableAddress; ?><br /><br />The course is inclusive of full board accommodation, English Lessons (15 hours a week) and an afternoon, evening and weekend Leisure Programmes. The payment is being made.<br /><br />Type of visa: General Visitor<br /><br />Group Leaders are responsible for students’ participation in the activities.<br /><br />Plus is accredited by ABLS and the British Council.<br /><br />Yours sincerely,<br /><em>Stefano Marra<br /><img src="http://www.plus-ed.com/vision_ag/img/firma_stefano_marra.gif" border="0" /></em></td>
 			</tr>		
 		</table>
 	<?php 
@@ -138,7 +138,7 @@ table.grande2{margin-left: auto; margin-right: auto;width:540pt;background-color
 			</tr>
 			<tr><td style="height:20px;">&nbsp;</td></tr>
 			<tr>
-				<td>This is to confirm that <?php echo $single["nome"] ?> <?php echo $single["cognome"] ?>, born on the <?php echo date("d/m/Y",strtotime($single["pax_dob"])); ?>, Passport no. <?php echo $single["numero_documento"] ?>, is part of a group of students participating in an English Language Course taking place at <?php echo $campi["school_name"]; ?>.<br /><br />From:	<?php echo date("d/m/Y",strtotime($campi["arrival_date"])); ?>      To: <?php echo date("d/m/Y",strtotime($campi["departure_date"])); ?><br /><br />Address: <?php echo $campi["school_name"]; ?><br /><br />The course is inclusive of full board accommodation, English Lessons (15 hours a week) and an afternoon, evening and weekend Leisure Programmes. The payment is being made.<br /><br />Type of visa: Child Visitor<br /><br />Group Leaders are responsible for students’ participation in the activities.<br /><br />Plus is accredited by ABLS and the British Council.<br /><br />Yours sincerely,<br /><em>Stefano Marra<br /><img src="http://www.plus-ed.com/vision_ag/img/firma_stefano_marra.gif" border="0" /></em></td>
+				<td>This is to confirm that <?php echo $single["nome"] ?> <?php echo $single["cognome"] ?>, born on the <?php echo date("d/m/Y",strtotime($single["pax_dob"])); ?>, Passport no. <?php echo $single["numero_documento"] ?>, is part of a group of students participating in an English Language Course taking place at <?php echo $campi["school_name"]; ?>.<br /><br />From:	<?php echo date("d/m/Y",strtotime($campi["arrival_date"])); ?>      To: <?php echo date("d/m/Y",strtotime($campi["departure_date"])); ?><br /><br />Address: <?php echo $printableAddress; ?><br /><br />The course is inclusive of full board accommodation, English Lessons (15 hours a week) and an afternoon, evening and weekend Leisure Programmes. The payment is being made.<br /><br />Type of visa: Child Visitor<br /><br />Group Leaders are responsible for students’ participation in the activities.<br /><br />Plus is accredited by ABLS and the British Council.<br /><br />Yours sincerely,<br /><em>Stefano Marra<br /><img src="http://www.plus-ed.com/vision_ag/img/firma_stefano_marra.gif" border="0" /></em></td>
 			</tr>		
 		</table>
 	<?php 

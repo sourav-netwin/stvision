@@ -12,7 +12,13 @@
 			parent::__construct();
 		}
 
-		//This function is used to get the module wise language array details from master_lang.php
+		/**
+		*This function is used to get the module wise language array details from master_lang.php
+		*
+		*@access public
+		*@param String $moduleName : Module Name
+		*@return Array
+		*/
 		public function getModule($moduleName = NULL)
 		{
 			$moduleArr = array();
@@ -21,13 +27,30 @@
 			return $moduleArr;
 		}
 
-		//This function is used to get the module details from database and perpare proper data to show in the datatable
-		public function getDatatable($moduleName = NULL , $start = NULL , $length = NULL , $searchString = NULL , $orderColumn = NULL , $orderDir = NULL)
+		/**
+		*This function is used to get the module details from database and perpare proper data to show in the datatable
+		*
+		*@access public
+		*@param String $moduleName : Module Name
+		*@param Integer $start : Where to start for pagination
+		*@param Integer $length : The length of the data need to show in a page
+		*@param String $searchString : String need to be searched
+		*@param String $orderColumn : The order by column name
+		*@param String $orderDir : The order by direction(asc/desc)
+		*@param Integer $submoduleId : The submodule id
+		*@return Array
+		*/
+		public function getDatatable($moduleName = NULL , $start = NULL , $length = NULL , $searchString = NULL , $orderColumn = NULL , $orderDir = NULL , $submoduleId = NULL)
 		{
 			$resultData = array();
 			$moduleArr = $this->getModule($moduleName);
-			$this->db->select($this->getSelectColumn($moduleArr , 'list'));
+			$this->db->select($this->getSelectColumn($moduleArr , 'list') , FALSE);
 			$this->db->from($moduleArr['dbName']);
+
+			//For join tables
+			if(isset($moduleArr['join']))
+				$this->db->join($moduleArr['join']['tableName'] , $moduleArr['join']['joinCondition'] , $moduleArr['join']['joinType']);
+
 			if(isset($moduleArr['listWhere']))
 				$this->db->where($moduleArr['listWhere']);
 
@@ -64,15 +87,33 @@
 					$actionStr ="<div class='btn-group custom-btn-group'>";
 					if(in_array('edit' , $moduleArr['list']['actionColumn']['actionType']))
 					{
-						$url = ($moduleName == 'manage_fixed_activity') ? 'master_activity/add_edit/'.$value[$moduleArr['key']] : 'master/add_edit/'.$moduleName.'/'.$value[$moduleArr['key']];
+						if($moduleName == 'manage_fixed_activity')
+							$url = 'master_activity/add_edit/'.$value[$moduleArr['key']];
+						elseif(isset($moduleArr['parentModule']))
+							$url = 'master/manage_submodule/'.$moduleName.'/'.$submoduleId.'/'.$value[$moduleArr['key']];
+						else
+							$url = 'master/add_edit/'.$moduleName.'/'.$value[$moduleArr['key']];
 						$actionStr.= '<a class="btn btn-xs btn-info btn-wd-24" href="'.base_url().'index.php/frontweb/'.$url.'" data-toggle="tooltip" data-original-title="Edit '.$moduleArr['title'].'"><span><i class="fa fa-pencil-square-o" aria-hidden="true"></i></span></a>';
 					}
 					if(in_array('delete' , $moduleArr['list']['actionColumn']['actionType']))
-						$actionStr.= '<a class="btn btn-xs btn-danger btn-wd-24" href="'.base_url().'index.php/frontweb/master/delete/'.$moduleName.'/'.$value[$moduleArr['key']].'" onclick="return confirm_delete(\''.$moduleArr['title'].'\')" data-toggle="tooltip" data-original-title="Delete '.$moduleArr['title'].'"><span><i class="fa fa-trash-o" aria-hidden="true"></i></span></a>';
+					{
+						if(isset($moduleArr['parentModule']))
+							$deleteUrl = 'delete/'.$moduleName.'/'.$value[$moduleArr['key']].'/'.$submoduleId;
+						else
+							$deleteUrl = 'delete/'.$moduleName.'/'.$value[$moduleArr['key']];
+						$extraData = ($moduleName == 'manage_extra_activity') ? 'data-delete_flag = "'.$value['delete_flag'].'"' : '';
+						$actionStr.= '<a class="btn btn-xs btn-danger btn-wd-24" href="'.base_url().'index.php/frontweb/master/'.$deleteUrl.'" onclick="return confirm_delete(\''.$moduleArr['title'].'\')" data-toggle="tooltip" data-original-title="Delete '.$moduleArr['title'].'" '.$extraData.'><span><i class="fa fa-trash-o" aria-hidden="true"></i></span></a>';
+					}
 					if(in_array('status' , $moduleArr['list']['actionColumn']['actionType']))
 					{
 						$statusClass = ($value[$moduleArr['statusField']] == 1) ? 'fa-check-square-o' : 'fa-square-o';
 						$actionStr.= '<a data-module="'.$moduleName.'" data-module_title="'.$moduleArr['title'].'" data-status="'.$value[$moduleArr['statusField']].'" data-id="'.$value[$moduleArr['key']].'" data-toggle="tooltip" data-original-title="Change Status for '.$moduleArr['title'].'" class="btn btn-xs btn-danger btn-wd-24 global-list-status-icon statusIcon"><span><i class="fa '.$statusClass.'" aria-hidden="true"></i></span></a>';
+					}
+					//This is for extra management in action column
+					if(isset($moduleArr['list']['actionColumn']['subModule']))
+					{
+						$actionStr.= '<a href = "'.base_url().'index.php/frontweb/master/manage_submodule/'.$moduleArr['list']['actionColumn']['subModule']['module'].'/'.$value[$moduleArr['key']].'" data-toggle="tooltip" data-original-title="Manage '.$moduleArr['list']['actionColumn']['subModule']['title'].'" class="btn btn-xs '.$moduleArr['list']['actionColumn']['subModule']['buttonClass'].' btn-wd-24 subModule">
+										<span><i class="fa '.$moduleArr['list']['actionColumn']['subModule']['iconClass'].'" aria-hidden="true"></i></span></a>';
 					}
 
 					//For master activity module(copy master activity for groups)
@@ -113,11 +154,18 @@
 			);
 		}
 
-		//This function is used to get the form data to show in the edit page
+		/**
+		*This function is used to get the form data to show in the edit page
+		*
+		*@access public
+		*@param String $moduleName : Module Name
+		*@param Integer $id : The Module id
+		*@return Array
+		*/
 		function getFormData($moduleName = NULL , $id = NULL)
 		{
 			$moduleArr = $this->getModule($moduleName);
-			$result = $this->db->select($this->getSelectColumn($moduleArr , 'edit'))
+			$result = $this->db->select($this->getSelectColumn($moduleArr , 'edit') , FALSE)
 							->where($moduleArr['key'] , $id)
 							->get($moduleArr['dbName'])->row_array();
 			//For sub table
@@ -137,7 +185,14 @@
 			return $result;
 		}
 
-		//This function is used to return the select columns for any module (listing/add_edit page)
+		/**
+		*This function is used to return the select columns for any module (listing/add_edit page)
+		*
+		*@access private
+		*@param Array $moduleArr : The module array
+		*@param String $type : The type(list/edit)
+		*@return Array
+		*/
 		private function getSelectColumn($moduleArr = array() , $type = NULL)
 		{
 			$selectStr = $moduleArr['key'];
@@ -145,9 +200,12 @@
 				$selectStr.= ','.$moduleArr['statusField'];
 			if($type == 'list')
 			{
+				if(isset($moduleArr['join']))
+					$selectStr.= ','.$moduleArr['join']['selectColumn'];
 				if(array_key_exists('actionColumn' , $moduleArr['list']))
 					unset($moduleArr['list']['actionColumn']);
-				$selectStr.= ','.implode(',' , array_keys($moduleArr['list']));
+				foreach($moduleArr['list'] as $key => $value)
+					$selectStr.= ','.$moduleArr['dbName'].'.'.$key;
 			}
 			if($type == 'edit')
 			{
@@ -161,8 +219,17 @@
 			return $selectStr;
 		}
 
-		//This function is used to create the form field for master modules(add/edit page)
-		public function setFormField($fieldKey = NULL , $fieldValue = array() , $post = array() , $fileUploadError = array() , $subTableFlag = NULL)
+		/**
+		*This function is used to create the form field for master modules(add/edit page)
+		*
+		*@access public
+		*@param String $fieldKey : The field key
+		*@param Array $fieldValue : The field array
+		*@param Array $post : Actual field values
+		*@param Array $fileUploadError : The file upload error messages
+		*@return Array
+		*/
+		public function setFormField($fieldKey = NULL , $fieldValue = array() , $post = array() , $fileUploadError = array())
 		{
 			$fieldStr = '';
 			if(!empty($fieldValue))
@@ -170,7 +237,7 @@
 				if($fieldValue['type'] == 'text')
 				{
 					$data = array(
-						'name' => ($subTableFlag == 1) ? $fieldKey.'[]' : $fieldKey,
+						'name' => $fieldKey,
 						'id' => $fieldKey,
 						'placeholder' => isset($fieldValue['placeholder']) ? $fieldValue['placeholder'] : '',
 						'class' => 'form-control',
@@ -180,10 +247,16 @@
 				}
 				elseif($fieldValue['type'] == 'textarea')
 				{
+					if(isset($fieldValue['summernote']) && $fieldValue['summernote'] == 1)
+						$className = 'form-control summernote';
+					elseif(isset($fieldValue['tinymce']) && $fieldValue['tinymce'] == 1)
+						$className = 'form-control tinymce';
+					else
+						$className = 'form-control';
 					$data = array(
 						'name' => $fieldKey,
 						'id' => $fieldKey,
-						'class' => (isset($fieldValue['summernote']) && $fieldValue['summernote'] == 1) ? 'form-control summernote' : 'form-control',
+						'class' =>  $className,
 						'value' => isset($post[$fieldKey]) ? $post[$fieldKey] : '',
 						'rows' => $fieldValue['rows']
 					);
@@ -230,25 +303,19 @@
 					);
 					$fieldStr.= form_input($data).form_error($fieldKey);
 				}
-				elseif($fieldValue['type'] == 'time')
-				{
-					$fieldStr.= '<div class="input-append date timepicker">';
-					$data = array(
-						'name' => ($subTableFlag == 1) ? $fieldKey.'[]' : $fieldKey,
-						'id' => $fieldKey,
-						'placeholder' => isset($fieldValue['placeholder']) ? $fieldValue['placeholder'] : '',
-						'data-format' => 'hh:mm:ss',
-						'value' => isset($post[$fieldKey]) ? $post[$fieldKey] : ''
-					);
-					$fieldStr.= form_input($data).form_error($fieldKey);
-					$fieldStr.= '<span class="add-on" style="height:30px;"><i class="fa fa-lg fa-clock"></i></span>';
-					$fieldStr.= '</div>';
-				}
 			}
 			return $fieldStr;
 		}
 
-		//This function is used to get the dynamic dropdown array or value name from another module
+		/**
+		*This function is used to get the dynamic dropdown array or value name from another module
+		*
+		*@access private
+		*@param String $moduleName : The Module name
+		*@param Integer $flag : If 1 : return one particular value , else return the whole dropdown values
+		*@param Integer $dropdownId : The id of the dropdown value
+		*@return Mixed
+		*/
 		private function dropdown($moduleName = NULL , $flag = 1 , $dropdownId = NULL)
 		{
 			$moduleArr = $this->getModule($moduleName);
@@ -277,17 +344,26 @@
 			}
 		}
 
-		//This function is used to get the dynamic sub table designing for master modules
-		public function createSubtable($moduleName = NULL , $post = array() , $globalCount = 1)
+		/**
+		*This function is used to get the dynamic sub table designing for master modules
+		*
+		*@access public
+		*@param String $moduleName : The Module name
+		*@param Array $post : THe actual field values
+		*@param Integer $globalCount : The count of the addmore element
+		*@param Integer $ajaxCount : The count of the addmore element of ajax call
+		*@return Mixed
+		*/
+		public function createSubtable($moduleName = NULL , $post = array() , $globalCount = 1 , $ajaxCount = NULL)
 		{
-			$fieldStr = '<div class="subTableWrapper col-lg-8" style="padding-left: 0;"><div class="border-box">';
+			$fieldStr = '<div class="subTableWrapper col-lg-12" style="padding-left: 0;"><div class="border-box" style="padding: 10px;">';
 			$moduleArr = $this->getModule($moduleName);
 			if(!empty($moduleArr['field']))
 			{
 				foreach($moduleArr['field'] as $fieldKey => $fieldValue)
 				{
 					$fieldStr.= '<div class="form-group">
-									<label class="control-label custom-control-label col-md-3 col-sm-3 col-xs-12" style="margin-left:10px;">';
+									<label class="control-label custom-control-label col-md-3 col-sm-3 col-xs-12">';
 					$fieldStr.= $fieldValue['fieldLabel'];
 					$fieldStr.= (strpos($fieldValue['validation'] , 'required') !== FALSE) ? '<span class="required">*</span>' : '';
 					$fieldStr.= '</label>';
@@ -301,15 +377,16 @@
 			$fieldStr.= '</div>';
 			$fieldStr.= '<div style="float: right;">
 							<i class="fa fa-lg fa-plus-circle add_section addMoreTable" aria-hidden="true"></i>';
-			if($globalCount > 1)
+			if($globalCount > 1 || $ajaxCount == 1)
 				$fieldStr.= '<i class="fa fa-lg fa-minus-circle delete_section removeMoreTable" aria-hidden="true"></i>';
-			$fieldStr.= '</div><br><br></div>';
+			$fieldStr.= '</div><br><br></div><div class="clearfix"></div>';
 			return $fieldStr;
 		}
 
 		/**
 		*This function is used to check if copy master activity icon should in the listing page ot not
 		*
+		*@access private
 		*@param Array $data : Master activity details
 		*@return Array
 		*/

@@ -188,6 +188,20 @@ function bReject(){
 		}
 	},true,true);
 }
+
+function bElapsedReject(){
+	var bookId = $('#bkDetBookId').val();
+	confirmAction("Are you sure you want to add this booking to \"elapsed rejected\" state?", function(s){
+		if(s){
+			$.ajax({
+				url: siteUrl + "backoffice/change_booking_status/"+bookId+"/elapsed_rejected",
+				success: function(html){
+					loadBookingDetail(bookId);
+				}
+			});
+		}
+	},true,true);
+}
 	
 function bPaid(){
 	var bookId = $('#bkDetBookId').val();
@@ -255,6 +269,9 @@ function bActivate(){
 $('body').on('click',"#B_cambiaStato",function(){
 	if($("#statusBooking").val()=="B_reject"){
 		bReject();
+	}
+        if($("#statusBooking").val()=="B_elapsed_rejected"){
+		bElapsedReject();
 	}
 	if($("#statusBooking").val()=="B_activate"){
 		bActivate();

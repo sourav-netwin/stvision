@@ -22,7 +22,17 @@
 <?php
 $campi = $booking_detail[0];
 $agency = $agency[0];
-//print_r($detSTD);
+
+$printCity = "";
+$printAddress = "";
+//$campi["address"] . ',' . $campi['post_code'];
+if (($pos = strpos($campi["address"], "#")) !== FALSE) {
+    $printCity = substr($campi['address'], $pos+1); 
+    $printAddress = substr($campi['address'], 0, $pos); 
+}
+else
+    $printAddress = $campi['address'].", ".$campi['post_code'];
+$printableAddress = (!empty($printCity) ? trim($printAddress).", ".trim($campi['post_code']) . ", " .trim($printCity)."." : trim($printAddress) .", ". $campi['post_code']);
 ?>
 <body>	
 	<?php
@@ -37,7 +47,7 @@ $agency = $agency[0];
 					<td align="center"><b style="font-size:11pt;">To whom it may concern</b></td>
 				</tr>
 				<tr>
-					<td>This is to confirm that the following students and group leaders from <?php echo $agency["businessname"]; ?> are part of a group enrolling on an English Language Short Course Programme for <?php echo $campi["weeks"]; ?> weeks from <?php echo date("d/m/Y", strtotime($campi["arrival_date"])); ?> to <?php echo date("d/m/Y", strtotime($campi["departure_date"])); ?> , taking place at  <?php echo $campi["school_name"]; ?>.
+                                    <td>This is to confirm that the following students and group leaders from <?php echo ucwords($agency["businessname"]); ?> are part of a group enrolling on an English Language Short Course Programme for <?php echo $campi["weeks"]; ?> weeks from <?php echo date("d/m/Y", strtotime($campi["arrival_date"])); ?> to <?php echo date("d/m/Y", strtotime($campi["departure_date"])); ?> , taking place at  <?php echo $campi["school_name"]; ?>.
 					</td>
 				</tr>		
 				<tr><td style="height:20px;">&nbsp;</td></tr>
@@ -51,7 +61,7 @@ $agency = $agency[0];
 					<td><span>Gender</span></td>
 					<td><span>Date of Birth</span></td>
 					<td><span>Passport Number</span></td>
-					<td><span>Country Issued</span></td>
+					<td><span>Nationality</span></td>
 				</tr>
 				<?php
 				$contaSTD = 1;
@@ -69,7 +79,7 @@ $agency = $agency[0];
 			} ?></span></td>
 						<td><span><?php echo date("d/m/Y", strtotime($STD["pax_dob"])); ?></span></td>
 						<td><span><?php echo $STD["numero_documento"] ?></span></td>
-						<td><span>--</span></td>
+                                                <td><span><?php echo empty($STD["nazionalita"]) ? "--" : ucwords($STD["nazionalita"]);?></span></td>
 					</tr>
 
 					<?php
@@ -92,7 +102,7 @@ $agency = $agency[0];
 					<td><span>Gender</span></td>
 					<td><span>Date of Birth</span></td>
 					<td><span>Passport Number</span></td>
-					<td><span>Country Issued</span></td>
+					<td><span>Nationality</span></td>
 				</tr>
 				<?php
 				$contaSTD = 1;
@@ -110,7 +120,7 @@ $agency = $agency[0];
 			} ?></span></td>
 						<td><span><?php echo date("d/m/Y", strtotime($STD["pax_dob"])); ?></span></td>
 						<td><span><?php echo $STD["numero_documento"] ?></span></td>
-						<td><span>--</span></td>
+                                                <td><span><?php echo empty($STD["nazionalita"]) ? "--" : ucwords($STD["nazionalita"]);?></span></td>
 					</tr><?php
 			$contaSTD++;
 		}
@@ -147,7 +157,7 @@ $agency = $agency[0];
 					<td align="center"><b style="font-size:11pt;">To whom it may concern</b></td>
 				</tr>
 				<tr>
-					<td>This is to confirm that the following students and group leader(s) from <?php echo $agency["businessname"] . ', ' . $agency["businesscountry"]; ?> are part of a group enrolling on an English language short course programme for <?php echo $campi["weeks"] <= 1 ? $campi["weeks"] . ' week' : $campi["weeks"] . ' weeks'; ?>, from <?php echo date("d/m/Y", strtotime($campi["arrival_date"])); ?> to <?php echo date("d/m/Y", strtotime($campi["departure_date"])); ?> , taking place at  <?php echo $campi["school_name"] . ', ' . $campi["located_in"]; ?>.
+                                    <td>This is to confirm that the following students and group leader(s) from <?php echo ucwords($agency["businessname"] . ', ' . $agency["businesscountry"]); ?> are part of a group enrolling on an English language short course programme for <?php echo $campi["weeks"] <= 1 ? $campi["weeks"] . ' week' : $campi["weeks"] . ' weeks'; ?>, from <?php echo date("d/m/Y", strtotime($campi["arrival_date"])); ?> to <?php echo date("d/m/Y", strtotime($campi["departure_date"])); ?> , taking place at  <?php echo $campi["school_name"] . ', ' . $campi["located_in"]; ?>.
 					</td>
 				</tr>
 				<tr><td style="height:20px;">&nbsp;</td></tr>
@@ -161,8 +171,8 @@ $agency = $agency[0];
 					<td><span>Surname</span></td>
 					<td><span>Gender</span></td>
 					<td><span>DOB</span></td>
-					<td><span>Passport No</span></td>
-					<td><span>Country Issued</span></td>
+					<td><span>Passport Number</span></td>
+					<td><span>Nationality</span></td>
 				</tr>
 				<?php
 				$contaSTD = 1;
@@ -180,7 +190,7 @@ $agency = $agency[0];
 			} ?></span></td>
 						<td><span><?php echo date("d/m/Y", strtotime($STD["pax_dob"])); ?></span></td>
 						<td><span><?php echo $STD["numero_documento"] ?></span></td>
-						<td><span>--</span></td>
+                                                <td><span><?php echo empty($STD["nazionalita"]) ? "--" : ucwords($STD["nazionalita"]);?></span></td>
 					</tr>					
 					<?php
 					$contaSTD++;
@@ -203,8 +213,8 @@ $agency = $agency[0];
 					<td><span>Surname</span></td>
 					<td><span>Gender</span></td>
 					<td><span>DOB</span></td>
-					<td><span>Passport No</span></td>
-					<td><span>Country Issued</span></td>
+					<td><span>Passport Number</span></td>
+					<td><span>Nationality</span></td>
 				</tr>
 				<?php
 				$contaSTD = 1;
@@ -222,7 +232,7 @@ $agency = $agency[0];
 			} ?></span></td>
 						<td><span><?php echo date("d/m/Y", strtotime($STD["pax_dob"])); ?></span></td>
 						<td><span><?php echo $STD["numero_documento"] ?></span></td>
-						<td><span>--</span></td>
+                                                <td><span><?php echo empty($STD["nazionalita"]) ? "--" : ucwords($STD["nazionalita"]);?></span></td>
 					</tr>					
 					<?php
 					$contaSTD++;
@@ -278,7 +288,7 @@ $agency = $agency[0];
 					<td colspan="2">To whom it may concern<br /><br /></td>
 				</tr>
 				<tr>
-					<td colspan="2">This is to confirm that the following student of <?php echo $agency["businesscountry"]; ?> is enrolled on the Malta Summer General Language Course by Plus, produced by Language Schools, which consists of 15 hours a week English tuition and excursion programme and Half Board accommodation in Malta from <?php echo date("d/m/Y", strtotime($campi["arrival_date"])); ?> to <?php echo date("d/m/Y", strtotime($campi["departure_date"])); ?>.
+                                    <td colspan="2">This is to confirm that the following student of <?php echo ucwords($agency["businesscountry"]); ?> is enrolled on the Malta Summer General Language Course by Plus, produced by Language Schools, which consists of 15 hours a week English tuition and excursion programme and Half Board accommodation in Malta from <?php echo date("d/m/Y", strtotime($campi["arrival_date"])); ?> to <?php echo date("d/m/Y", strtotime($campi["departure_date"])); ?>.
 					</td>
 				</tr>		
 				<tr><td colspan="2" style="height:20px;">&nbsp;</td></tr>
@@ -291,8 +301,8 @@ $agency = $agency[0];
 					<td><span>Date of Birth</span></td>
 					<td><span>Gender</span></td>						
 					<td><span>PAX</span></td>
-					<td><span>Passport #</span></td>
-					<td><span>Country Issued</span></td>
+					<td><span>Passport Number</span></td>
+					<td><span>Nationality</span></td>
 				</tr>
 				<?php
 				if (!empty($detSTD)) {
@@ -310,7 +320,7 @@ $agency = $agency[0];
 			} ?></span></td>
 							<td><span>STD</span></td>
 							<td><span><?php echo $STD["numero_documento"] ?></span></td>
-							<td><span>--</span></td>
+                                                <td><span><?php echo empty($STD["nazionalita"]) ? "--" : ucwords($STD["nazionalita"]);?></span></td>
 						</tr>					
 						<?php
 					}
@@ -330,7 +340,7 @@ $agency = $agency[0];
 			} ?></span></td>
 							<td><span>GL</span></td>
 							<td><span><?php echo $STD["numero_documento"] ?></span></td>
-							<td><span>--</span></td>
+                                                        <td><span><?php echo empty($STD["nazionalita"]) ? "--" : ucwords($STD["nazionalita"]);?></span></td>
 						</tr>					
 						<?php
 					}
@@ -370,12 +380,12 @@ $agency = $agency[0];
 					<td align="center"><b style="font-size:11pt;">To whom it may concern</b></td>
 				</tr>
 				<tr>
-					<td>This is to confirm that the following students from <?php echo $agency["businessname"] . ', ' . $agency["businesscountry"]; ?> are part of a group enrolling on an English Language Course programme for <?php echo $campi["weeks"] <= 1 ? $campi["weeks"] . ' week' : $campi["weeks"] . ' weeks'; ?>, from <?php echo date("d/m/Y", strtotime($campi["arrival_date"])); ?> to <?php echo date("d/m/Y", strtotime($campi["departure_date"])); ?> , taking place at  <?php echo $campi["school_name"] . ', ' . $campi["located_in"]; ?>.
+                                    <td>This is to confirm that the following students from <?php echo ucwords($agency["businessname"] . ', ' . $agency["businesscountry"]); ?> are part of a group enrolling on an English Language Course programme for <?php echo $campi["weeks"] <= 1 ? $campi["weeks"] . ' week' : $campi["weeks"] . ' weeks'; ?>, from <?php echo date("d/m/Y", strtotime($campi["arrival_date"])); ?> to <?php echo date("d/m/Y", strtotime($campi["departure_date"])); ?> , taking place at  <?php echo $campi["school_name"] . ', ' . $campi["located_in"]; ?>.
 					</td>
 				</tr>
 				<tr><td style="height:20px;">&nbsp;</td></tr>
 				<tr>
-					<td>Campus address: <?php echo $campi["address"] . ',' . $campi['post_code']; ?></td>
+					<td>Campus address: <?php echo $printableAddress; ?></td>
 				</tr>
 			</table>
 			<table cellpadding="0" cellspacing="0" class="grande grande-us">
@@ -392,8 +402,8 @@ $agency = $agency[0];
 					<td><span>Surname</span></td>
 					<td><span>Date of Birth</span></td>
 					<td><span>Gender</span></td>
-					<td><span>Passport No</span></td>
-					<td><span>Country Issued</span></td>
+					<td><span>Passport Number</span></td>
+					<td><span>Nationality</span></td>
 				</tr>
 				<?php
 				$contaSTD = 1;
@@ -411,7 +421,7 @@ $agency = $agency[0];
 				echo 'Female';
 			} ?></span></td>
 						<td><span><?php echo $STD["numero_documento"] ?></span></td>
-						<td><span>--</span></td>
+                                                <td><span><?php echo empty($STD["nazionalita"]) ? "--" : ucwords($STD["nazionalita"]);?></span></td>
 					</tr>					
 			<?php
 			$contaSTD++;
@@ -432,8 +442,8 @@ $agency = $agency[0];
 					<td><span>Surname</span></td>
 					<td><span>Date of Birth</span></td>
 					<td><span>Gender</span></td>
-					<td><span>Passport No</span></td>
-					<td><span>Country Issued</span></td>
+					<td><span>Passport Number</span></td>
+					<td><span>Nationality</span></td>
 				</tr>
 		<?php
 		$contaSTD = 1;
@@ -451,7 +461,7 @@ $agency = $agency[0];
 				echo 'Female';
 			} ?></span></td>
 						<td><span><?php echo $STD["numero_documento"] ?></span></td>
-						<td><span>--</span></td>
+                                                <td><span><?php echo empty($STD["nazionalita"]) ? "--" : ucwords($STD["nazionalita"]);?></span></td>
 					</tr>					
 			<?php
 			$contaSTD++;
@@ -513,7 +523,7 @@ foreach ($detGL as $single) {
 				else {
 					echo 'MR/MS';
 				}
-				?><?php echo $single["nome"] ?> <?php echo $single["cognome"] ?>, born on the <?php echo date("d/m/Y", strtotime($single["pax_dob"])); ?>, Passport no. <?php echo $single["numero_documento"] ?> is accompanying a group of students participating in an English language course for <?php echo $campi["weeks"] <= 1 ? $campi["weeks"] . ' week' : $campi["weeks"] . ' weeks'; ?>, taking place at <?php echo $campi["school_name"] . ', ' . $campi["located_in"]; ?>.<br /><br />From:	<?php echo date("d/m/Y", strtotime($campi["arrival_date"])); ?>      To: <?php echo date("d/m/Y", strtotime($campi["departure_date"])); ?><br /><br />Campus address: <?php echo $campi["school_name"]; ?><br /><br />The course is inclusive of full board accommodation, English lessons (15 hours a week) and an afternoon, evening and weekend leisure programme. The payment is being made. <br /><br />Type of visa: General Visitor<br /><br />Group Leaders are responsible for students’ participation in the activities.<br /><br />Plus UK summer courses are accredited by the British Council and ABLS.<br /><br />Yours sincerely,<br /><em>Stefano Marra<br />Managing Director<br /><img src="http://www.plus-ed.com/vision_ag/img/firma_stefano_marra.gif" border="0" /></em></td>
+				?><?php echo $single["nome"] ?> <?php echo $single["cognome"] ?>, born on the <?php echo date("d/m/Y", strtotime($single["pax_dob"])); ?>, Passport no. <?php echo $single["numero_documento"] ?> is accompanying a group of students participating in an English language course for <?php echo $campi["weeks"] <= 1 ? $campi["weeks"] . ' week' : $campi["weeks"] . ' weeks'; ?>, taking place at <?php echo $campi["school_name"] . ', ' . $campi["located_in"]; ?>.<br /><br />From:	<?php echo date("d/m/Y", strtotime($campi["arrival_date"])); ?>      To: <?php echo date("d/m/Y", strtotime($campi["departure_date"])); ?><br /><br />Campus address: <?php echo $printableAddress; ?><br /><br />The course is inclusive of full board accommodation, English lessons (15 hours a week) and an afternoon, evening and weekend leisure programme. The payment is being made. <br /><br />Type of visa: General Visitor<br /><br />Group Leaders are responsible for students’ participation in the activities.<br /><br />Plus UK summer courses are accredited by the British Council and ABLS.<br /><br />Yours sincerely,<br /><em>Stefano Marra<br />Managing Director<br /><img src="http://www.plus-ed.com/vision_ag/img/firma_stefano_marra.gif" border="0" /></em></td>
 					</tr>		
 				</table>
 				<div class="pdf-footer">
@@ -536,7 +546,7 @@ foreach ($detGL as $single) {
 					</tr>
 					<tr><td style="height:20px;">&nbsp;</td></tr>
 					<tr>
-						<td>This is to confirm that <?php echo $single["nome"] ?> <?php echo $single["cognome"] ?>, born on the <?php echo date("d/m/Y", strtotime($single["pax_dob"])); ?>, Passport no. <?php echo $single["numero_documento"] ?> is accompanying a Group of students participating in an English Language Course taking place at <?php echo $campi["school_name"]; ?>.<br /><br />From:	<?php echo date("d/m/Y", strtotime($campi["arrival_date"])); ?>      To: <?php echo date("d/m/Y", strtotime($campi["departure_date"])); ?><br /><br />Address: <?php echo $campi["school_name"]; ?><br /><br />The course is inclusive of full board accommodation, English Lessons (15 hours a week) and an afternoon, evening and weekend Leisure Programmes. The payment is being made.<br /><br />Type of visa: General Visitor<br /><br />Group Leaders are responsible for students’ participation in the activities.<br /><br />Plus is accredited by ABLS and the British Council.<br /><br />Yours sincerely,<br /><em>Stefano Marra<br /><img src="http://www.plus-ed.com/vision_ag/img/firma_stefano_marra.gif" border="0" /></em></td>
+						<td>This is to confirm that <?php echo $single["nome"] ?> <?php echo $single["cognome"] ?>, born on the <?php echo date("d/m/Y", strtotime($single["pax_dob"])); ?>, Passport no. <?php echo $single["numero_documento"] ?> is accompanying a Group of students participating in an English Language Course taking place at <?php echo $campi["school_name"]; ?>.<br /><br />From:	<?php echo date("d/m/Y", strtotime($campi["arrival_date"])); ?>      To: <?php echo date("d/m/Y", strtotime($campi["departure_date"])); ?><br /><br />Address: <?php echo $printableAddress; ?><br /><br />The course is inclusive of full board accommodation, English Lessons (15 hours a week) and an afternoon, evening and weekend Leisure Programmes. The payment is being made.<br /><br />Type of visa: General Visitor<br /><br />Group Leaders are responsible for students’ participation in the activities.<br /><br />Plus is accredited by ABLS and the British Council.<br /><br />Yours sincerely,<br /><em>Stefano Marra<br /><img src="http://www.plus-ed.com/vision_ag/img/firma_stefano_marra.gif" border="0" /></em></td>
 					</tr>		
 				</table>
 				<span class="brk-each-page"></span>
@@ -564,7 +574,7 @@ foreach ($detGL as $single) {
 						<td colspan="2">To whom it may concern<br /><br /></td>
 					</tr>
 					<tr>
-						<td colspan="2">This is to confirm that the following student of <?php echo $agency["businesscountry"]; ?> is enrolled on the Malta Summer General Language Course by Plus, produced by Language Schools, which consists of 15 hours a week English tuition and excursion programme and Half Board accommodation in Malta from <?php echo date("d/m/Y", strtotime($campi["arrival_date"])); ?> to <?php echo date("d/m/Y", strtotime($campi["departure_date"])); ?>.
+                                            <td colspan="2">This is to confirm that the following student of <?php echo ucwords($agency["businesscountry"]); ?> is enrolled on the Malta Summer General Language Course by Plus, produced by Language Schools, which consists of 15 hours a week English tuition and excursion programme and Half Board accommodation in Malta from <?php echo date("d/m/Y", strtotime($campi["arrival_date"])); ?> to <?php echo date("d/m/Y", strtotime($campi["departure_date"])); ?>.
 						</td>
 					</tr>		
 					<tr><td colspan="2" style="height:20px;">&nbsp;</td></tr>
@@ -576,8 +586,8 @@ foreach ($detGL as $single) {
 						<td><span>Date of Birth</span></td>
 						<td><span>Gender</span></td>						
 						<td><span>PAX</span></td>
-						<td><span>Passport #</span></td>
-						<td><span>Country Issued</span></td>
+						<td><span>Passport Number</span></td>
+						<td><span>Nationality</span></td>
 					</tr>
 					<tr>
 						<td><span><?php echo $single["nome"] ?></span></td>
@@ -591,7 +601,7 @@ foreach ($detGL as $single) {
 			} ?></span></td>
 						<td><span>GL</span></td>
 						<td><span><?php echo $single["numero_documento"] ?></span></td>
-						<td><span>--</span></td>
+                                                <td><span><?php echo empty($single["nazionalita"]) ? "--" : ucwords($single["nazionalita"]);?></span></td>
 					</tr>
 				</table>
 
@@ -638,11 +648,11 @@ foreach ($detGL as $single) {
 							else {
 								echo 'MR/MS ';
 							}
-							?><?php echo $single["nome"] ?> <?php echo $single["cognome"] ?>, born on the <?php echo date("d/m/Y", strtotime($single["pax_dob"])); ?>, Passport no. <?php echo $single["numero_documento"] ?> is accompanying a group of students participating in an English language course for <?php echo $single["weeks"] <= 1 ? $campi["weeks"] . ' week' : $campi["weeks"] . ' weeks'; ?>, taking place at <?php echo $campi["school_name"] . ', ' . $campi["located_in"]; ?>.
+							?><?php echo $single["nome"] ?> <?php echo $single["cognome"] ?>, born on the <?php echo date("d/m/Y", strtotime($single["pax_dob"])); ?>, Passport no. <?php echo $single["numero_documento"] ?> is accompanying a group of students participating in an English language course for <?php echo $campi["weeks"] <= 1 ? $campi["weeks"] . ' week' : $campi["weeks"] . ' weeks'; ?>, taking place at <?php echo $campi["school_name"] . ', ' . $campi["located_in"]; ?>.
 							<br /><br />
 							From: <?php echo date("d/m/Y", strtotime($campi["arrival_date"])); ?><br/>
 							To: <?php echo date("d/m/Y", strtotime($campi["departure_date"])); ?><br /><br />
-							Campus address: <?php echo $campi["address"] . ',' . $campi['post_code']; ?><br /><br />
+							Campus address: <?php echo $printableAddress; ?><br /><br />
 							The course is inclusive of full – board residence accommodation, English Lessons (15 hours a week) and an afternoon, evening and weekend leisure programme. The payment is being made.<br /><br />
 							Upon arrival date <?php echo date("d/m/Y", strtotime($campi["arrival_date"])); ?>, the group will be met by a PLUS representative at the Airport and transferred to <?php echo $campi["school_name"]; ?>. <br /><br />
 							Students will be met at <?php echo $campi["school_name"]; ?> by the residential campus manager and be allocated a room.<br /><br />
@@ -688,7 +698,7 @@ foreach ($detGL as $single) {
 						<br /><br />
 						From: <?php echo date("d/m/Y", strtotime($campi["arrival_date"])); ?><br/>
 						To: <?php echo date("d/m/Y", strtotime($campi["departure_date"])); ?><br /><br />
-						Campus address: <?php echo $campi["address"].','.$campi['post_code']; ?><br /><br />
+						Campus address: <?php echo $printableAddress; ?><br /><br />
 						The course is inclusive of full – board residence accommodation, English Lessons (15 hours a week) and an afternoon, evening and weekend leisure programme. The payment is being made. <br /><br />
 						Upon arrival date <?php echo date("d/m/Y", strtotime($campi["arrival_date"])); ?>, the group will be met by a PLUS representative at the Airport and transferred to <?php echo $campi["school_name"]; ?>. <br /><br />
 						Students will be met at <?php echo $campi["school_name"]; ?> by the residential campus manager and be allocated a room.<br /><br />
@@ -734,7 +744,7 @@ foreach ($detGL as $single) {
 						<br /><br />
 						From: <?php echo date("d/m/Y", strtotime($campi["arrival_date"])); ?><br/>
 						To: <?php echo date("d/m/Y", strtotime($campi["departure_date"])); ?><br /><br />
-						Campus address: <?php echo $campi["address"].','.$campi['post_code']; ?><br /><br />
+						Campus address: <?php echo $printableAddress; ?><br /><br />
 						The course is inclusive of full – board residence accommodation, English Lessons (15 hours a week) and an afternoon, evening and weekend leisure programme. The payment is being made. <br /><br />
 						Upon arrival date <?php echo date("d/m/Y", strtotime($campi["arrival_date"])); ?>, the group will be met by a PLUS representative at the Airport and transferred to <?php echo $campi["school_name"]; ?>. <br /><br />
 						Students will be met at <?php echo $campi["school_name"]; ?> by the residential campus manager and be allocated a room.<br /><br />
@@ -782,7 +792,7 @@ foreach ($detSTD as $single) {
 				else {
 					echo 'MR/MS';
 				}
-				?><?php echo $single["nome"] ?> <?php echo $single["cognome"] ?>, born on the <?php echo date("d/m/Y", strtotime($single["pax_dob"])); ?>, Passport no. <?php echo $single["numero_documento"] ?>, is part of a group of students participating in an English language course for <?php echo $campi["weeks"] <= 1 ? $campi["weeks"] . ' week' : $campi["weeks"] . ' weeks'; ?>, taking place at <?php echo $campi["school_name"] . ', ' . $campi["located_in"]; ?>.<br /><br />From:	<?php echo date("d/m/Y", strtotime($campi["arrival_date"])); ?>      To: <?php echo date("d/m/Y", strtotime($campi["departure_date"])); ?><br /><br />Campus address: <?php echo $campi["school_name"]; ?><br /><br />The course is inclusive of full board accommodation, English lessons (15 hours a week) and an afternoon, evening and weekend leisure programme. The payment is being made. <br /><br />Type of visa: Child Visitor<br /><br />Group leaders are responsible for students’ participation in the activities.<br /><br />Plus UK summer courses are accredited by the British Council and ABLS.<br /><br />Yours sincerely,<br /><em>Stefano Marra<br />Managing Director<br /><img src="http://www.plus-ed.com/vision_ag/img/firma_stefano_marra.gif" border="0" /></em></td>
+				?><?php echo $single["nome"] ?> <?php echo $single["cognome"] ?>, born on the <?php echo date("d/m/Y", strtotime($single["pax_dob"])); ?>, Passport no. <?php echo $single["numero_documento"] ?>, is part of a group of students participating in an English language course for <?php echo $campi["weeks"] <= 1 ? $campi["weeks"] . ' week' : $campi["weeks"] . ' weeks'; ?>, taking place at <?php echo $campi["school_name"] . ', ' . $campi["located_in"]; ?>.<br /><br />From:	<?php echo date("d/m/Y", strtotime($campi["arrival_date"])); ?>      To: <?php echo date("d/m/Y", strtotime($campi["departure_date"])); ?><br /><br />Campus address: <?php echo $printableAddress; ?><br /><br />The course is inclusive of full board accommodation, English lessons (15 hours a week) and an afternoon, evening and weekend leisure programme. The payment is being made. <br /><br />Type of visa: Child Visitor<br /><br />Group leaders are responsible for students’ participation in the activities.<br /><br />Plus UK summer courses are accredited by the British Council and ABLS.<br /><br />Yours sincerely,<br /><em>Stefano Marra<br />Managing Director<br /><img src="http://www.plus-ed.com/vision_ag/img/firma_stefano_marra.gif" border="0" /></em></td>
 					</tr>		
 				</table>
 				<div class="pdf-footer">
@@ -805,7 +815,7 @@ foreach ($detSTD as $single) {
 					</tr>
 					<tr><td style="height:20px;">&nbsp;</td></tr>
 					<tr>
-						<td>This is to confirm that <?php echo $single["nome"] ?> <?php echo $single["cognome"] ?>, born on the <?php echo date("d/m/Y", strtotime($single["pax_dob"])); ?>, Passport no. <?php echo $single["numero_documento"] ?>, is part of a group of students participating in an English Language Course taking place at <?php echo $campi["school_name"]; ?>.<br /><br />From:	<?php echo date("d/m/Y", strtotime($campi["arrival_date"])); ?>      To: <?php echo date("d/m/Y", strtotime($campi["departure_date"])); ?><br /><br />Address: <?php echo $campi["school_name"]; ?><br /><br />The course is inclusive of full board accommodation, English Lessons (15 hours a week) and an afternoon, evening and weekend Leisure Programmes. The payment is being made.<br /><br />Type of visa: Child Visitor<br /><br />Group Leaders are responsible for students’ participation in the activities.<br /><br />Plus is accredited by ABLS and the British Council.<br /><br />Yours sincerely,<br /><em>Stefano Marra<br /><img src="http://www.plus-ed.com/vision_ag/img/firma_stefano_marra.gif" border="0" /></em></td>
+						<td>This is to confirm that <?php echo $single["nome"] ?> <?php echo $single["cognome"] ?>, born on the <?php echo date("d/m/Y", strtotime($single["pax_dob"])); ?>, Passport no. <?php echo $single["numero_documento"] ?>, is part of a group of students participating in an English Language Course taking place at <?php echo $campi["school_name"]; ?>.<br /><br />From:	<?php echo date("d/m/Y", strtotime($campi["arrival_date"])); ?>      To: <?php echo date("d/m/Y", strtotime($campi["departure_date"])); ?><br /><br />Address: <?php echo $printableAddress; ?><br /><br />The course is inclusive of full board accommodation, English Lessons (15 hours a week) and an afternoon, evening and weekend Leisure Programmes. The payment is being made.<br /><br />Type of visa: Child Visitor<br /><br />Group Leaders are responsible for students’ participation in the activities.<br /><br />Plus is accredited by ABLS and the British Council.<br /><br />Yours sincerely,<br /><em>Stefano Marra<br /><img src="http://www.plus-ed.com/vision_ag/img/firma_stefano_marra.gif" border="0" /></em></td>
 					</tr>		
 				</table>
 				<span class="brk-each-page"></span>
@@ -833,7 +843,7 @@ foreach ($detSTD as $single) {
 						<td colspan="2">To whom it may concern<br /><br /></td>
 					</tr>
 					<tr>
-						<td colspan="2">This is to confirm that the following student of <?php echo $agency["businesscountry"]; ?> is enrolled on the Malta Summer General Language Course by Plus, produced by Language Schools, which consists of 15 hours a week English tuition and excursion programme and Half Board accommodation in Malta from <?php echo date("d/m/Y", strtotime($campi["arrival_date"])); ?> to <?php echo date("d/m/Y", strtotime($campi["departure_date"])); ?>.
+                                            <td colspan="2">This is to confirm that the following student of <?php echo ucwords($agency["businesscountry"]); ?> is enrolled on the Malta Summer General Language Course by Plus, produced by Language Schools, which consists of 15 hours a week English tuition and excursion programme and Half Board accommodation in Malta from <?php echo date("d/m/Y", strtotime($campi["arrival_date"])); ?> to <?php echo date("d/m/Y", strtotime($campi["departure_date"])); ?>.
 						</td>
 					</tr>		
 					<tr><td colspan="2" style="height:20px;">&nbsp;</td></tr>
@@ -845,8 +855,8 @@ foreach ($detSTD as $single) {
 						<td><span>Date of Birth</span></td>
 						<td><span>Gender</span></td>						
 						<td><span>PAX</span></td>
-						<td><span>Passport #</span></td>
-						<td><span>Country Issued</span></td>
+						<td><span>Passport Number</span></td>
+						<td><span>Nationality</span></td>
 					</tr>
 					<tr>
 						<td><span><?php echo $single["nome"] ?></span></td>
@@ -860,7 +870,7 @@ foreach ($detSTD as $single) {
 			} ?></span></td>
 						<td><span>STD</span></td>
 						<td><span><?php echo $single["numero_documento"] ?></span></td>
-						<td><span>--</span></td>
+                                                <td><span><?php echo empty($single["nazionalita"]) ? "--" : ucwords($single["nazionalita"]);?></span></td>
 					</tr>
 				</table>
 				<table cellpadding="0" cellspacing="0" class="grande grande-us">
@@ -910,7 +920,7 @@ foreach ($detSTD as $single) {
 							<br /><br />
 							From: <?php echo date("d/m/Y", strtotime($campi["arrival_date"])); ?><br/>
 							To: <?php echo date("d/m/Y", strtotime($campi["departure_date"])); ?><br /><br />
-							Campus address: <?php echo $campi["address"] . ',' . $campi['post_code']; ?><br /><br />
+							Campus address: <?php $printableAddress; ?><br /><br />
 							The course is inclusive of full – board residence accommodation, English Lessons (15 hours a week) and an afternoon, evening and weekend leisure programme. The payment is being made.<br /><br />
 							Upon arrival date <?php echo date("d/m/Y", strtotime($campi["arrival_date"])); ?>, the group will be met by a PLUS representative at the Airport and transferred to <?php echo $campi["school_name"]; ?>. <br /><br />
 							Students will be met at <?php echo $campi["school_name"]; ?> by the residential campus manager and be allocated a room.<br /><br />
@@ -956,7 +966,7 @@ foreach ($detSTD as $single) {
 						<br /><br />
 						From: <?php echo date("d/m/Y", strtotime($campi["arrival_date"])); ?><br/>
 						To: <?php echo date("d/m/Y", strtotime($campi["departure_date"])); ?><br /><br />
-						Campus address: <?php echo $campi["address"].','.$campi['post_code']; ?><br /><br />
+						Campus address: <?php echo $printableAddress; ?><br /><br />
 						The course is inclusive of full – board residence accommodation, English Lessons (15 hours a week) and an afternoon, evening and weekend leisure programme. The payment is being made. <br /><br />
 						Upon arrival date <?php echo date("d/m/Y", strtotime($campi["arrival_date"])); ?>, the group will be met by a PLUS representative at the Airport and transferred to <?php echo $campi["school_name"]; ?>. <br /><br />
 						Students will be met at <?php echo $campi["school_name"]; ?> by the residential campus manager and be allocated a room.<br /><br />
@@ -1002,7 +1012,7 @@ foreach ($detSTD as $single) {
 						<br /><br />
 						From: <?php echo date("d/m/Y", strtotime($campi["arrival_date"])); ?><br/>
 						To: <?php echo date("d/m/Y", strtotime($campi["departure_date"])); ?><br /><br />
-						Campus address: <?php echo $campi["address"].','.$campi['post_code']; ?><br /><br />
+						Campus address: <?php echo $printableAddress; ?><br /><br />
 						The course is inclusive of full – board residence accommodation, English Lessons (15 hours a week) and an afternoon, evening and weekend leisure programme. The payment is being made. <br /><br />
 						Upon arrival date <?php echo date("d/m/Y", strtotime($campi["arrival_date"])); ?>, the group will be met by a PLUS representative at the Airport and transferred to <?php echo $campi["school_name"]; ?>. <br /><br />
 						Students will be met at <?php echo $campi["school_name"]; ?> by the residential campus manager and be allocated a room.<br /><br />

@@ -4,7 +4,7 @@
  * @Programmer  : SK
  * @Maintainer  : SK
  * @Created     : 18-July-2016
- * @Modified    : 
+ * @Modified    :
  * @Description : sudents used to authenticate pulsed_row user pax with type STD
  */
 class Students extends Controller {
@@ -21,7 +21,7 @@ class Students extends Controller {
     }
 
     /**
-     * students section landing page dashboard/login 
+     * students section landing page dashboard/login
      */
     function index() {
         if ($this->session->userdata('role') == 502) {
@@ -39,9 +39,9 @@ class Students extends Controller {
     }
 
     /**
-     * login 
-     * this function uses email address and students password to check/authenticate user 
-     * if user is authenticated basic information is save into the session and user gets loggedin. 
+     * login
+     * this function uses email address and students password to check/authenticate user
+     * if user is authenticated basic information is save into the session and user gets loggedin.
      */
     function login() {
         if (!empty($_POST)) {
@@ -92,13 +92,22 @@ class Students extends Controller {
 
     /**
      * dashboard
-     * this function loads students dashboard. 
+     * this function loads students dashboard.
      */
     function dashboard() {
         if ($this->session->userdata('role') == 502) {
             $data['title'] = "plus-ed.com | Dashboard";
             $data['breadcrumb1'] = 'Dashboard';
             $data['breadcrumb2'] = '';
+            $userUUID = $this->session->userdata('uuid');
+            $testId = ENGLISH_GRAMMAR_TEST; // THIS IS STATIC ID FOR : ENGLISH GRAMMAR TEST
+            $checkAlreadySubmitted = $this->studentsmodel->checkAlreadySubmited($testId, $userUUID);
+            $testSubmitedStatus = 0;
+            if(!empty($checkAlreadySubmitted))
+            {
+                $testSubmitedStatus = ($checkAlreadySubmitted->ts_test_status == "Completed" ? 1 : 0);
+            }
+            $data['testSubmitedStatus'] = $testSubmitedStatus;
             if (APP_THEME == "OLD")
                 $this->load->view('tuition/plused_students_dashboard', $data);
             else { // if(APP_THEME == "LTE")
@@ -112,8 +121,8 @@ class Students extends Controller {
     }
 
     /**
-     * logout 
-     * this function is used to destroy students session. 
+     * logout
+     * this function is used to destroy students session.
      */
     function logout() {
         $this->session->sess_destroy();
@@ -158,14 +167,14 @@ class Students extends Controller {
             if ($userData) {
                 $data['userData'] = $userData;
                 $data['userId'] = $id;
-                $testId = 3; // THIS IS STATIC ID FOR : ENGLISH GRAMMAR TEST
-                $remainingTime = "30:00"; //Minutes, THIS IS STATIC TIME FOR : ENGLISH GRAMMAR TEST
+                $testId = ENGLISH_GRAMMAR_TEST; // THIS IS STATIC ID FOR : ENGLISH GRAMMAR TEST
+                $remainingTime = ENGLISH_GRAMMAR_TEST_TIMER; //Minutes, THIS IS STATIC TIME FOR : ENGLISH GRAMMAR TEST
                 $runningTestId = 0;// RUNNING TEST INSTANCE FOR STUDENT
-                $currentTestAttempt = 0;// RUNNING TEST INSTANCE ATTENMPT FOR STUDENT
+                $currentTestAttempt = 0;// RUNNING TEST INSTANCE ATTEMPT FOR STUDENT
                 $testSubmitedStatus = 0;
                 $checkAlreadySubmitted = $this->studentsmodel->checkAlreadySubmited($testId, $userUUID);
                 $checkCDUserMarks = $this->studentsmodel->checkCDUserEnteredMarks($userUUID);
-                
+
                 if(!empty($checkAlreadySubmitted))
                 {
                     $runningTestId = $checkAlreadySubmitted->ts_id;
@@ -177,10 +186,10 @@ class Students extends Controller {
                 $data['runningTestId'] = $runningTestId;
                 $data['testAlreadySubmitted'] = $testSubmitedStatus;
                 $data['currentTestAttempt'] = $currentTestAttempt;
-                
+
                 $data['checkCDUserMarks'] = $checkCDUserMarks;
                 $testQuestionData = $this->studentsmodel->getTestQuestions($testId, $userUUID);
-                
+
                 $data['testQuestionData'] = $testQuestionData;
                 if ($data['testQuestionData']) {
                     $data['testName'] = $data['testQuestionData'][0]['test_title'];
@@ -192,10 +201,11 @@ class Students extends Controller {
                 else { // if(APP_THEME == "LTE")
                     $data['pageHeader'] = "Grammar and vocabulary";
                     $data['optionalDescription'] = "";
-                    if($testSubmitedStatus)
+                    $this->ltelayout->view('lte/students/online_english_test', $data);
+                    /*if($testSubmitedStatus)
                         $this->ltelayout->view('lte/students/english_test', $data);
                     else
-                        $this->ltelayout->view('lte/students/online_english_test', $data);
+                        $this->ltelayout->view('lte/students/online_english_test', $data);*/
                 }
             } else
                 redirect('students', 'refresh');
@@ -205,7 +215,7 @@ class Students extends Controller {
     }
 
     /**
-     * used to log the students answer given agains test question 
+     * used to log the students answer given agains test question
      */
     function logquesanswer() {
         $questionId = $this->input->post('quesId');
@@ -224,7 +234,7 @@ class Students extends Controller {
             echo json_encode(array('result' => 0, "message" => "User session expired."));
         }
     }
-    
+
     function teststarted(){
         $testId = $this->input->post('testId');
         $remainingTime = $this->input->post('remainingTime');
@@ -237,7 +247,7 @@ class Students extends Controller {
         }
         echo json_encode(array('testSubmitId'=>$testSubmitId));
     }
-    
+
     function upatetimer(){
         $runningTestId = $this->input->post('runningTestId');
         $remainingTime = $this->input->post('remainingTime');
@@ -248,7 +258,7 @@ class Students extends Controller {
     }
 
     /**
-     * used to submit students test 
+     * used to submit students test
      */
     function submittest() {
         $testId = $this->input->post('testId');
@@ -274,8 +284,8 @@ class Students extends Controller {
     }
 
     /**
-     * This function can be used to insert test question and option 
-     * into the database 
+     * This function can be used to insert test question and option
+     * into the database
      * it will provoid a raw form to enter one question at time
      *  'tque_test_id' => 2, please change test id here in below code.
      */

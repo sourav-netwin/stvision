@@ -7,11 +7,11 @@
                     Current test is disabled, may be you have opted for offline test.
                 </div>
             <?php } else { ?>
-                <div class="box box-primary">                
+                <div class="box box-primary">
                     <div class="box-header with-border text-center">
                         <h3 class="box-title">PLACEMENT TEST <?php echo date('Y'); ?> </h3>
                     </div>
-                    <!-- /.box-header -->                
+                    <!-- /.box-header -->
                     <div class="box-body test-head">
                         <p ><strong>Question paper</strong></p>
                         <p class="test-note"><span>Do as many questions as you can, beginning with question 1. Only ONE answer is correct in each question. Choose A,

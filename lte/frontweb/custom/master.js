@@ -1,7 +1,7 @@
 /*
 	This JS file is used to manage all custom javascript functionality(applicable for
 	add/edit/list) related to the master module
-	Current Version : 1.3
+	Current Version : 1.9
 */
 
 var pageHighlightMenu = 'frontweb/master/index/'+moduleName;
@@ -11,6 +11,13 @@ $(document).ready(function(){
 		//Initialize datatable
 		var table = $("#datatable").DataTable({
 			processing : true,
+			"createdRow": function( row, data, dataIndex ) {
+				if(moduleName == 'manage_extra_activity')
+				{
+					if($(row).find('.btn-danger').data('delete_flag') == 1)
+						$(row).css('background-color' , '#9fb48e');
+				}
+			},
 			stateSave : true,
 			serverSide : true,
 			ajax : {
@@ -41,7 +48,7 @@ $(document).ready(function(){
 			} , true , true);
 		});
 
-		//Operations for master activity module only
+		//Operations for master activity module only - Copy activity management
 		if(moduleName == 'manage_fixed_activity')
 		{
 			//For master activity module , after click on the copy icon , we have opened one modal to select multiple dates
@@ -87,6 +94,34 @@ $(document).ready(function(){
 				}
 			});
 		}
+
+		//After click on the add more icon it will add dynamic content for master modules through ajax call
+		$(document).on('click' , '.addMoreTable' , function(){
+			var $selector = $(this);
+			if($selector.parent().find('i').length == 1)
+				$selector.parent().append('<i class="fa fa-lg fa-minus-circle delete_section removeMoreTable" aria-hidden="true"></i>');
+			$.ajax({
+				url : baseUrl+'index.php/frontweb/master/get_extra_action_fields',
+				type : 'POST',
+				data : {
+					'module' : $('#extraActionModal').find('#moduleName').val(),
+					'id' : '',
+					'ajaxCount' : 1
+				},
+				dataType : 'JSON',
+				success : function(response){
+					$selector.parent().parent().after(response.htmlStr);
+					initSummernote();
+				}
+			});
+		});
+
+		//After click on the remove more icon it will remove dynamic content for master modules
+		$(document).on('click' , '.removeMoreTable' , function(){
+			$(this).parent().parent().remove();
+			if($('.subTableWrapper').length == 1)
+				$('.subTableWrapper').find('.removeMoreTable').remove();
+		});
 	}
 	else if(pageType == 'add_edit')
 	{
@@ -208,41 +243,6 @@ $(document).ready(function(){
 			}
 		});
 
-		//Check validation for subtable fields dynamically
-		var subTableObj = JSON.parse(subModuleArr);
-		if(Object.keys(subTableObj).length > 0)
-		{
-			$('#masterForm').submit(function(){
-				$(this).valid();
-				var errorFlag = 1;
-				$.each(subTableObj.field , function(fieldKey , fieldValue){
-					$('input[name="'+fieldKey+'[]"]').each(function(){
-						//To check the required validation
-						if(fieldValue.validation.indexOf('required') != -1)
-						{
-							if($(this).val() == '')
-							{
-								errorFlag = 2;
-								if(fieldValue.type == 'time')
-									$(this).parent().next('.showErrorMessage').text(please_enter_dynamic.replace('**field**' , fieldValue.fieldLabel)).css('display' , 'block');
-								else
-									$(this).next('.showErrorMessage').text(please_enter_dynamic.replace('**field**' , fieldValue.fieldLabel)).css('display' , 'block');
-							}
-							else
-							{
-								if(fieldValue.type == 'time')
-									$(this).parent().next('.showErrorMessage').text('');
-								else
-									$(this).next('.showErrorMessage').text('');
-							}
-						}
-					});
-				});
-				if(errorFlag == 2)
-					return false;
-			});
-		}
-
 		//Add customize validation rules to check the valid data
 		jQuery.validator.addMethod("validData" , function(value , element){
 			if(/[()+<>\"\'%&;]/.test(value))
@@ -288,10 +288,10 @@ $(document).ready(function(){
 				return true;
 		} , enter_vimeo_url);
 
+		//On change of the image , it checks the validation and load the image accordingly
 		$.each(fieldObject , function(fieldKey , fieldValue){
 			if(fieldValue.type == 'file' && fieldValue.fileType == 'image')
 			{
-				//On change of the image , it checks the validation and load the image accordingly
 				$('#'+fieldKey).on('change' , function(){
 					$(this).next('span.error').text('');
 					var files = (this.files) ? this.files : [];
@@ -325,25 +325,6 @@ $(document).ready(function(){
 				});
 			}
 		});
-
-		//After click on the add more icon it will add dynamic content for master modules
-		$(document).on('click' , '.addMoreTable' , function(){
-			if($(this).parent().find('i').length == 1)
-				$(this).parent().append('<i class="fa fa-lg fa-minus-circle delete_section removeMoreTable" aria-hidden="true"></i>');
-			$(this).parent().parent().after($(this).parent().parent().clone());
-			$(this).parent().parent().next().find('input:text').val('');
-			$(this).parent().parent().next().find('.showErrorMessage').text('');
-			$('.timepicker').datetimepicker({
-				pickDate: false
-			});
-		});
-
-		//After click on the remove more icon it will remove dynamic content for master modules
-		$(document).on('click' , '.removeMoreTable' , function(){
-			$(this).parent().parent().remove();
-			if($('.subTableWrapper').length == 1)
-				$('.subTableWrapper').find('.removeMoreTable').remove();
-		});
 	}
 });
 
@@ -373,4 +354,12 @@ function strip_html_tags(str)
 	else
 		str = str.toString();
 	return str.replace(/<[^>]*>/g , '');
+}
+
+//This function is used to initialize summernote
+function initSummernote()
+{
+	$('.summernote').summernote({
+		height: 200
+	});
 }

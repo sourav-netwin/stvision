@@ -167,6 +167,7 @@
                             <td style="width:40%;border: 1px solid black;">
                         <?php
                             $freeGlPerPax = $bc['pack_free_gl_per_pax'];
+                            // EXTRA GL PRICE MULTIPLIED BY WEEKS
                             $extraGLPrice = $bc['pack_extra_gl_price'] * $book['weeks'];
                             $extrGL = 0;
                             $payableGl = 0;
@@ -207,7 +208,7 @@
                                 if($bc['tipo_pax'] == "GL")
                                 {
                                     $totalGL = $totalPax + $bc['cnt'];
-                                    echo $bc['cnt'] . " (Free: ".$freeGL.")";
+                                    echo $bc['cnt'] . "(".  substr($bc['glPaidType'], 0,1).")";
                                 }
                                 ?>
                             </td>
@@ -266,7 +267,7 @@
                                     echo $book['valuta'] . number_format(($display_price / $numOfWeeks), 2, '.', '');
                                 } else 
                                 {
-                                    if ($extrGL)  // it means there are some free GLs
+                                    if ($bc['glPaidType'] == "Free")  // it means there are some free GLs
                                     {
                                         // calculate the ratio cost.
                                         $ratioCost = ($display_price / $freeGlPerPax) * ($freeGlPerPax - $remaingPaxToReachFreeGL);
@@ -274,23 +275,16 @@
                                             $extraGLPrice = $ratioCost;
                                         echo $book['valuta'] . number_format(($extraGLPrice / $numOfWeeks), 2, '.', '');
 
+                                    }
+                                    else if ($bc['glPaidType'] == "Extra")  // it means there are some free GLs
+                                    {
+                                        echo $book['valuta'] . number_format(($extraGLPrice / $numOfWeeks), 2, '.', '');
                                     } else 
                                     {
-                                        // IF THERE ARE NO EXTRA GL MEANS NO FREE GL
-                                        // THEN USE COMPOSITION PRICE WITH THE FORMULA TO CALCULATE GL COST
-                                        $gl_formula_price = 0;
-                                        if($freeGlPerPax * ($freeGlPerPax - $remaingPaxToReachFreeGL))
-                                            $gl_formula_price = $display_price / $freeGlPerPax * ($freeGlPerPax - $remaingPaxToReachFreeGL);
-                                        else
-                                            $gl_formula_price = $display_price;
-                                        if ($gl_formula_price > 0)
-                                        {
-                                            echo $book['valuta'] . number_format(($gl_formula_price / $numOfWeeks), 2, '.', '');
-                                        }
-                                        else
-                                        {
-                                            echo $book['valuta'] . number_format(0, 2, '.', '');
-                                        }
+                                        $ratioCost = ($display_price / $freeGlPerPax) * ($freeGlPerPax - $remaingPaxToReachFreeGL);
+                                        if($ratioCost > $extraGLPrice)
+                                            $ratioCost = $extraGLPrice;
+                                        echo $book['valuta'] . number_format(($ratioCost / $numOfWeeks), 2, '.', '');
                                     }
                                 }
                             ?>
@@ -298,21 +292,29 @@
                             <td style="width:10%;text-align: right;border: 1px solid black;">
                                 <?php 
                                     if($bc['tipo_pax'] == "GL"){
-                                        if($extrGL)
+                                        if ($bc['glPaidType'] == "Free")  // it means there are some free GLs
                                         {
-                                            $totalInvoiceCost = $totalInvoiceCost + ($extrGL * ($extraGLPrice));
-                                            echo $book['valuta'].number_format($extrGL * ($extraGLPrice), 2, '.', '');
+                                            echo $book['valuta'] . number_format(0, 2, '.', '');
+
                                         }
-                                        else{
-                                            $gl_formula_price = 0;
-                                            if($freeGlPerPax * ($freeGlPerPax - $remaingPaxToReachFreeGL))
-                                                $gl_formula_price = $display_price / $freeGlPerPax * ($freeGlPerPax - $remaingPaxToReachFreeGL);
+                                        else if ($bc['glPaidType'] == "Extra")  // it means there are some free GLs
+                                        {
+                                            $totalInvoiceCost = $totalInvoiceCost + ($bc['cnt'] * ($extraGLPrice));
+                                            echo $book['valuta'].number_format($bc['cnt'] * ($extraGLPrice), 2, '.', '');
+
+                                        } else 
+                                        {
+                                            $ratioCost = 0;
+                                            if($freeGlPerPax)
+                                                $ratioCost = ($display_price / $freeGlPerPax) * ($freeGlPerPax - $remaingPaxToReachFreeGL);
                                             else
-                                                $gl_formula_price = $display_price;
-                                            if($gl_formula_price > 0)
+                                                $ratioCost = $display_price;
+                                            if($ratioCost > $extraGLPrice)
+                                                $ratioCost = $extraGLPrice;
+                                            if($ratioCost > 0)
                                             {
-                                                $totalInvoiceCost = $totalInvoiceCost + ($payableGl * $gl_formula_price);
-                                                echo $book['valuta'].number_format($payableGl * $gl_formula_price, 2, '.', '');
+                                                $totalInvoiceCost = $totalInvoiceCost + ($bc['cnt'] * $ratioCost);
+                                                echo $book['valuta'].number_format($bc['cnt'] * $ratioCost, 2, '.', '');
                                             }else{
                                                 echo $book['valuta'].number_format(0, 2, ',', '');
                                             }

@@ -17,7 +17,7 @@ class Studentsmodel extends Model {
      * @param string $userFirstName
      * @param string $userSurname
      * @param string $userDOB
-     * @return mixed 
+     * @return mixed
      */
     public function verifySTDUser($userFirstName, $userSurname, $userDOB) {
         $this->db->where('cognome', $userSurname);
@@ -36,7 +36,7 @@ class Studentsmodel extends Model {
     /**
      * getUserdata
      * @param INT $id
-     * @return int 
+     * @return int
      */
     public function getUserdata($id) {
         $this->db->where('tipo_pax', 'STD');
@@ -56,7 +56,7 @@ class Studentsmodel extends Model {
      * This functon list the all question available for test and answer given by student if any
      * @param int $testId
      * @param string $userUUID
-     * @return mixed 
+     * @return mixed
      */
     public function getTestQuestions($testId = 0, $userUUID = "") {
         if (!empty($testId)) {
@@ -86,7 +86,7 @@ class Studentsmodel extends Model {
      * @param int $questionId
      * @param int $optionId
      * @param string $userUUID
-     * @return int 
+     * @return int
      */
     public function updateQuestionAnswer($questionId, $optionId, $userUUID) {
         $whereData = array(
@@ -116,7 +116,7 @@ class Studentsmodel extends Model {
             return 1;
         }
     }
-    
+
     public function testStarted($testId, $userUUID,$remainingTime) {
         $testSubmitId = 0;
         if (!empty($testId) && !empty($userUUID)) {
@@ -152,7 +152,7 @@ class Studentsmodel extends Model {
         }
         return $testSubmitId;
     }
-    
+
     function upatetimer($runningTestId, $remainingTime){
         $updateArray = array(
             'ts_remaining_time' => $remainingTime
@@ -167,7 +167,7 @@ class Studentsmodel extends Model {
      * @param int $testId
      * @param string $userUUID
      * @param string $testSubmittedDate
-     * @return int 
+     * @return int
      */
     public function submitTest($testId, $userUUID, $testSubmittedDate) {
         if (!empty($testId) && !empty($userUUID) && !empty($testSubmittedDate)) {
@@ -209,7 +209,7 @@ class Studentsmodel extends Model {
      * Check student has already submitted the same test or not?
      * @param int $testId
      * @param string $userUUID
-     * @return int 
+     * @return int
      */
     public function checkAlreadySubmited($testId, $userUUID) {
         if (!empty($testId) && !empty($userUUID)) {
@@ -229,11 +229,11 @@ class Studentsmodel extends Model {
     /**
      * getStudentTestData
      * this funtion return array of students result agains test
-     * it calculates number of question asked in test and 
+     * it calculates number of question asked in test and
      * number of correct answer given by students
      * @param int $testId
      * @param string $keyword
-     * @return int 
+     * @return int
      */
     public function getStudentTestData($testId = 0, $keyword = "", $params = array()) {
         $this->db->select("ts_submitted_on,test_title,
@@ -271,7 +271,7 @@ class Studentsmodel extends Model {
 
         $result = $this->db->get('plused_test_submited');
 
-        if ($result->num_rows()) { 
+        if ($result->num_rows()) {
             return $result->result_array();
         }
         return 0;
@@ -319,7 +319,7 @@ class Studentsmodel extends Model {
         }
         return 0;
     }
-    
+
     public function resetAttempt($test_sub_id){
          $updateArray = array(
              'ts_attempt_count' => 0
@@ -333,7 +333,7 @@ class Studentsmodel extends Model {
      * Retrive students test score
      * @param int $testId
      * @param string $userUUID
-     * @return int 
+     * @return int
      */
     public function getStudentTestScore($testId = 0, $userUUID = "") {
         $this->db->select("COUNT(tque_id) AS total_questions,
@@ -360,7 +360,7 @@ class Studentsmodel extends Model {
      * This function will save test score for language knowledge
      * @param int $testId
      * @param string $userUUID
-     * @return int 
+     * @return int
      */
     public function addTestScore($testId, $userUUID) {
         $result = $this->getStudentTestScore($testId, $userUUID);

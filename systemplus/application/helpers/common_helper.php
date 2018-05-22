@@ -28,7 +28,7 @@ if (!function_exists('validateDate')) {
         $d = DateTime::createFromFormat($format, $date);
         return $d && $d->format($format) == $date;
     }
-    
+
 }
 
 /**
@@ -59,8 +59,8 @@ if ( ! function_exists('seoUrl'))
 if (!function_exists('authSessionMenu')) {
 
     /**
-     * This function will check the user session and menu access for for the user. 
-     * 
+     * This function will check the user session and menu access for for the user.
+     *
      * @access public
      * @author Sandip Kalbhile
      */
@@ -103,7 +103,7 @@ if (!function_exists('handleRoleRedirection')) {
 
     /**
      * This function handles request for redirection and per user role.
-     * @param type $userRole 
+     * @param type $userRole
      * @access public
      * @author Sandip Kalbhile
      */
@@ -134,7 +134,7 @@ if (!function_exists('accessDenied')) {
 
     /**
      * This function will load user page not found page
-     * @param object $CI 
+     * @param object $CI
      * @access public
      * @author Sandip Kalbhile
      */
@@ -158,7 +158,7 @@ if (!function_exists('leftSideBarMenuHtml')) {
 
     /**
      * This function creates html for left side bar menus
-     * @param type $mnuArrData 
+     * @param type $mnuArrData
      * @access public
      * @author Sandip Kalbhile
      */
@@ -247,7 +247,7 @@ if (!function_exists('showSessionMessageIfAny')) {
 
     /**
      * This will echo session success / failure messages
-     * @param object $CI 
+     * @param object $CI
      * @access public
      * @author Sandip Kalbhile
      */
@@ -319,12 +319,12 @@ if (!function_exists('getThumbnailName')) {
  *
  * Author(s): thanosb, ddonahue
  * Date: May 11, 2008
- * 
+ *
  * Writes the values of certain variables along with a message in a database.
  *
  * Parameters:
  *  $message: Message to be logged
- *  $db: Object that represents the connection to the MySQL Server    
+ *  $db: Object that represents the connection to the MySQL Server
  *
  * Returns array:
  *  $result[status]:   True on success, false on failure
@@ -541,7 +541,7 @@ function getSurveyStarRating($rate = 0,$stars = 4){
                 $smiley = "smiley-yell.png";
                 break;
         }
-        for ($i = 1; $i <= $stars; $i++) 
+        for ($i = 1; $i <= $stars; $i++)
         {
             if($i == $rate)
             {
@@ -576,7 +576,7 @@ function print_tags($csvStr,$newLine = 0,$row = array()){
 
 /**
  * getEmailTemplate
- * fetch email template as per given id. 
+ * fetch email template as per given id.
  */
 if ( ! function_exists('getEmailTemplate'))
 {
@@ -610,4 +610,18 @@ if ( ! function_exists('mergeContent'))
             ob_end_clean();
             return $template;
         }
+}
+
+
+function getPrintableAddress($campi){
+    $printCity = "";
+    $printAddress = "";
+    if (($pos = strpos($campi["address"], "#")) !== FALSE) {
+        $printCity = substr($campi['address'], $pos+1); 
+        $printAddress = substr($campi['address'], 0, $pos); 
+    }
+    else
+        $printAddress = $campi['address'].", ".$campi['post_code'];
+    $printableAddress = (!empty($printCity) ? trim($printAddress).", ".trim($campi['post_code']) . ", " .trim($printCity)."." : trim($printAddress) .", ". $campi['post_code']);
+    return $printableAddress;
 }

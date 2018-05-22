@@ -457,12 +457,28 @@ class Backoffice extends Controller {
             $campus = $NA_bookDet[0]->id_centro;
             $datein = $NA_bookDet[0]->mindatein;
             $dateout = $NA_bookDet[0]->maxdateout;
+            /*
             $dateInterval = (strtotime($dateout) - strtotime($datein)) / 60 / 60 / 24;
             $addedDays = 30 - $dateInterval;
             $startingDays = floor($addedDays / 2);
             $endingDays = $addedDays - $startingDays;
             $datecycleIn = date("Y-m-d", strtotime("-" . $startingDays . " day", strtotime($datein)));
             $datecycleOut = date("Y-m-d", strtotime("+" . $endingDays . " day", strtotime($dateout)));
+            */
+            $dateinObj = date_create($datein);
+            $dateoutObj = date_create($dateout);
+            $dateInterval = date_diff($dateoutObj,$dateinObj)->days;
+            $addedDays = 30 - $dateInterval;
+            $startingDays = floor($addedDays / 2);
+            $endingDays = $addedDays - $startingDays;
+            if($startingDays < 50 && $endingDays < 50)
+            {
+                $datecycleIn = date('Y-m-d', strtotime($datein. ' - '.$startingDays.' days'));
+                $datecycleOut = date('Y-m-d', strtotime($dateout. ' + '.$endingDays.' days'));
+            }
+            else{
+                die("Invalid date range to generate calender");
+            }
             //echo $datein."-".$dateout."-".$dateInterval."-".$addedDays."-".$startingDays."-".$endingDays."-".$datecycleIn."-".$datecycleOut;
             $data["datein"] = $datecycleIn;
             $data["dateout"] = $datecycleOut;
@@ -609,13 +625,13 @@ class Backoffice extends Controller {
             $data["agenziefrom"] = $agent;
             $data["statusfrom"] = $status;
             $data["all_books"] = $this->mbackoffice->exportCSVBookings($campus, $agent, $status, $year);
-            //echo "<pre>";
-            //print_r($data["all_books"]);
-            //echo "</pre>";
+//            echo "<pre>";
+//            print_r($data["all_books"]);
+//            echo "</pre>";die;
             $myFile = "/var/www/html/www.plus-ed.com/vision_ag/downloads/export_csv/allCSVBookings.csv";
             //$myFile = "./downloads/export_csv/allCSVBookings.csv";
             $fh = fopen($myFile, 'w+') or die("can't open file");
-            $intestData = '"Centro";"Booking number";"Agency";"Arrival date";"Departure date";"Weeks";"Pax type";"Accomodation";"Pax number";"Status";"Elapsing date";"Elapsed checked";"Elapsed checked note";"Booking date and time";"Deposit invoice";"Full invoice";"Currency";"Account Manager";"Account Manager Email"' . PHP_EOL;
+            $intestData = '"Centro";"Booking number";"Agency";"Arrival date";"Departure date";"Weeks";"Pax type";"Accomodation";"Pax number";"Status";"Elapsing date";"Elapsed checked";"Elapsed checked note";"Booking date and time";"Deposit invoice";"Full invoice";"Currency";"Account Manager";"Account Manager Email";"Transfer";"Note"' . PHP_EOL;
             fwrite($fh, $intestData);
             foreach ($data["all_books"] as $singbk) {
                 //echo "<br />".$singbk["centro"].'";"'.$singbk["id_book"]."_".$singbk["id_year"].$singbk["agency"][0]["businessname"].'";"'.$singbk["arrival_date"].'";"'.$singbk["departure_date"].'";"'.$singbk["weeks"].'";"'.$singbk["status"].'";"'.$singbk["data_scadenza"].'";"'.$singbk["data_insert"].'";'.str_replace(".",",",$singbk["acconto_versato"]).';'.str_replace(".",",",$singbk["saldo_versato"]).';"'.$singbk["valuta"]."<br />";
@@ -631,17 +647,20 @@ class Backoffice extends Controller {
                         if(isset($singbk["agency"][0]["acc_manager_email"]))
                             $agencyAccMngrEmail = $singbk["agency"][0]["acc_manager_email"];
                         
-                        $rigaData = '"' . $singbk["centro"] . '";"' . $singbk["id_year"] . "_" . $singbk["id_book"] . '";"' . $agencyBusinessName . '";"' . $singacco->data_arrivo_campus /*$singbk["arrival_date"]*/ . '";"' . $singacco->data_partenza_campus /*$singbk["departure_date"]*/ . '";"' . $singbk["weeks"] . '";"' . $singacco->tipo_pax . '";"' . $singacco->accomodation . '";"' . $singacco->contot . '";"' . $singbk["status"] . '";"' . $singbk["data_scadenza"] . '";"' . ($singbk["flag_elapsed"] == 1 ? 'Checked' : '' ) . '";"' . $singbk["flag_elapsed_comment"] . '";"' . $singbk["data_insert"] . '";' . str_replace(".", ",", $singbk["acconto_versato"]) . ';' . str_replace(".", ",", $singbk["saldo_versato"]) . ';"' . $singbk["valuta"] . '";"'.$agencyAccMngrName.'";"'.$agencyAccMngrEmail.'"' . PHP_EOL;
+                        $transferRequired = "-";
+                        if($singbk["flag_transfer"] == 0)
+                            $transferRequired = "No";
+                        else if($singbk["flag_transfer"] == 1)
+                            $transferRequired = "Yes";
+                        $bookingNote = trim($singbk['booking_note'],"\n");
+                        $rigaData = '"' . $singbk["centro"] . '";"' . $singbk["id_year"] . "_" . $singbk["id_book"] . '";"' . $agencyBusinessName . '";"' . $singacco->data_arrivo_campus /*$singbk["arrival_date"]*/ . '";"' . $singacco->data_partenza_campus /*$singbk["departure_date"]*/ . '";"' . $singbk["weeks"] . '";"' . $singacco->tipo_pax . '";"' . $singacco->accomodation . '";"' . $singacco->contot . '";"' . $singbk["status"] . '";"' . $singbk["data_scadenza"] . '";"' . ($singbk["flag_elapsed"] == 1 ? 'Checked' : '' ) . '";"' . $singbk["flag_elapsed_comment"] . '";"' . $singbk["data_insert"] . '";' . str_replace(".", ",", $singbk["acconto_versato"]) . ';' . str_replace(".", ",", $singbk["saldo_versato"]) . ';"' . $singbk["valuta"] . '";"'.$agencyAccMngrName.'";"'.$agencyAccMngrEmail.'";"'.$transferRequired.'";"'.$bookingNote.'"' . PHP_EOL;
                         //echo "<br />".$rigaData."<br />";
                         fwrite($fh, $rigaData);
                     }
                 }
             }
             fclose($fh);
-
             $this->load->library('excel');
-
-
             $inputFileType = 'CSV';
             $inputFileName = $myFile;
             $objReader = PHPExcel_IOFactory::createReader($inputFileType);
@@ -814,9 +833,15 @@ class Backoffice extends Controller {
                 $this->email->from('info@plus-ed.com', 'Plus Sales Office');
                 $this->email->to($a_email);
                 if(!empty($accountManagerEmail))
-                    $this->email->cc($accountManagerEmail. ", smarra@plus-ed.com");
+                {
+                    $ccArray = array(
+                        $accountManagerEmail,
+                        'smarra@plus-ed.com'
+                    );
+                    $this->email->cc($ccArray);//smarra@plus-ed.com
+                }
                 else
-                    $this->email->cc("smarra@plus-ed.com");
+                    $this->email->cc("smarra@plus-ed.com"); // smarra@plus-ed.com
                 $this->email->bcc($this->session->userdata('email'));
                 $this->email->subject('Plus Sales Office - Your booking has been activated.');
                 $this->email->message($messageBody);
@@ -844,6 +869,35 @@ class Backoffice extends Controller {
                         '{AGENCY_NAME}' => $agencyName,
                         '{ACCOUNT_MNGR_NAME}' => $accountManagerName,
                         '{ACCOUNT_MNGR_EMAIL}' => $accountManagerEmail
+                    );
+                    $txtMessageStr = mergeContent($strParam,$emailTemplate->emt_text);
+                    $this->email->message($txtMessageStr);
+                    $this->email->send();
+                }
+            }if ($stato == "elapsed_rejected") {
+                // used email template to send email on booking
+                // confirmation Email Template id is 7
+                $bookAgentDetails = $this->mbackoffice->getBookingAgentDetail($id);
+                if(isset($bookAgentDetails->email))
+                if(!empty($bookAgentDetails->email))
+                {
+                    $agencyName = $bookAgentDetails->mainfirstname ." ". $bookAgentDetails->mainfamilyname;
+                    $agentEmail = $bookAgentDetails->email;
+                    $accountManagerEmail = $bookAgentDetails->acc_manager_email;
+                    $accountManagerName = $bookAgentDetails->acc_manager_firstname ." ". $bookAgentDetails->acc_manager_lastname;
+                    $bookingDetailHtml = $this->_getBookingInfoHTML($id);
+                    $this->load->library('email');
+                    $emailTemplate = getEmailTemplate(EmailTemplateIds::$BOOKING_ELAPSED_REJECTED_TEMPLATE);
+                    $this->email->set_newline("\r\n");
+                    $this->email->from($emailTemplate->emt_from_email, "Plus-ed.com");
+                    $this->email->to($agentEmail);
+                    $this->email->cc($accountManagerEmail);
+                    $this->email->subject($emailTemplate->emt_title);
+                    $strParam = array(
+                        '{AGENCY_NAME}' => $agencyName,
+                        '{ACCOUNT_MNGR_NAME}' => $accountManagerName,
+                        '{ACCOUNT_MNGR_EMAIL}' => $accountManagerEmail,
+                        '{BOOKING_DETAIL_HMTL}' => $bookingDetailHtml
                     );
                     $txtMessageStr = mergeContent($strParam,$emailTemplate->emt_text);
                     $this->email->message($txtMessageStr);
@@ -1790,68 +1844,77 @@ class Backoffice extends Controller {
     }
 
 //FINE NUOVA REVIEW BACKOFFICE DAY2DAY
-
-
-
-
-
-
+    
     function setExcursionTransport() {
 //        if ($this->session->userdata('role') == 100) {
         if ($this->session->userdata('role')) {
-            authSessionMenu($this);
-            $arr_key = array();
-            $tot_pax = 0;
-            foreach ($_POST as $key => $value) {
-                if (strpos($key, "excur_") !== false) {
-                    $t_key = explode("_", $key);
-                    $arr_key[] = $t_key[1];
-                    $v_key = explode("_", $value);
-                    $t_exc_id = $v_key[2];
-                    $tot_pax += $v_key[3];
+            if(!empty($_POST))
+            {
+                authSessionMenu($this);
+                $arr_key = array();
+                $tot_pax = 0;
+                foreach ($_POST as $key => $value) {
+                    if (strpos($key, "excur_") !== false) {
+                        $t_key = explode("_", $key);
+                        $arr_key[] = $t_key[1];
+                        $v_key = explode("_", $value);
+                        $t_exc_id = $v_key[2];
+                        $tot_pax += $v_key[3];
+                    }
                 }
+                //print_r($arr_key);
+                //echo "id escursione per recuperare i bus da jn_id_exc in tabella plused_exc_join---->".$t_exc_id;
+                //echo "tot pax---->".$tot_pax;
+                //echo "---->".$_POST['id_centro'];die;
+                $campus = isset($_POST['id_centro']) ? $_POST['id_centro'] : '';
+                $to = isset($_POST['to']) ? $_POST['to'] : '';
+                $from = isset($_POST['from']) ? $_POST['from'] : '';
+                $data["campusID"] = $campus;
+                $data["campus"] = $this->mbackoffice->centerNameById($campus);
+                $data["pickupPlace"] = $this->mbackoffice->centerPickupById($campus);
+                $data["to"] = $to;
+                $data["from"] = $from;
+                //$data["arr_key"] = $arr_key;
+                $data["tot_pax"] = $tot_pax;
+                $data["escursione"] = $this->mbackoffice->excursionById($t_exc_id);
+                $data["bookings"] = $this->mbackoffice->bkgDetailsForExcursion($arr_key);
+    //            echo "<pre>";
+    //            print_r($data["escursione"]);die;
+    //            print_r($data["bookings"]);die;
+                $arrT = array();
+                $arrF = array();
+                foreach ($data["bookings"] as $bkU) {
+                    $arrT[] = $bkU["departure_date"];
+                    $arrF[] = $bkU["arrival_date"];
+                }
+                //print_r($arrT);
+                //print_r($arrF);
+                $minV = array_search(max($arrF), $arrF);
+                $maxV = array_search(min($arrT), $arrT);
+                $fromOk = date("Y-m-d", strtotime($arrF[$minV] . ' + 1 day'));
+                $toOk = date("Y-m-d", strtotime($arrT[$maxV] . ' - 1 day'));
+                $data["otherExc"] = $this->mbackoffice->getOtherExcursions($t_exc_id, $campus, $fromOk, $toOk);
+                //print_r($data["otherExc"]);
+                $data["bus"] = $this->mbackoffice->busListForExcursion($t_exc_id);
+                //print_r($data["escursione"]);
+                //print_r($data["bookings"]);
+                //echo "<pre>";
+                //print_r($data["bus"]);
+                //echo "</pre>";
+                $data['title'] = 'plus-ed.com | Book excursion bus';
+                $data['breadcrumb1'] = 'Included excursions';
+                $data['breadcrumb2'] = 'Book excursion bus';
+
+                if (APP_THEME == "OLD")
+                    $this->load->view('plused_set_excursion_transport', $data);
+                else { // if(APP_THEME == "LTE")
+                    $data['pageHeader'] = $data['breadcrumb2'];
+                    $data['optionalDescription'] = "";
+                    $this->ltelayout->view('lte/backoffice/super_user/set_excursion_transport', $data);
+                }
+            }else{
+                redirect('backoffice/setUnplannedExcursions', 'refresh');
             }
-            //print_r($arr_key);
-            //echo "id escursione per recuperare i bus da jn_id_exc in tabella plused_exc_join---->".$t_exc_id;
-            //echo "tot pax---->".$tot_pax;
-            //echo "---->".$_POST['id_centro'];
-            $campus = isset($_POST['id_centro']) ? $_POST['id_centro'] : '';
-            $to = isset($_POST['to']) ? $_POST['to'] : '';
-            $from = isset($_POST['from']) ? $_POST['from'] : '';
-            $data["campusID"] = $campus;
-            $data["campus"] = $this->mbackoffice->centerNameById($campus);
-            $data["pickupPlace"] = $this->mbackoffice->centerPickupById($campus);
-            $data["to"] = $to;
-            $data["from"] = $from;
-            //$data["arr_key"] = $arr_key;
-            $data["tot_pax"] = $tot_pax;
-            $data["escursione"] = $this->mbackoffice->excursionById($t_exc_id);
-            $data["bookings"] = $this->mbackoffice->bkgDetailsForExcursion($arr_key);
-            //print_r($data["bookings"]);
-            $arrT = array();
-            $arrF = array();
-            foreach ($data["bookings"] as $bkU) {
-                $arrT[] = $bkU["departure_date"];
-                $arrF[] = $bkU["arrival_date"];
-            }
-            //print_r($arrT);
-            //print_r($arrF);
-            $minV = array_search(max($arrF), $arrF);
-            $maxV = array_search(min($arrT), $arrT);
-            $fromOk = date("Y-m-d", strtotime($arrF[$minV] . ' + 1 day'));
-            $toOk = date("Y-m-d", strtotime($arrT[$maxV] . ' - 1 day'));
-            $data["otherExc"] = $this->mbackoffice->getOtherExcursions($t_exc_id, $campus, $fromOk, $toOk);
-            //print_r($data["otherExc"]);
-            $data["bus"] = $this->mbackoffice->busListForExcursion($t_exc_id);
-            //print_r($data["escursione"]);
-            //print_r($data["bookings"]);
-            //echo "<pre>";
-            //print_r($data["bus"]);
-            //echo "</pre>";
-            $data['title'] = 'plus-ed.com | Book excursion bus';
-            $data['breadcrumb1'] = 'Included excursions';
-            $data['breadcrumb2'] = 'Book excursion bus';
-            $this->load->view('plused_set_excursion_transport', $data);
         } else {
             redirect('backoffice', 'refresh');
         }
@@ -1859,10 +1922,10 @@ class Backoffice extends Controller {
 
     function reviewBusForPlan($busCode) {
         if ($this->session->userdata('role') == 100) {
-
+            $data = array();
             $data['title'] = 'plus-ed.com | Bus review for excursion plan detail - Code ' . $busCode;
             $data['breadcrumb1'] = 'Included excursions';
-            $data['breadcrumb2'] = 'Bus review for included excursion plan detail - Code ' . $busCode;
+            $data['breadcrumb2'] = 'Bus review for plan detail - Code ' . $busCode;//for included excursion
             $data["bus_detail"] = $this->mbackoffice->busDetailForExcursion($busCode);
             $data["plan_detail"] = $this->mbackoffice->excDetail($busCode);
             //print_r($data["plan_detail"]);
@@ -1875,13 +1938,23 @@ class Backoffice extends Controller {
             $data["bus_code"] = $busCode;
             $data["allpax"] = $this->mbackoffice->getExcPaxForBusCode($busCode);
             $data["status_ex"] = $this->mbackoffice->getExcStatusByBusCode($busCode);
+            if(!isset($data["plan_detail"][0]))
+            {
+                echo "ERROR!";
+                die();
+            }
             $data["bus"] = $this->mbackoffice->busListForExcursion($data["plan_detail"][0]["pbe_jnidexc"]);
             if (count($data["status_ex"]) != 1) {
                 echo "ERROR!";
                 die();
             }
-
-            $this->load->view('plused_review_bus_for_plan', $data);
+            if (APP_THEME == "OLD")
+                $this->load->view('plused_review_bus_for_plan', $data);
+            else { // if(APP_THEME == "LTE")
+                $data['pageHeader'] = $data['breadcrumb2'];
+                $data['optionalDescription'] = "";
+                $this->ltelayout->view('lte/backoffice/super_user/review_bus_for_plan', $data);
+            }
         } else {
             redirect('backoffice', 'refresh');
         }
@@ -1971,7 +2044,8 @@ class Backoffice extends Controller {
     }
 
     function plusedConfirmReviewBuses($busCode) {
-        if ($this->session->userdata('role') == 100) {
+        
+        if ($this->session->userdata('role')) {// == 100
             $remBusTab = $this->mbackoffice->remBusTab($busCode);
             //echo "||remBusTab|| ---> $busCode ";
             $s_exc_date = isset($_POST['s_exc_date']) ? $_POST['s_exc_date'] : '';
@@ -2016,6 +2090,7 @@ class Backoffice extends Controller {
             $data["bus_code"] = $codeBusArr[1];
             $data["allpax"] = $this->mbackoffice->getExcPaxForBusCode($codeBusArr[1]);
             $data["status_ex"] = $this->mbackoffice->getExcStatusByBusCode($codeBusArr[1]);
+            
             $data["others"] = array();
             if(count($data["plan_detail"]))
                 $data["others"] = $this->mbackoffice->otherGroupsForExc($data["plan_detail"][0]["pbe_jnidexc"], $data["plan_detail"][0]["pbe_excdate"], $arrayPrenotazioni);
@@ -2412,6 +2487,12 @@ class Backoffice extends Controller {
         echo "done";
     }
 
+    /**
+     * This function is written to create excursions entries
+     * in new table 'agnt_pack_exc_bookings' 
+     * this new table will be used to book buses and coaches later.
+     * @Author: SK
+     */
     function moveConfirmedExcursion(){
         $this->load->model('agents/mapbookmodel');
         $numRows = $this->mapbookmodel->moveConfirmedExcursion();
@@ -2520,9 +2601,6 @@ class Backoffice extends Controller {
                 $objReader->setInputEncoding('UTF-8');
 
                 $objPHPExcel = $objReader->load($inputFileName);
-
-
-
                 $filename = 'export_' . $this->session->userdata('businessname') . '_' . $year . '_' . $book . '.xls';
                 header('Content-Type: application/vnd.ms-excel');
                 header('Content-Disposition: attachment;filename="' . $filename . '"');
@@ -2530,12 +2608,6 @@ class Backoffice extends Controller {
 
                 $objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel5');
                 $objWriter->save('php://output');
-
-
-
-
-
-
 
                 die();
             } else {
@@ -4460,6 +4532,11 @@ class Backoffice extends Controller {
         }
     }
     
+    /**
+     * This function is used to convert the existing code of 
+     * csv generation to the phpExcel .xlsx file generation.
+     * this will generate the excel file with requested format. 
+     */
     function exportAvailabilityDetailNew() {
         if ($this->session->userdata('role')) {
             authSessionMenu($this);
@@ -4602,6 +4679,14 @@ class Backoffice extends Controller {
         }
     }
     
+    /**
+     * This is fucntion is used to format the value of cell if it's in negative 
+     * it will show the number eg. (1245) for -1245 in red color.
+     * @param type $xlsRow
+     * @param type $newsheet
+     * @param type $rowCount
+     * @return type 
+     */
     function _formateNegative($xlsRow,$newsheet,$rowCount){
         if($xlsRow){
             $row = "A";
@@ -4905,7 +4990,6 @@ class Backoffice extends Controller {
             redirect('backoffice', 'refresh');
         }
     }
-
 // funzioni importazione ws da dev
 
     function getWsDev() {
@@ -5383,7 +5467,6 @@ class Backoffice extends Controller {
             $udpateData = array(
                 'cc_is_active' => $courseStatus
             );
-
 
             // CHECK THERE ARE SOME CLASSES CREATED FOR THIS COURSE
             $classAvailable = $this->campuscoursemodel->operations('check_classes', array(), $courseId);

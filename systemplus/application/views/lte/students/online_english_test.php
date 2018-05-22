@@ -1,14 +1,16 @@
 <section class="content">
     <div class="row">
         <div class="col-md-12">
-            <div id="testCompletedBox" style="display:none;" class="box box-primary">                
+            <div id="testCompletedBox" style="display:none;" class="box box-primary">
                 <div class="box-header with-border text-center">
                     <h3 class="box-title">PLACEMENT TEST <?php echo date('Y'); ?> </h3>
                 </div>
                 <div class="box-body text-center">
-                    <img src="<?php echo base_url()?>/img/tuition/hp_summer.jpg" />
-                    <br />Congratulations, you have completed the test.
-                    <br />We look forward to seeing you at PLUS this Summer!
+                    <img class="congo-image" src="<?php echo base_url()?>/img/tuition/hp_summer.jpg" />
+                    <br />
+                    <p>Congratulations, you have completed the test.</p>
+                    <p>We cannot display your test score or level because you have only completed the first half of the test. On your arrival in the summer, we will test your speaking skills, and then we will inform of your English language level.</p>
+                    <p>We look forward to seeing you at PLUS this Summer!</p>
                     <br /><br /><p>Click here to go back <a href="<?php echo base_url();?>index.php/students/dashboard" >dashboard</a></p>
                 </div>
             </div>
@@ -18,7 +20,7 @@
                     Current test is disabled, may be you have opted for offline test.
                 </div>
             <?php }else if ($currentTestAttempt > 2) { ?>
-            <div class="box box-primary">                
+            <div class="box box-primary">
                     <div class="box-header with-border text-center">
                         <h3 class="box-title">PLACEMENT TEST <?php echo date('Y'); ?> </h3>
                     </div>
@@ -30,11 +32,11 @@
                 </div>
             </div>
             <?php } else { ?>
-                <div id="divClickToStart" class="box box-primary">                
+                <div id="divClickToStart" class="box box-primary">
                     <div class="box-header with-border">
                         <h3 class="box-title">PLACEMENT TEST <?php echo date('Y'); ?> </h3>
                     </div>
-                    <!-- /.box-header -->                
+                    <!-- /.box-header -->
                     <div class="box-body">
                         <div class="row">
                             <div class="col-sm-12">
@@ -72,13 +74,14 @@
                     <div class="box-header with-border text-center">
                         <h3 class="box-title">PLACEMENT TEST <?php echo date('Y'); ?> </h3>
                     </div>
-                    <!-- /.box-header -->                
+                    <!-- /.box-header -->
                     <div class="box-body test-head">
                         <div class="row">
                             <div class="test-example col-sm-12">
                                 <span>EXAMPLE:</span><br />
                                 <div class="text-center">
-                                    <img style="width:75%" src="<?php echo base_url();?>img/tuition/test_example.png?v=1" /> 
+                                    <img id="desk_example" style="width:100%" src="<?php echo base_url();?>img/tuition/test_example.png?v=1" />
+                                    <img id="mobile_example" style="margin-left: -21%; width: 140%;" src="<?php echo base_url();?>img/tuition/mobi_full_example2.png?v=1" />
                                 </div>
                             </div>
                         </div>
@@ -92,11 +95,11 @@
                         </div>
                     </div>
                 </div>
-                <div id="divTestD" style="display:none;" class="box box-primary">                
+                <div id="divTestD" style="display:none;" class="box box-primary">
                     <div class="box-header with-border text-center">
                         <h3 class="box-title">PLACEMENT TEST <?php echo date('Y'); ?> </h3>
                     </div>
-                    <!-- /.box-header -->                
+                    <!-- /.box-header -->
                     <div class="box-body test-head">
                         <p ><strong>Question paper</strong></p>
                         <p class="test-note"><span>Do as many questions as you can, beginning with question 1. Only ONE answer is correct in each question. Choose A,
@@ -122,7 +125,7 @@
                             foreach ($testQuestionData as $test) {
                                 $sr++;
                                 if(empty($test['std_marked_option']))
-                                { 
+                                {
                                     $firstUnmarkedQuestion++;
                                 }
                                 ?>
@@ -263,6 +266,27 @@
         vertical-align: middle;
         cursor: pointer;
     }
+
+    .congo-image{
+        max-width: 100%;
+    }
+
+    @media only screen and (max-width: 600px) {
+        #desk_example {
+            display:none;
+        }
+        #mobile_example {
+            display:block;
+        }
+    }
+    @media only screen and (min-width: 600px) {
+        #desk_example {
+            display:block;
+        }
+        #mobile_example {
+            display:none;
+        }
+    }
 </style>
 <script>
     var timeoutHandle;
@@ -275,7 +299,7 @@
             {
                 maxMinutes = maxMinutes - 1;
                 maxSeconds = 60;
-            }   
+            }
             maxSeconds--;
             var counter = document.getElementById("timerClock");
             counter.innerHTML = (maxMinutes < 10 ? "0" : "") + String(maxMinutes)
@@ -288,10 +312,10 @@
             } else {
                 if(maxMinutes > 0){
                 // countdown(mins-1);   //never reach “00″ issue solved
-                setTimeout(function (){ 
+                setTimeout(function (){
                         var cTime = maxMinutes - 1;
                         cTime = (cTime < 10 ? "0" : "")+ String(cTime) + ":60";
-                        countdown(cTime); 
+                        countdown(cTime);
                     }, 1000);
                 }
                 else{
@@ -302,7 +326,7 @@
         }
         tick();
     }
-    
+
     function updateTimer(){
         var runningTestId = $("#runningTestId").val();
         var remainingTime = $("#remainingTime").val();
@@ -311,10 +335,10 @@
             'runningTestId': runningTestId,
             'remainingTime': remainingTime
         }, function (data) {
-            
+
         }, 'json');
     }
-    
+
     function toggleFullScreen(elem) {
             // ## The below if statement seems to work better ## if ((document.fullScreenElement && document.fullScreenElement !== null) || (document.msfullscreenElement && document.msfullscreenElement !== null) || (!document.mozFullScreen && !document.webkitIsFullScreen)) {
             if ((document.fullScreenElement !== undefined && document.fullScreenElement === null) || (document.msFullscreenElement !== undefined && document.msFullscreenElement === null) || (document.mozFullScreen !== undefined && !document.mozFullScreen) || (document.webkitIsFullScreen !== undefined && !document.webkitIsFullScreen)) {
@@ -339,7 +363,7 @@
                 }
             }
         }
-    
+
     $(document).ready(function () {
         $(document).on("keydown",function(ev){
 //                console.log(ev.keyCode);
@@ -393,7 +417,7 @@
                         $("#runningTestId").val(data.testSubmitId);
                 }, 'json');
         });
-        
+
         $("body").on("click", "#btnNextQuestion", function () {
             var group = {};
             var allowSubmit = 1;
@@ -467,14 +491,14 @@
                 },true,true);
             }
         });
-        
-        // REMOVE OTHER OPTIONS 
+
+        // REMOVE OTHER OPTIONS
         // DISABLE BACK OPTION.
         $(".sidebar-toggle").trigger('click');
         $(".sidebar").hide();
         $(".main-header").hide();
         $(".content-header").hide();
-        // for mobiles 
+        // for mobiles
          setTimeout(function(){$('.content').trigger('click');},1000);
         //$(".main-sidebar").hide();
         history.pushState(null, null, location.href);

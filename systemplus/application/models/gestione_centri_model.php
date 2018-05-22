@@ -45,7 +45,7 @@ function insertRows($book_id,$anno,$id_agente){
 	$data_arrivo=$arr[2]."-".$arr[0]."-".$arr[1];
 	$arr2 = explode("/", $this->input->post('departure_date'));
 	$data_partenza=$arr2[2]."-".$arr2[0]."-".$arr2[1];
-        
+
 	for($x=0;$x<$st_ensuite;$x++){
 		$newpwd="";
 		do{
@@ -2760,7 +2760,7 @@ function GESTcheckUUID($password){
 	{
 		$result = array();
 
-	    $this->db->select("c.id, c.nome_centri, ci.title, ci.image_path");
+	    $this->db->select("c.id, c.nome_centri, ci.title, ci.image_path , ci.campus_image_id");
 	    $this->db->from("centri c");
 	    $this->db->join("plused_campus_image ci","ci.campus_id = c.id");
 	    $this->db->where('c.attivo',1);
@@ -2773,7 +2773,11 @@ function GESTcheckUUID($password){
 	    {
 	    	foreach ( $query->result_array() as $row )
 	    	{
-	    		$result[$row['nome_centri'].'_'.$row['id']][] = array( 'image_name' => $row['image_path'], 'title' => $row['title'] );
+	    		$result[$row['nome_centri'].'_'.$row['id']][] = array(
+	    			'campus_image_id' => $row['campus_image_id'],
+	    			'image_name' => $row['image_path'],
+	    			'title' => $row['title']
+	    		);
 	    	}
 	    }
 	    return $result;

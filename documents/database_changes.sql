@@ -1341,12 +1341,36 @@ ADD `ts_test_status` ENUM( 'Pending', 'Running', 'Completed' ) NOT NULL DEFAULT 
 ALTER TABLE `plused_book` ADD `flag_elapsed` TINYINT(1) NOT NULL DEFAULT '0' AFTER `flag_transfer`;
 ALTER TABLE `plused_book` ADD `flag_elapsed_comment` VARCHAR(255) NOT NULL AFTER `flag_elapsed`;
 
-/* ----------------------------Not Executed---------------------------- */
 
 /* Date: 19-Apr-2018 | Sourav Dhara */
 
 UPDATE `plused_role_menu` SET `mnu_url` = 'frontweb/master/index/manage_walking_tour' WHERE `plused_role_menu`.`mnu_menuid` = 273; 
-
 /* Date: 20-Apr-2018 | Sourav Dhara */
 
 INSERT INTO `plused_role_menu` (`mnu_menuid`, `mnu_parent_menu_id`, `mnu_menu_name`, `mnu_caption`, `mnu_url`, `mnu_status`, `mnu_level`, `mnu_type`, `mnu_sequence`, `mnu_icon_class`, `mnu_created_on`, `mnu_created_by`, `mnu_modified_on`, `mnu_modified_by`, `is_deleted`) VALUES (NULL, '249', 'Manage activity photogallery', '', 'frontweb/master/index/manage_activity_photogallery', '1', '2', 'Left', '17', '', '2018-04-20 00:00:00', '1', '2018-04-20 00:00:00', '1', '0');
+
+
+/* Date: 30-Apr-2018 | Sourav Dhara */
+UPDATE `plused_role_menu` SET `mnu_url` = 'frontweb/master/add_edit/manage_adult_course,frontweb/master/process,frontweb/master/delete/manage_adult_course,frontweb/master/manage_submodule' WHERE `plused_role_menu`.`mnu_menuid` = 280; 
+INSERT INTO `plused_role_menu` (`mnu_menuid`, `mnu_parent_menu_id`, `mnu_menu_name`, `mnu_caption`, `mnu_url`, `mnu_status`, `mnu_level`, `mnu_type`, `mnu_sequence`, `mnu_icon_class`, `mnu_created_on`, `mnu_created_by`, `mnu_modified_on`, `mnu_modified_by`, `is_deleted`) VALUES (NULL, '249', 'Manage activity photogallery', '', 'frontweb/master/index/manage_activity_photogallery', '1', '2', 'Left', '17', '', '2018-04-20 00:00:00', '1', '2018-04-20 00:00:00', '1', '0');
+
+/* Date: 27-Apr-2018 | Sandip Kalbhile */
+UPDATE `plused_role_menu` SET `mnu_menu_name` = 'End of course student survey' WHERE `plused_role_menu`.`mnu_menuid` =44;
+UPDATE `plused_test_student` SET `test_title` = 'End of course student survey' WHERE `plused_test_student`.`test_id` = 1;
+
+/* Date: 05-May-2018 | Sandip Kalbhile */
+INSERT INTO `agnt_email_template` (`emt_id`, `emt_from_email`, `emt_to_email`, `emt_to`, `emt_title`, `emt_text`, `emt_active`, `emt_delete`) VALUES (NULL, 'info@plus-ed.com', '', '2', 'plus-ed.com | Booking elapsed-rejected', '<p>Dear {AGENCY_NAME},</p> <p>This email is for your information as your booking is no longer available.</p> <p>Should you have any further questions please contact your sales representative.</p> <p>Regards,<br> PLUS Team </p>', '1', '0');
+
+
+/* Date: 09-May-2018 | Sourav Dhara */
+ALTER TABLE `frontweb_extra_day_activity_details` ADD `extra_flag` TINYINT(1) NOT NULL DEFAULT '1' COMMENT '1 : Not extra activity & 2 : Extra activity' AFTER `extra_day_activity_id`; 
+
+
+/* ----------------------------Not Executed---------------------------- */
+
+/* Date: 11-May-2018 | Sourav Dhara */
+INSERT INTO `plused_role_menu` (`mnu_menuid`, `mnu_parent_menu_id`, `mnu_menu_name`, `mnu_caption`, `mnu_url`, `mnu_status`, `mnu_level`, `mnu_type`, `mnu_sequence`, `mnu_icon_class`, `mnu_created_on`, `mnu_created_by`, `mnu_modified_on`, `mnu_modified_by`, `is_deleted`) VALUES (NULL, '249', 'Show extra activity', '', 'frontweb/master/index/manage_extra_activity', '1', '2', 'Left', '18', '', '2018-05-11 00:00:00', '1', '2018-05-11 00:00:00', '1', '0'); 
+
+/* Date: 21-May-2018 | Sandip Kalbhile */
+ALTER TABLE `agnt_pack_exc_bookings` ADD `exb_weeks` INT( 10 ) NOT NULL AFTER `exb_type` ;
+

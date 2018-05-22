@@ -593,6 +593,11 @@ $(document).ready(function() {
                             $("#selTeacher").html(data);
                             //$("#selTeacher").trigger("liszt:updated");
                         });
+                        var showAll = 1;
+                        $.post( SITE_PATH + "tuitions/getCampusTeachers",{'campusId':campusId,'durationDate':durationDate,'showAll':showAll}, function( data ) {
+                            $("#selTeacherFHistory").html(data);
+                            //$("#selTeacher").trigger("liszt:updated");
+                        });
                         
                         // load teacher listing for class
                         $.post( SITE_PATH + "tuitions/getTeacherListing",{'classId':classId}, function( data ) {
@@ -604,7 +609,17 @@ $(document).ready(function() {
                         
                 });
                 
-                
+                $( "body" ).on( "change", "#chkShowAllTeacher", function() {
+                    if($(this).prop('checked')){
+                        $("#selTeacherFHistory").removeAttr('disabled');
+                        $("#selTeacher").attr('disabled','disabled');
+                    }
+                    else
+                    {
+                        $("#selTeacher").removeAttr('disabled');
+                        $("#selTeacherFHistory").attr('disabled','disabled');
+                    }
+                });
                 
                 $( "body" ).on( "click", "#btnAddTeacher", function() {
                     $("#teacherMessage").html('');
@@ -615,6 +630,10 @@ $(document).ready(function() {
                     var classDate = $("#hiddClassDate").val();
                     var classId = $("#hidd_class_id").val();
                     var teacherId = $("#selTeacher").val();
+                    var allTeachers = $("#chkShowAllTeacher").prop('checked');
+                    if(allTeachers)
+                        teacherId = $("#selTeacherFHistory").val();
+                    
                     var courseId = $("#hidd_course_id").val();
                     var txtFromTime = $("#txtFromTime").val();
                     var txtToTime = $("#txtToTime").val();
@@ -624,25 +643,25 @@ $(document).ready(function() {
                         $("#teacherMessage").switchClass('tuition_success','tuition_error',1);
                     }
                     else
-                    $.post( SITE_PATH + "tuitions/addteacher",{'clId':clId,'classDate':classDate,'classId':classId,'teacherId':teacherId,'courseId':courseId,'txtFromTime':txtFromTime,'txtToTime':txtToTime}, function( data ) {
-                        if(parseInt(data.result)){
-                            $("#btnTechCancel").trigger('click');
-                            $("#teacherMessage").html(data.message);
-                            $("#teacherMessage").switchClass('tuition_error','tuition_success',1);
-                            // load teacher listing for class
-                            $.post( SITE_PATH + "tuitions/getTeacherListing",{'classId':classId}, function( data ) {
-                                $(".teacherdetailview").remove();
-                                $("#teacherListingData").html(data);
-                                teacherListed();
-                                initDataTable("teachersDataTable");
-                            });
-                        }
-                        else
-                        {
-                            $("#teacherMessage").html(data.message);
-                            $("#teacherMessage").switchClass('tuition_success','tuition_error',1);
-                        }
-                    },'json'); 
+                        $.post( SITE_PATH + "tuitions/addteacher",{'clId':clId,'classDate':classDate,'classId':classId,'teacherId':teacherId,'courseId':courseId,'txtFromTime':txtFromTime,'txtToTime':txtToTime}, function( data ) {
+                            if(parseInt(data.result)){
+                                $("#btnTechCancel").trigger('click');
+                                $("#teacherMessage").html(data.message);
+                                $("#teacherMessage").switchClass('tuition_error','tuition_success',1);
+                                // load teacher listing for class
+                                $.post( SITE_PATH + "tuitions/getTeacherListing",{'classId':classId}, function( data ) {
+                                    $(".teacherdetailview").remove();
+                                    $("#teacherListingData").html(data);
+                                    teacherListed();
+                                    initDataTable("teachersDataTable");
+                                });
+                            }
+                            else
+                            {
+                                $("#teacherMessage").html(data.message);
+                                $("#teacherMessage").switchClass('tuition_success','tuition_error',1);
+                            }
+                        },'json'); 
 
                 });
                 
@@ -652,6 +671,8 @@ $(document).ready(function() {
                     $("#teacherMessage").html('');
                     $("#teacherMessage").removeClass('tuition_success');
                     $("#teacherMessage").removeClass('tuition_error');
+                    $("#chkShowAllTeacher").prop('checked',false);
+                    $("#chkShowAllTeacher").trigger('change');
                 });
                 
                 
@@ -813,6 +834,24 @@ $(document).ready(function() {
                         );
                     },500);
                     //$("#dialog_modal_students_list_print table").addClass("table table-bordered table-hover dataTable");
+                }); 
+            });
+            
+            $( "body" ).on( "click", ".dialogbtnprintRegister", function() {
+                var hiddCampusId = $("#hiddCampusId").val();  
+                var hiddMyClassDate = $("#hiddMyClassDate").val(); 
+                var classId = $(this).attr('data-id'); 
+                var courseId = $(this).attr('data-course-id'); 
+                $("#dialog_modal_students_list_print").modal("show");
+                $.post( SITE_PATH + "tuitions/printClassRegister",{'campusId':hiddCampusId,'dateOfClass':hiddMyClassDate,'courseId':courseId,'classId':classId}, function( data ) {
+                    $("#studentsListPrint").html(data);
+                    setTimeout(function(){
+                        $('#studentsListPrint').printElement(
+                            {
+                                pageTitle:$("#hidd-print-title").val()
+                            }
+                        );
+                    },500);
                 }); 
             });
             

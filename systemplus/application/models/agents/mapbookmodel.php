@@ -174,6 +174,7 @@ class Mapbookmodel extends Model {
                 ) a
                 ORDER BY a.pack_package";
         $query = $this->db->query($sql, array($center, $user_id, $center));
+        //echo $this->db->last_query();die;
         return ( $query->num_rows() > 0 ) ? $query->result_array() : array();
     }
     
@@ -359,7 +360,11 @@ class Mapbookmodel extends Model {
     function getBookingDiscount($enrollId){
         $this->db->select("sum(pfp_importo) as discountAdded");
         $this->db->where("pfp_bk_id",$enrollId);
-        $this->db->where("pfp_tipo_servizio","Invoice Discount");
+        //$this->db->where("pfp_tipo_servizio","Invoice Discount");
+        $this->db->where("(
+            pfp_tipo_servizio = 'Invoice Discount'
+            OR pfp_tipo_servizio = 'Discount'
+            )");
         $result = $this->db->get('plused_fincon_payments');
         if($result->num_rows())
         {
@@ -371,8 +376,14 @@ class Mapbookmodel extends Model {
     function getBookingReciept($enrollId){
         $this->db->select("sum(pfp_importo) as recieptAdded");
         $this->db->where("pfp_bk_id",$enrollId);
-        $this->db->where("(pfp_tipo_servizio = 'Full Deposit' OR pfp_tipo_servizio = 'Partial Deposit')");
+        $this->db->where("(
+            pfp_tipo_servizio = 'Full Deposit' 
+            OR pfp_tipo_servizio = 'Partial Deposit'
+            OR pfp_tipo_servizio = 'Partial Balance'
+            OR pfp_tipo_servizio = 'Full Balance'
+            )");
         $result = $this->db->get('plused_fincon_payments');
+        //echo $this->db->last_query();die;
         if($result->num_rows())
         {
             return $result->row()->recieptAdded;
@@ -390,24 +401,27 @@ class Mapbookmodel extends Model {
     function moveConfirmedExcursion()
     {
         $numRowsCreated = 0;
-        $this->db->from('agnt_enrol_bookings');
-        $this->db->where('status', BookingStatus::$CONFIRMED);
-        $this->db->where("enroll_id NOT IN (SELECT DISTINCT exb_id_book FROM agnt_pack_exc_bookings)",NULL, FALSE);
+        $this->db->from('plused_book');
+        $this->db->where('status', BookingStatus::$CONFIRMED_STR);
+        $this->db->where("id_book NOT IN (SELECT DISTINCT exb_id_book FROM agnt_pack_exc_bookings)",NULL, FALSE);
         $this->db->select("exc_id,exc_excursion_name,exc_type,exc_days,exc_weeks,exc_airport,
-            enroll_id,enrol_campus_id,enrol_agent_id,enrol_package_id,enrol_booked_students,
-            enrol_booked_gl,enrol_number_of_week,enrol_arrival_date,
-            enrol_departure_date,status");
-        $this->db->join("agnt_package_services","enrol_package_id = serv_package_id AND serv_service_type = 'Excursion'");
+            id_book,id_year,id_centro,id_agente,pbmap_package_id,serv_week,arrival_date,departure_date,
+            status");
+        $this->db->join("agnt_map_packbooking","id_book = pbmap_book_id");
+        $this->db->join("agnt_package_services","pbmap_package_id = serv_package_id AND serv_service_type = 'Excursion'");
         $this->db->join('agnt_excursions','serv_service_id = exc_id');
         $bookedExcursions = $this->db->get();
         if($bookedExcursions->num_rows()){
             foreach($bookedExcursions->result_array() as $excursion){
+                $totalPax = $this->getTotalPax($excursion['id_book']);
                 $insertArr = array(
-                    'exb_id_book' => $excursion['enroll_id'],
+                    'exb_id_book' => $excursion['id_book'],
+                    'exb_id_year' => $excursion['id_year'],
                     'exb_id_excursion' => $excursion['exc_id'],
-                    'exb_campus_id' => $excursion['enrol_campus_id'],
-                    'exb_tot_pax' => $excursion['enrol_booked_students'] + $excursion['enrol_booked_gl'],
-                    'exb_type' => $excursion['exc_type']
+                    'exb_campus_id' => $excursion['id_centro'],
+                    'exb_tot_pax' => $totalPax,
+                    'exb_type' => $excursion['exc_type'],
+                    'exb_weeks' => (int)$excursion['serv_week']
                 );
                 $this->db->insert('agnt_pack_exc_bookings',$insertArr);
                 $numRowsCreated++;
@@ -415,7 +429,16 @@ class Mapbookmodel extends Model {
         }
         return $numRowsCreated;
     }
-
+    
+    function getTotalPax($book_id){
+        //SELECT COUNT(id_prenotazione) FROM `plused_rows` where id_book = 2254 
+        $this->db->select("COUNT(id_prenotazione) as countPax");
+        $this->db->where("id_book",$book_id);
+        $result = $this->db->get("plused_rows");
+        if($result->num_rows())
+            return $result->row()->countPax;
+        return 0;
+    }
 }
 
 /*End of file rolemanagementmodel.php*/

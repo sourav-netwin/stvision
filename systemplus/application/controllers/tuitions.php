@@ -1,5 +1,8 @@
 <?php
-
+/**
+ * Tuitions
+ * This is tuition schedule cotroller 
+ */
 class Tuitions extends Controller {
 
     function __construct() {
@@ -71,6 +74,10 @@ class Tuitions extends Controller {
         }
     }
     
+    /**
+     * getStatisticsHtml
+     * Generates statistics rows. 
+     */
     function getStatisticsHtml(){
         $campusId = $this->input->post('campusId');
         $monthDates = $this->input->post('monthDates');
@@ -201,7 +208,8 @@ class Tuitions extends Controller {
         if ($this->session->userdata('username') && $this->session->userdata('role') != 200) {
             $campusId = $this->input->post('campusId');
             $durationDate = $this->input->post('durationDate');
-            $teacherList = $this->tuitionsmodel->getCampusTeachers($campusId, $durationDate);
+            $showAll = $this->input->post('showAll');
+            $teacherList = $this->tuitionsmodel->getCampusTeachers($campusId, $durationDate, $showAll);
             if ($teacherList) {
                 ?>
                 <select class="required" id="selTeacher" name="selTeacher"  >
@@ -479,6 +487,9 @@ class Tuitions extends Controller {
             $classType = $this->input->post('classType');
             $dateOfClass = $this->input->post('dateOfClass');
             $classId = $this->input->post('classId');
+            $seqClass = $this->input->post('seqClass');
+            if(empty($seqClass))
+                $seqClass = $class_edit_id;
             $toview = $this->input->post('toview');
             if (empty($classId))
                 $classId = 0;
@@ -503,6 +514,8 @@ class Tuitions extends Controller {
                                 <th>Select</th>
                                 <th>Student name</th>
                                 <th>Hours assigned</th>
+                                <th>Arrival date</th>
+                                <th>Departure date</th>
                                 <th>Online test score</th>
                                 <th>Gender</th>
                                 <th>Age</th>
@@ -512,6 +525,21 @@ class Tuitions extends Controller {
                         </thead>
                         <tbody>
                             <?php
+                            $stdHavingClass = array();
+                            $stdWithoutClass = array();
+                            if($seqClass)
+                            {
+                                foreach ($studentsList as $student) {
+                                    if($student["class_id"] == $seqClass){
+                                        array_push($stdHavingClass, $student);
+                                    }
+                                    else{
+                                        array_push($stdWithoutClass, $student);
+                                    }
+                                }
+                                $studentsList = array_merge($stdHavingClass,$stdWithoutClass);
+                            }
+                            
                             foreach ($studentsList as $student) {
                                 $alreadyAssigned = $student['already_assigned'];
                                 $studentsDateOfBirth = $student['pax_dob'];
@@ -543,10 +571,13 @@ class Tuitions extends Controller {
                                             ?>
                                                 <input id="chk_<?php echo $student['uuid']; ?>" type="checkbox" class="chkStudents" data-std-id="<?php echo $student['uuid']; ?>" />
                                             <?php 
-                                            }else{ 
+                                            }if ($class_edit_id == $student["class_id"]) {
+                                                    ?>
+                                                    <input id="chk_<?php echo $student['uuid']; ?>" type="checkbox" class="chkStudents" data-std-id="<?php echo $student['uuid']; ?>" />
+                                                <?php }else{ 
                                             ?>
                                             <span class="flag-green label label-success"><?php echo htmlspecialchars($student['class_name'] . ' #' . $student["class_id"]); ?></span>
-                                        <?php 
+                                            <?php 
                                             }
                                         } 
                                         // ADD SUPPLEMENT CLASSES IF ANY
@@ -562,6 +593,8 @@ class Tuitions extends Controller {
                                     </td>
                                     <td style="background-color: <?php echo getStudentListColor($student['lk_lang_knowledge']); ?>"><?php echo $student['nome'] . ' ' . $student['cognome']; ?></td>
                                     <td style="background-color: <?php echo getStudentListColor($student['lk_lang_knowledge']); ?>"><?php echo round($student['assigned_course_hours']) . '/' . round($courseHoursForWeeks); ?></td>
+                                    <td style="background-color: <?php echo getStudentListColor($student['lk_lang_knowledge']); ?>"><?php echo date("d-m-Y",strtotime($student['data_arrivo_campus'])); ?></td>
+                                    <td style="background-color: <?php echo getStudentListColor($student['lk_lang_knowledge']); ?>"><?php echo date("d-m-Y",strtotime($student['data_partenza_campus'])); ?></td>
                                     <td style="background-color: <?php echo getStudentListColor($student['lk_lang_knowledge']); ?>"><?php echo $student['lk_lang_knowledge']; ?></td>
                                     <td style="background-color: <?php echo getStudentListColor($student['lk_lang_knowledge']); ?>"><?php echo ($student['sesso'] == 'M' ? 'Male' : 'Female'); ?></td>
                                     <td style="background-color: <?php echo getStudentListColor($student['lk_lang_knowledge']); ?>"><?php echo $stdAge; ?></td>
@@ -661,6 +694,144 @@ class Tuitions extends Controller {
                                 <?php
                             }
                             ?></tbody></table><?php
+                } else {
+                    ?>
+                    <span>No students available for selected date.</span>
+                    <?php
+                }
+            } else {
+                $this->session->sess_destroy();
+                redirect('backoffice', 'refresh');
+            }
+        }
+        
+        function printClassRegister() {
+            if ($this->session->userdata('username') && $this->session->userdata('role') != 200) {
+                $campusId = $this->input->post('campusId');
+                $courseId = $this->input->post('courseId');
+                $dateOfClass = $this->input->post('dateOfClass');
+                $classId = $this->input->post('classId');
+                $classRow = $this->tuitionsmodel->getSingleClass($classId);
+                $classRow = $classRow[0];
+                $studentsList = $this->tuitionsmodel->getCampusStudentsPrint($campusId, $dateOfClass, $classId, $courseId); // $printData = TRUE
+                $campusCourseData = $this->campuscoursemodel->getData($courseId);
+                $classTeachers = $this->tuitionsmodel->getTeacherOfClass($classId);
+                $courseHours = 0;
+                if ($campusCourseData)
+                    $courseHours = $campusCourseData[0]['cc_total_hours'];
+                if ($studentsList) {
+                    ?>
+                    <style>
+                        #print-head label{
+                            padding: 4px;
+                        }
+                        #print-head{
+                            margin-bottom: 20px;
+                            font-size: 12;
+                        }
+                    </style>
+                    <input type="hidden" id="hidd-print-title" value="<?php echo $classRow['class_name'] . ' #' . $classRow["class_id"] . '-' . date('d/m/Y', strtotime($classRow["class_date"])); ?>" />
+                    <table id="print-head" style="width:100%;text-align: left;">
+                        <thead>
+                            <tr>
+                                <th>Class level:<label><?php echo $classRow['class_name'] . ' #' . $classRow['class_id']; ?></label>
+                                <span class="label label-<?php echo ($classRow["class_type"] == "Regular" ? 'success' : 'warning');?>">
+                                    <?php echo htmlspecialchars($classRow["class_type"]); ?>
+                                </span>
+                                </th>
+                                <th>Room Id:<label><?php echo $classRow['class_room_number']; ?></label></th>
+                            </tr>
+                            <tr>
+                                <th>Course:<label><?php echo $classRow['cc_course_name']; ?></label></th>
+                                <th>#Students:<label><?php echo $classRow['numberofbookings']; ?></label></th>
+                            </tr>
+                            <tr>
+                                <th>Campus:<label><?php echo $classRow['nome_centri']; ?></label></th>
+                                <th>Date:<label><?php echo date('d/m/Y', strtotime($classRow["class_date"])); ?></label></th>
+                            </tr>
+                            <tr>
+                                <th>Teacher:<label><?php echo ucwords($classTeachers); ?></label></th>
+                            </tr>
+                        </thead>
+                    </table>
+                    <style>
+                        #printTable{
+                            border:solid #000 !important;
+                            border-width:1px 0 0 1px !important;
+                            font-size: 12;
+                        }
+                        #printTable th, #printTable td {
+                            border:solid #000 !important;
+                            border-width:0 1px 1px 0 !important;
+                        }
+                    </style>
+                    <table id="printTable" cellspacing="0" style="width:100%;text-align: left;">
+                        <thead>
+                            <tr>
+                                <th width="150" rowspan="2">Student name</th>
+                                <th width="80" rowspan="2">Nationality</th>
+                                <th width="50" rowspan="2">Age</th>
+                                <th width="50" rowspan="2">Gender</th>
+                                <th width="75">Date:</th>
+                                <?php $cols = 12;
+                                    for($iCell = 0;$iCell < $cols; $iCell++){
+                                        ?><th colspan="2" width="50"></th><?php
+                                    }
+                                ?>
+                                <th width="200" rowspan="2">Speaking Level/Notes on Individulas</th>
+                            </tr>
+                            <tr>
+                                <th width="75">Tuition session:</th>
+                                <?php $cols = 12;
+                                    for($iCell = 1;$iCell <= $cols; $iCell++){
+                                        ?><th colspan="2" style="text-align: center;"><?php echo ($iCell);?></th><?php
+                                    }
+                                ?>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php
+                            foreach ($studentsList as $student) {
+                                $studentsDateOfBirth = $student['pax_dob'];
+                                $stdAge = "--";
+                                if ($studentsDateOfBirth != "00-00-00 00:00:00" && $studentsDateOfBirth != '')
+                                    $stdAge = date_diff(date_create($studentsDateOfBirth), date_create('today'))->y;
+                                ?>
+                                <tr>
+                                    <td><?php echo $student['nome'] . ' ' . $student['cognome']; ?></td>
+                                    <td><?php echo ucwords($student['nazionalita']); ?></td>
+                                    <td><?php echo $stdAge; ?></td>
+                                    <td><?php echo ($student['sesso'] == 'M' ? 'Male' : 'Female'); ?></td>
+                                    <?php $cols = 25;
+                                        for($iCell = 0;$iCell < $cols; $iCell++){
+                                            ?><td width="15"></td><?php
+                                        }
+                                    ?>
+                                            <td></td>
+                                </tr>
+                                <?php
+                            }
+                            $emptyRows = 18 - count($studentsList);
+                            for($extraRows = 0; $extraRows < $emptyRows; $extraRows++){
+                                ?>
+                                <tr>
+                                    <td>&nbsp;</td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <?php $cols = 25;
+                                        for($iCell = 0;$iCell < $cols; $iCell++){
+                                            ?><td width="15"></td><?php
+                                        }
+                                    ?>
+                                    <td></td>
+                                </tr>
+                                <?php
+                            }
+                            ?></tbody></table>
+                            <p style="font-size:12px;">Present  =   √<br />
+                            Absent = A</p>
+                <?php
                 } else {
                     ?>
                     <span>No students available for selected date.</span>

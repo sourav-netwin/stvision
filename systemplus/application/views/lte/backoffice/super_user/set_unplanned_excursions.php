@@ -50,7 +50,6 @@
                             <input type="button" name="transpmi" id="transpmi" class="btn btn-primary mr-top-10" value="Search" />
                         </div>
                     </div>
-
                 </div>
                 <!-- /.box-body -->
                 <div class="box-footer">
@@ -68,7 +67,7 @@
                 <div class="row">
                     <div class="col-sm-12">
                         <form name="allexcu" id="allexcu" method="POST" action="<?php echo base_url(); ?>index.php/backoffice/setExcursionTransport">
-                            <table class="datatable table table-bordered table-striped" style="width:99.98%;">
+                            <table class="table table-bordered table-striped" style="width:99.98%;">
                                 <thead>
                                     <tr>
                                         <th>Booking ID</th>
@@ -127,8 +126,18 @@
 </div>
 <script src="<?php echo LTE; ?>plugins/datatables/jquery.dataTables.min.js"></script>
 <script src="<?php echo LTE; ?>plugins/datatables/dataTables.bootstrap.min.js"></script>
+<script src="<?php echo LTE; ?>plugins/iCheck/icheck.min.js"></script>
+<link href="<?php echo LTE; ?>plugins/iCheck/all.css" rel="stylesheet">
 <script>
+    function iCheckInit(){
+        $('.containcheck input:checkbox').iCheck('destroy'); 
+        $('.containcheck input:checkbox').iCheck({
+            checkboxClass: 'icheckbox_square-blue',
+            increaseArea: '10%' // optional
+        });
+    }
     $(document).ready(function(){
+        iCheckInit();
 	$('#transpmi').click(function(){
             $('#loading-data').show();
             $('#box_transport').submit();
@@ -152,31 +161,32 @@
                 $( "#from" ).datepicker( "option", "maxDate", selectedDate );
             }
         });
-        $(".containcheck input").click(function(){
-            var arrclassi = $(this).attr("class").split(" ");
-            var arrid = arrclassi[0].split("_");
-            var groupidclass = arrclassi[1];
-            var fatherId = $(this).attr("id").split("_")[0];
-            var fatherId2 = $(this).attr("id").split("_")[1];
-            $(".containcheck input").attr("disabled",true);
-            var classenable = "excn_"+arrid[1];
-            var groupdisable = "group_"+arrid[1];
-            //alert(classenable);
-            $(".containcheck input."+classenable).each(function() {
-                var secondId = $(this).attr("id").split("_")[0];
-                var secondId2 = $(this).attr("id").split("_")[1];
-                //alert(fatherId+"-"+secondId+" ... "+fatherId2+"-"+secondId2);
-                if(fatherId != secondId){
-                    $(this).removeAttr("disabled");
-                }else if(fatherId2 == secondId2){
-                    $(this).removeAttr("disabled");
-                }else{
-                    $(this).removeAttr("checked");
+        var checkedGroup = "";
+        $('.containcheck input').on('ifClicked', function(event){
+            var currGroup = $(this).attr('class');
+            if(checkedGroup == "" || $('.containcheck input:checked').length == 0)
+                checkedGroup = currGroup;
+            else
+            {
+                if(checkedGroup != currGroup)
+                {
+                    swal("Alert","You can select same excursion only, \nIf you want to change excursion please deselect all and try again.");
+                    setTimeout(function(){
+                        $("."+currGroup).iCheck("uncheck");
+                    },200);
                 }
-            });
+            }
         });
+        
         $("#bus_all").click(function(){
-            $("#allexcu").submit();
+            if ($('.containcheck input:checked').length > 0)
+            {
+                $("#allexcu").submit();
+            }
+            else
+            {
+                swal("Alert","Please select at least one excursion");
+            }
         });
     })
 </script>

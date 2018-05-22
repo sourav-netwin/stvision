@@ -458,7 +458,6 @@ left join frontweb_student_group e on e.student_group_id=a.student_group
 left join plused_book f on f.id_book=a.group_reference_id
 )
 
-/* ----------------------------Not Executed---------------------------- */
 
 /* Date: 18-Apr-2018 | Sourav Dhara */
 
@@ -470,7 +469,21 @@ AFTER `video_image`, ADD `delete_flag` TINYINT(1) NOT NULL DEFAULT '0' COMMENT '
 /* Date: 20-Apr-2018 | Sourav Dhara */
 
 CREATE TABLE `vision_plus`.`frontweb_activity_photo_gallery` ( `activity_photo_gallery_id` INT NOT NULL AUTO_INCREMENT COMMENT
- 'primary key' , `centre_id` INT NULL , `image_name` VARCHAR(255) NULL , `added_date` DATETIME NULL , `status` TINYINT(1) NOT 
+ 'primary key' , `centre_id` INT NULL , `image_name` VARCHAR(255) NULL , `added_date` DATETIME NULL , `added_type` TINYINT(1) NOT 
+ NULL DEFAULT '1' COMMENT '1:Admin , 2:Campus manager' , `status` TINYINT(1) NOT 
  NULL DEFAULT '1' COMMENT '1:Active , 0:inactive' , `delete_flag` TINYINT(1) NOT NULL DEFAULT '0' COMMENT '0:not delete and 
  1:deleted' , PRIMARY KEY (`activity_photo_gallery_id`)) ENGINE = MyISAM; 
 
+ 
+ /* Date: 24-Apr-2018 | Sourav Dhara */
+ 
+ CREATE TABLE IF NOT EXISTS `frontweb_adult_course_feature` (
+  `feature_id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'primary key',
+  `feature_title` varchar(100) DEFAULT NULL,
+  `feature_description` text,
+  `feature_image` varchar(200) DEFAULT NULL,
+  `adult_course_id` int(11) NOT NULL COMMENT 'foreign key',
+  PRIMARY KEY (`feature_id`)
+) ENGINE=MyISAM;
+
+ /* ----------------------------Not Executed---------------------------- */
