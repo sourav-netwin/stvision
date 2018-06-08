@@ -21,8 +21,6 @@
     color: #B00;
   }
 </style>
-<section class="content transfer-plan-content">
-  
   <div class="row">
     <div class="col-md-12">
       <div class="box box-primary">
@@ -34,38 +32,45 @@
 
         <div class="box-body">                
 
-          <?php
+          <?php 
             if($tipo_ex=="inbound")
             {
+                $fromAirportName = str_replace("to/from","",$plan["exc_excursion"]);
+                $fromAirportName = strtoupper(str_replace("inbound","",$fromAirportName));
           ?>
               <h4 class="evidence">
-                Transfer inbound from <?php echo str_replace("to/from","",$plan["exc_excursion"]) ?> to <?php echo $plan["nome_centri"] ?>
-                <font><?php echo ucfirst($tipoe) ?></font>
+                <?php 
+                /* Transfer inbound from <?php echo str_replace("to/from","",$plan["exc_excursion"]) ?> to <?php echo $plan["nome_centri"] ?><br /> */
+                echo "Inbound transfer from ".$fromAirportName." to ".strtoupper($plan["nome_centri"]); 
+                ?>
               </h4>
 
               <p>
-                From airport: <span><?php echo str_replace("to/from","",$plan["exc_excursion"]) ?></span>
+                From airport: <span><?php echo $fromAirportName ?></span>
               </p>
 
               <p>
-                To campus: <span><?php echo $plan["nome_centri"] ?></span>
+                To campus: <span><?php echo strtoupper($plan["nome_centri"]) ?></span>
               </p>
         <?php
             }
             else
             {
+                $toAirportName = str_replace("to/from","",$plan["exc_excursion"]);
+                $toAirportName = strtoupper(str_replace(" outbound","",$toAirportName));
         ?>
               <h4>
-                Transfer outbound from <?php echo $plan["nome_centri"] ?> to <?php echo str_replace("to/from","",$plan["exc_excursion"]) ?>
-                <font><?php echo ucfirst($tipoe) ?></font>
+                <?php 
+                /*Transfer outbound from <?php echo $plan["nome_centri"] ?> to <?php echo str_replace("to/from","",$plan["exc_excursion"]) ?>*/
+                echo "Outbound transfer from ".strtoupper($plan["nome_centri"])." to ".$toAirportName; ?>
               </h4>
 
               <p>
-                From campus: <span><?php echo $plan["nome_centri"] ?></span>
+                From campus: <span><?php echo strtoupper($plan["nome_centri"]) ?></span>
               </p>
 
               <p>
-                To airport: <span><?php echo str_replace("to/from","",$plan["exc_excursion"]) ?></span>
+                To airport: <span><?php echo $toAirportName; ?></span>
               </p>
 
         <?php
@@ -196,7 +201,6 @@
           ?>
     </div>
   </div>
-</section>
 
 <div class="modal fade" id="dialog_modal_paxlist" tabindex="-1" role="dialog" aria-labelledby="pdfModalLabel">
   <div class="modal-dialog modal-lg" role="document">
@@ -216,7 +220,7 @@
 
 <script src="<?php echo base_url(); ?>js/jquery.printElement.min.js"></script>  
 <script>
-  pageHighlightMenu = "backoffice/ca_viewBookedTransfers";
+  pageHighlightMenu = "transfers/viewBookedTransfers";
   $(document).ready(function() {
 
     $("#print_dialog_modal_paxlista").click(function(){
@@ -224,17 +228,23 @@
     });  
     
     $("#resetExc").click(function(){
-      if(confirm("Are you sure you want to reset this transfer plan?")){
-        window.location.replace("<?php echo base_url(); ?>index.php/backoffice/busTraReset/<?php echo $bus_code?>");
-      }
+        confirmAction("Are you sure you want to reset this transfer plan?", 
+        function(c)
+        {
+            if(c)
+                window.location.replace("<?php echo base_url(); ?>index.php/transfers/busTraReset/<?php echo $bus_code?>");
+        }, true, true);
     });
     $("#confirmExc").click(function(){
-      if(confirm("Are you sure you want to confirm this transfer plan?")){
-        window.location.replace("<?php echo base_url(); ?>index.php/backoffice/busTraConfirm/<?php echo $bus_code?>");
-      }
+      confirmAction("Are you sure you want to confirm this transfer plan?", 
+        function(c)
+        {
+            if(c)
+                window.location.replace("<?php echo base_url(); ?>index.php/transfers/busTraConfirm/<?php echo $bus_code?>");
+        }, true, true);
     });   
     $(".viewEntirePaxList").click(function(){
-      $.post( '<?php echo base_url(); ?>index.php/backoffice/ca_getTransfersPaxFromBusCode/<?php echo $bus_code?>/<?php echo $tipo_ex?>', function( data ) {
+      $.post( '<?php echo base_url(); ?>index.php/transfers/ca_getTransfersPaxFromBusCode/<?php echo $bus_code?>/<?php echo $tipo_ex?>', function( data ) {
           $("#modal_paxlist_body").html('');
           $("#dialog_modal_paxlist").modal("show");
           $("#modal_paxlist_body").html(data);

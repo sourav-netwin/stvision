@@ -159,7 +159,8 @@ class Mapbookings extends Controller {
             if($booking_composition)
             {
                 $freeGlPerPax = $booking_composition[0]['pack_free_gl_per_pax'];
-                $freeGL = (int)($booking['students_count'] / $freeGlPerPax);
+                if(!empty($booking['students_count']) && $freeGlPerPax)
+                    $freeGL = (int)($booking['students_count'] / $freeGlPerPax);
             }
             
             $booking_composition = $this->splitGLRows($booking_composition,$freeGL);
@@ -224,7 +225,8 @@ class Mapbookings extends Controller {
         exit();
     }
     
-    function splitGLRows($booking_composition,$freeGL){
+    function splitGLRows($booking_composition,$remainingFreeGL){
+        $applyProrata = true;
         foreach ($booking_composition as $key => $bc){
             if($bc['tipo_pax'] == 'GL'){
                 $glRowMaster = $bc;
@@ -233,21 +235,54 @@ class Mapbookings extends Controller {
                 $glCount = $glRowMaster['cnt'];
                 $proRataGL = 0 ;
                 $extrGL = 0;
-                if($freeGL){
-                    if($freeGL >= $glCount)
+                $freeGL = 0;
+                if($remainingFreeGL){
+                    if($remainingFreeGL >= $glCount)
                     {
                         $proRataGL = 0;
                         $extrGL = 0;
+                        $freeGL = $glCount;
+                        $remainingFreeGL = $remainingFreeGL - $glCount;
                     }
-                    else // FREE GL ARE LESS THANT TOTAL GL
+                    else // FREE GL ARE LESS THAN TOTAL GL
                     {
-                        $proRataGL = 1;
-                        $extrGL = $glCount - ($proRataGL + $freeGL);
+                        if($remainingFreeGL)
+                        {
+                            $freeGL = $remainingFreeGL;
+                            $remainingFreeGL = 0;
+                            $afterFreeGL = $glCount - $freeGL;
+                            if($afterFreeGL){
+                                if($applyProrata)
+                                {
+                                    $proRataGL = 1;
+                                }
+                                else 
+                                    $proRataGL = 0;
+                                $applyProrata = false;
+                                $extrGL = $afterFreeGL - $proRataGL;
+                            }
+                        }else
+                        {
+                            if($applyProrata)
+                            {
+                                $proRataGL = 1;
+                            }
+                            else 
+                                $proRataGL = 0;
+                            $applyProrata = false;
+                            $extrGL = $glCount - $proRataGL;
+                        }
                     }
                 }else{ // FREE GL IS ZERO 0
-                    $proRataGL = 1;
+                    if($applyProrata)
+                    {
+                        $proRataGL = 1;
+                    }
+                    else 
+                        $proRataGL = 0;
+                    $applyProrata = false;
                     $extrGL = $glCount - $proRataGL;
-                }
+                }                
                 
                 if($freeGL)
                 {
@@ -269,7 +304,7 @@ class Mapbookings extends Controller {
                     $glRowMaster['glPaidType'] = "Extra";
                     array_push($booking_composition, $glRowMaster);
                 }
-                break;
+                //break;
             }
         }
         return $booking_composition;

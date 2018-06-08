@@ -41,7 +41,7 @@
                     <br />Your pay will be <?php echo $recCurrencySymbol.$recSalary;?> per week payable monthly by BACS.
                     <?php }?>
 <!--                <br />Your anticipated average hours will be <?php //echo $workHours;?> per week.-->
-                    <br />Your anticipated average hours will be <?php echo $workHours;?> per week in a teaching capacity. In addition to your teaching responsibilities, you will be also required to assist in duties set out in your job offer letter as per centre in the course of each week.
+                    <br />Your anticipated average hours will be <?php echo $workHours;?> per week<?php if($contractPosition != "Course Director" && $contractPosition != "Assistant Course Director"){?> in a teaching capacity. In addition to your teaching responsibilities, you will be also required to assist in duties set out in your job offer letter as per centre in the course of each week<?php }?>.
                     <br />Your position means that you will be employed on a <?php echo $boardAs;?>.
                     
                     </p>

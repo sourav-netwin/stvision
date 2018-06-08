@@ -1,7 +1,7 @@
 /*
 	This JS file is used to manage all custom javascript functionality(applicable for
 	add/edit/list) related to the master module
-	Current Version : 1.9
+	Current Version : 2.3
 */
 
 var pageHighlightMenu = 'frontweb/master/index/'+moduleName;
@@ -92,6 +92,42 @@ $(document).ready(function(){
 						required : true
 					}
 				}
+			});
+		}
+
+		//Operations for photo gallery module only - Copy photo for new centres
+		if(moduleName == 'manage_activity_photogallery')
+		{
+			//Initialize bootstrap multiselect
+			$('.multiSelect').multiselect({
+				buttonWidth : '272px',
+				nonSelectedText: 'Please Select',
+				maxHeight: 200
+			});
+
+			//On click of the icon , open the modal popup
+			$(document).on('click' , '.copyPhoto' , function(){
+				$('#copyPhotoModal').find('#id').val($(this).data('id'));
+				$('#copyPhotoModal').modal();
+			});
+
+			//Check required validation
+			$('#copyPhotoForm').submit(function(){
+				$('#copyPhotoForm').find('.centreErrorMsg').text('');
+				var errorFlag = 1;
+				$.each($(".multiSelect option:selected"), function(){
+					if($(this).val() != '')
+					{
+						errorFlag = 2;
+						return false;
+					}
+				});
+				if(errorFlag == 1)
+				{
+					$('#copyPhotoForm').find('.centreErrorMsg').text(please_select_dynamic.replace('**field**' , 'Centre'));
+					return false;
+				}
+				return true;
 			});
 		}
 

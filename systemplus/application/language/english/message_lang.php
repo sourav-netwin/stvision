@@ -23,4 +23,9 @@
 	$lang['password_validation'] = 'Password should contain one capital letter , one small letter and one numeric number';
 	$lang['please_select_dropdown'] = 'Please select';
 	$lang['start_end_date_validation'] = 'Start date should be less than or equal to end date';
+
+	//Notification messages
+	$lang['dynamic_module_added'] = 'New **module** is added';
+	$lang['video_notification_type'] = 'Walking tour video';
+	$lang['video_notification_message'] = 'Admin has added a new video . Please check now .';
 ?>

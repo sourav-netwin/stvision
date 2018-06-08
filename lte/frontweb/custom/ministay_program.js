@@ -2,7 +2,7 @@
 
 	This JS file is to manage custom javascript functionality(for both add/edit/list)
 	related to the ministay program module
-	Current Version : 1.1
+	Current Version : 1.3
 */
 
 var pageHighlightMenu = "frontweb/ministay_program";
@@ -28,6 +28,13 @@ $(document).ready(function(){
 		//Initialize summernote
 		$('.summernote').summernote({
 			height: 200
+		});
+
+		//Initialize bootstrap multiselect
+		$('#course_program').multiselect({
+			buttonWidth : '272px',
+			nonSelectedText: 'Please Select',
+			maxHeight: 200
 		});
 
 		//Add customize validation rules

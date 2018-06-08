@@ -235,6 +235,17 @@ define('TABLE_EXTRA_DAY_MANAGED_BY' , 'frontweb_extra_day_managed_by');
 define('ACTIVITY_REPORT_PROGRAM' , 'activity_report_program');
 define('TABLE_ACTIVITY_PHOTO_GALLERY' , 'frontweb_activity_photo_gallery');
 define('TABLE_ADULT_COURSE_FEATURE' , 'frontweb_adult_course_feature');
+define('TABLE_TEST_SUBMITTED' , 'plused_test_submited');
+define('TABLE_TEST_STUDENT' , 'plused_test_student');
+define('TABLE_TEST_QUESTION' , 'plused_test_question');
+define('TABLE_TEST_OPTIONS' , 'plused_test_options');
+define('TABLE_TEST_ANSWERS' , 'plused_test_answers');
+define('TABLE_LANGUAGE_KNOWLEDGE' , 'plused_language_knowledge');
+define('TABLE_USER_DEVICES' , 'frontweb_user_devices');
+define('TABLE_PUSH_NOTIFICATION_HISTORY' , 'frontweb_push_notification_history');
+define('TABLE_USER_NOTIFICATION' , 'frontweb_user_notification');
+define('TABLE_PLUSED_ROWS' , 'plused_rows');
+define('TABLE_MINISTAY_COURSE_PROGRAM' , 'frontweb_ministay_course_program');
 
 //Constant for create folder permission
 define('DIR_PERMISSION' , 0755);
@@ -246,6 +257,22 @@ define('UPLOAD_IMAGE_SIZE' , 10000);
 /*  I used it for google map API .
     I have used the following account :SD*/
 define('GOOGLE_API_KEY' , 'AIzaSyAxAOuX6VZ3411GsROuhn-SxYbNC0skt9M');
+
+/*------------------For push notification (Start)--------------------*/
+
+//Android FCM url
+define('FCM_ANDROID_URL', 'https://fcm.googleapis.com/fcm/send');
+
+//Google FCM key
+define('GOOGLE_FCM_KEY', 'AAAAV-Xmqcc:APA91bGqUhUfabK80gk-z-qWrX_wNSQxGcv4fIqCZr63o6MPka-Eka_IsEDBAmLBvIEol5RmYmvpnBRy6xhdwK1JlR7_2DPpqrFg4C0hFkn8vpAut_-10SQu3zoszm3jo_AbVsJuWN9R');
+
+//IOS FCM key
+define('IOS_FCM_KEY', 'AAAANIGtNK8:APA91bHs0Q5vjB6E-6H6RHplCYmuBNuXZq2LHYwdhwDGCXeouLqbigEL5oOevcrjc_49bdH6aztPUIh7K2746KUxgv-ooJ28P2xWSAZfj9Vr5OJGqarsC2yfFTGWxe5h4INdBDkDxJQL');
+
+//Maximum number of device token able to send in one FCM request
+define('FCM_MAX_LIMIT', 1000);
+
+/*------------------For push notification (End)--------------------*/
 
 //Define image location , height , width , thumb details for program banner module images
 define('PROGRAM_IMAGE_PATH' , 'uploads/program/');

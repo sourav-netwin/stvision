@@ -61,7 +61,7 @@
 	var duplicate_dynamic = "<?php echo $this->lang->line("duplicate_dynamic"); ?>";
 	var enter_vimeo_url = "<?php echo $this->lang->line("enter_vimeo_url"); ?>";
 </script>
-<script src="<?php echo LTE; ?>frontweb/custom/master.js?v=1.9"></script>
+<script src="<?php echo LTE; ?>frontweb/custom/master.js?v=2.3"></script>
 
 <div class="right_col" role="main">
 	<div class="row">

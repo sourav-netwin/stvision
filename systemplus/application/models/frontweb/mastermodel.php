@@ -124,6 +124,10 @@
 							$actionStr.= '<a data-id="'.$value[$moduleArr['key']].'" data-toggle="tooltip" data-original-title="Copy master activity" class="btn btn-xs btn-success btn-wd-24 copyMasterActivity"><span><i class="fa fa-copy" aria-hidden="true"></i></span></a>';
 					}
 
+					//photo gallery module(copy one photo for multiple centres)
+					if($moduleName == 'manage_activity_photogallery')
+						$actionStr.= '<a data-id="'.$value[$moduleArr['key']].'" data-toggle="tooltip" data-original-title="Copy photo" class="btn btn-xs btn-success btn-wd-24 copyPhoto" data-container="body"><span><i class="fa fa-copy" aria-hidden="true"></i></span></a>';
+
 					$actionStr.= "</div>";
 
 					$resultData[$key][0] = $siNo++;
@@ -406,6 +410,35 @@
 				$returnArr['show'] = 1;
 			else
 				$returnArr['show'] = 2;
+			return $returnArr;
+		}
+
+		/**
+		*This function is used to get the user uuid list for the selected centre in plus
+		*walking tour module(to send notification)
+		*
+		*@access public
+		*@author S.D
+		*@since 30th May , 2018
+		*@param Integer $centreId : The centre id
+		*@return NONE
+		*/
+		public function getUserUuid($centreId = NULL)
+		{
+			$returnArr = array();
+			$userIdArr = $this->db->select('a.uuid')
+							->from(TABLE_PLUSED_ROWS.' a')
+							->join(TABLE_PLUS_BOOK.' b' , 'a.id_book = b.id_book' , 'left')
+							->join(TABLE_USER_DEVICES.' c' , 'c.user_id = a.uuid' , 'left')
+							->where('b.id_centro' , $centreId)
+							->where('c.user_id != ' , '')
+							->order_by('id_prenotazione' , 'DESC')
+							->get()->result_array();
+			if(!empty($userIdArr))
+			{
+				foreach($userIdArr as $value)
+					$returnArr[] = $value['uuid'];
+			}
 			return $returnArr;
 		}
 	}

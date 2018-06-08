@@ -1066,7 +1066,6 @@ class Mbackoffice extends Model {
         $this->db->join('plused_account-manager','agenti.account = plused_account-manager.id','left');
         $this->db->select('agenti.*,plused_account-manager.firstname as acc_manager_firstname,plused_account-manager.familyname as acc_manager_lastname,plused_account-manager.email as acc_manager_email');
         $Q = $this->db->get();
-        echo $this->db->last_query();die;
         if ($Q->num_rows() > 0) {
             $data = $Q->row();
         }
@@ -2458,12 +2457,15 @@ class Mbackoffice extends Model {
             $this->db->select("pb.id_year, pb.id_book, peb.exb_id, exc.exc_excursion_name as exc_excursion, ag.businessname,
                 ag.businesscountry, c.nome_centri, peb.exb_tot_pax, peb.exb_weeks as exc_weeks,
                 pb.status as statopre, pb.arrival_date, pb.departure_date,
-                exc.exc_id, exc_day_type as exc_length");
+                exc.exc_id, exc_day_type as exc_length,
+                pack.pack_package");
             $this->db->from('agnt_pack_exc_bookings peb');
             $this->db->join('plused_book pb','peb.exb_id_book = pb.id_book');
             $this->db->join('agnt_excursions exc','peb.exb_id_excursion = exc.exc_id');
             $this->db->join('agenti ag','pb.id_agente = ag.id');            
             $this->db->join('centri c','peb.exb_campus_id = c.id');            
+            $this->db->join('agnt_map_packbooking mpack','peb.exb_id_book = mpack.pbmap_book_id','left');            
+            $this->db->join('agnt_packages pack','mpack.pbmap_package_id = pack.pack_package_id','left');            
             
             $this->db->where("(pb.status = 'confirmed' 
                 OR pb.status = 'active')");
@@ -2844,7 +2846,9 @@ class Mbackoffice extends Model {
         $data = array();
         foreach ($arr_key as $key => $value) {
             $bkgexploded = array();
-            $querybk = "SELECT ptt_book_id, ptt_dataora, ptt_airport_from, ptt_airport_to, ptt_flight, ptt_tot_pax, ptt_id, ptt_type FROM plused_tra_transfers WHERE ptt_id = " . $value; //." AND plused_book.id_agente = agenti.id";
+            $querybk = "SELECT ptt_book_id, ptt_dataora, ptt_airport_from, 
+                ptt_airport_to, ptt_flight, ptt_tot_pax, ptt_id, ptt_type 
+                FROM plused_tra_transfers WHERE ptt_id = " . $value; //." AND plused_book.id_agente = agenti.id";
             $Q2 = $this->db->query($querybk);
             if ($Q2->num_rows() > 0) {
                 foreach ($Q2->result_array() as $row) {
@@ -3154,7 +3158,10 @@ class Mbackoffice extends Model {
     }
 
     function getTraPaxForBusCode($busCode) {
-        $querybk = "SELECT SUM(ptt_tot_pax) as allpax FROM plused_tra_transfers WHERE ptt_buscompany_code = '$busCode' GROUP BY ptt_buscompany_code";
+        $querybk = "SELECT SUM(ptt_tot_pax) as allpax 
+        FROM plused_tra_transfers 
+        WHERE ptt_buscompany_code = '$busCode' 
+        GROUP BY ptt_buscompany_code";
         $Q = $this->db->query($querybk);
         if ($Q->num_rows() > 0) {
             foreach ($Q->result_array() as $row) {
@@ -3201,9 +3208,31 @@ class Mbackoffice extends Model {
         return $data;
     }
 
+    // Changed for package integration
     function busExcReset($busCode) {
-        $qCopyNum = "SELECT pbe_rndcode, CONCAT('From ',exc_centro,' to ',exc_excursion,' - ',exc_length,' || ',exc_type) as canExc, CONCAT(pbe_qtybus,' - ',tra_cp_name,' ',tra_bus_name) as canBus, CONCAT(pbe_jnprice,' ',pbe_jncurrency) as canPrice, pbe_excdate FROM plused_exc_all, plused_bus_exc, plused_tra_bus, plused_tra_companies WHERE pbe_jnidbus = tra_bus_id AND tra_bus_cp_id = tra_cp_id AND pbe_rndcode = '" . $busCode . "' AND exc_id = pbe_jnidexc";
-        $Q = $this->db->query($qCopyNum);
+        /*$qCopyNum = "SELECT pbe_rndcode, CONCAT('From ',exc_centro,' to ',
+            exc_excursion,' - ',exc_length,' || ',exc_type) as canExc, 
+            CONCAT(pbe_qtybus,' - ',tra_cp_name,' ',tra_bus_name) as canBus, 
+            CONCAT(pbe_jnprice,' ',pbe_jncurrency) as canPrice, pbe_excdate 
+            FROM plused_exc_all, plused_bus_exc, plused_tra_bus, plused_tra_companies 
+            WHERE pbe_jnidbus = tra_bus_id 
+            AND tra_bus_cp_id = tra_cp_id 
+            AND pbe_rndcode = '" . $busCode . "' 
+            AND exc_id = pbe_jnidexc";
+        */
+        $this->db->select("pbe_rndcode, CONCAT('From ',c.nome_centri,' to ',
+            exc_excursion_name) as canExc, 
+            CONCAT(pbe_qtybus,' - ',tra_cp_name,' ',tra_bus_name) as canBus, 
+            CONCAT(pbe_jnprice,' ',pbe_jncurrency) as canPrice, pbe_excdate",FALSE);
+        $this->db->from("plused_bus_exc pbe");
+        $this->db->join("agnt_excursions exc","pbe.pbe_jnidexc = exc.exc_id");
+        $this->db->join("agnt_campus_excursion cexc","exc.exc_id = cexc.excm_exc_id");
+        $this->db->join("centri c","cexc.excm_campus_id = c.id");
+        $this->db->join("plused_tra_bus ptb","pbe.pbe_jnidbus = ptb.tra_bus_id");
+        $this->db->join("plused_tra_companies ptc","ptb.tra_bus_cp_id = ptc.tra_cp_id");
+        $this->db->where("pbe_rndcode",$busCode);
+        $Q = $this->db->get();
+        // Removed from cancel excurions name : ,' - ',exc_day_type,' || ',exc_type
         if ($Q->num_rows() > 0) {
             foreach ($Q->result_array() as $row) {
                 $data = array(
@@ -3235,9 +3264,9 @@ class Mbackoffice extends Model {
         $this->email->bcc($bcc_email);
         $this->email->subject('Plus Sales Office - Planned excursion: ' . $busCode . ' canceled now.');
         $this->email->message($mymessage);
-        $this->email->send();
-        //FINE INVO MAIL PER CANCELED BUS
-        $qUpdNum = "UPDATE plused_exc_bookings SET exb_buscompany_code = '', exb_confirmed = 'NO', exb_excursion_date = '0000-00-00', exb_modified = 0 WHERE exb_buscompany_code = '" . $busCode . "'";
+        @$this->email->send();
+        //FINE INVO MAIL PER CANCELED BUS plused_exc_bookings
+        $qUpdNum = "UPDATE agnt_pack_exc_bookings SET exb_buscompany_code = '', exb_confirmed = 'NO', exb_excursion_date = '0000-00-00', exb_modified = 0 WHERE exb_buscompany_code = '" . $busCode . "'";
         $Q = $this->db->query($qUpdNum);
         //echo $qUpdNum."<br>";
         $qDelNum = "DELETE FROM plused_bus_exc WHERE pbe_rndcode = '" . $busCode . "'";
@@ -3247,10 +3276,11 @@ class Mbackoffice extends Model {
         return true;
     }
 
+    // Changed for package integration
     function addGroupToBusCode($busCode, $exbId, $excDate) {
-        $qUpdNum = "UPDATE plused_exc_bookings SET exb_buscompany_code = '" . $busCode . "', exb_confirmed = 'STANDBY', exb_excursion_date = '" . $excDate . "' WHERE exb_id = " . $exbId;
+        $qUpdNum = "UPDATE agnt_pack_exc_bookings SET exb_buscompany_code = '" . $busCode . "', exb_confirmed = 'STANDBY', exb_excursion_date = '" . $excDate . "' WHERE exb_id = " . $exbId;
         $Q = $this->db->query($qUpdNum);
-        $qUPDCode = "UPDATE plused_exc_bookings SET exb_confirmed = 'STANDBY', exb_modified = 1 WHERE exb_buscompany_code = '" . $busCode . "'";
+        $qUPDCode = "UPDATE agnt_pack_exc_bookings SET exb_confirmed = 'STANDBY', exb_modified = 1 WHERE exb_buscompany_code = '" . $busCode . "'";
         $Q = $this->db->query($qUPDCode);
         return true;
     }
@@ -3317,8 +3347,9 @@ class Mbackoffice extends Model {
         return true;
     }
 
+    // Changed for package integration
     function busExcConfirm($busCode) {
-        $qUpdNum = "UPDATE plused_exc_bookings SET exb_confirmed = 'YES' WHERE exb_buscompany_code = '" . $busCode . "'";
+        $qUpdNum = "UPDATE agnt_pack_exc_bookings SET exb_confirmed = 'YES' WHERE exb_buscompany_code = '" . $busCode . "'";
         $Q = $this->db->query($qUpdNum);
         return true;
     }
@@ -3698,7 +3729,20 @@ class Mbackoffice extends Model {
     function checkTransfersStudy($tipo) {
         $notification_text = "";
         if ($tipo == "inbound") {
-            $queryPT = "SELECT nome_centri, ptt_buscompany_code as buscode, CONCAT(plused_rows.id_year,'_', plused_rows.id_book) as bookid, CONCAT (cognome,' ', nome) as pax,  pttr_uuid, pttr_dataora, andata_data_arrivo, pttr_flight FROM centri, plused_rows, plused_tra_transfers_rows, plused_book, plused_tra_transfers WHERE pttr_trid = ptt_id AND pttr_uuid = uuid AND plused_book.id_book = plused_rows.id_book AND plused_book.id_agente = 795 AND andata_data_arrivo <> pttr_dataora AND centri.id = ptt_campus_id AND pttr_type = 'inbound'";
+            $queryPT = "SELECT nome_centri, ptt_buscompany_code as buscode, 
+                CONCAT(plused_rows.id_year,'_', plused_rows.id_book) as bookid, 
+                CONCAT (cognome,' ', nome) as pax,  pttr_uuid, pttr_dataora, 
+                andata_data_arrivo, pttr_flight 
+                FROM centri, 
+                plused_rows, 
+                plused_tra_transfers_rows, 
+                plused_book, 
+                plused_tra_transfers 
+                WHERE pttr_trid = ptt_id AND pttr_uuid = uuid 
+                AND plused_book.id_book = plused_rows.id_book 
+                AND plused_book.id_agente = 795 
+                AND andata_data_arrivo <> pttr_dataora 
+                AND centri.id = ptt_campus_id AND pttr_type = 'inbound'";
             $Q = $this->db->query($queryPT);
             if ($Q->num_rows() > 0) {
                 foreach ($Q->result_array() as $row) {
@@ -3856,7 +3900,14 @@ class Mbackoffice extends Model {
     function sendRosterMail($type = "added", $idBook) {
         $idcampus = $this->campusIdByBookingId($idBook);
         $nomeCampus = $this->centerNameById($idcampus);
-        $mailto = $this->getCmMailFromCampusId($idcampus);
+        //$mailto = $this->getCmMailFromCampusId($idcampus);
+        $accountManagerEmail = "";
+        $bookAgentDetails = $this->getBookingAgentDetail($idBook);
+        if(isset($bookAgentDetails->acc_manager_email))
+        if(!empty($bookAgentDetails->acc_manager_email))
+        {
+            $accountManagerEmail = $bookAgentDetails->acc_manager_email;
+        }
         $year = $this->yearIdByBookingId($idBook);
         $this->load->library('email');
         $mymessage = "<!DOCTYPE HTML PUBLIC =22-//W3C//DTD HTML 4.01 Transitional//EN=22 =22http://www.w3.org/TR/html4/loose.dtd=22>";
@@ -3868,7 +3919,22 @@ class Mbackoffice extends Model {
         $mymessage .= "Roster for booking " . $year . "_" . $idBook . " has been changed @" . $nomeCampus . ". Pax " . $type . "<br />";
         $mymessage .= "<strong>Plus Sales Office</strong>" . "<br/><br/>";
         $mymessage .= "</body></html>";
-        $mailccarray = array('j.roldan@plus-ed.com', 'j.mcconville@plus-ed.com','m.adnitt@plus-ed.com', 'a.kavak@plus-ed.com', 'n.shabanova@plus-ed.com', 'jbhim@plus-ed.com', 'michelle.gloster@plus-ed.com', 'michael.hollinshead@plus-ed.com');
+        $mailccarray = array(
+                'j.fitzpatrick@plus-ed.com', 
+                'j.roldan@plus-ed.com', 
+                'j.mcconville@plus-ed.com',
+                'm.adnitt@plus-ed.com', 
+                'a.kavak@plus-ed.com', 
+                'n.shabanova@plus-ed.com', 
+                'jbhim@plus-ed.com'
+            );
+        if(!empty($accountManagerEmail))
+            array_push($mailccarray, $accountManagerEmail);
+        $isUSRegion = 1; // check campus is from US region
+        if($isUSRegion){
+            array_push($mailccarray, "michelle.gloster@plus-ed.com");
+            array_push($mailccarray, "michael.hollinshead@plus-ed.com");
+        }
         $this->email->from('info@plus-ed.com', 'Plus Sales Office');
         $this->email->to('smarra@plus-ed.com');
         $this->email->cc($mailccarray);
@@ -6394,11 +6460,11 @@ class Mbackoffice extends Model {
             '_Psw' => 'j%asbwY3',
             '_anno' => '2018'
         );
-        $result = $client->getPrenotazioniProdotti($params);
-
-        $jsonR = $result->getPrenotazioniProdottiResult;
+        $result = $client->getPrenotazioniProdotti_Test($params);
+        //print_r($result);
+        $jsonR = $result->getPrenotazioniProdotti_TestResult;
         //echo "<pre>";
-        print_r($jsonR);
+        //print_r($jsonR);
         //echo "</pre>";
         echo "start decoding";
         $task_array = json_decode($jsonR, true);
@@ -6406,7 +6472,7 @@ class Mbackoffice extends Model {
         //echo "<pre>";
         //print_r($task_array);
         //echo "</pre>";
-        echo "decoded";
+        //echo "decoded";
         //die();
         $seldb = "TRUNCATE TABLE plused_studytours_rows_import";
         $Q = $this->db->query($seldb);
@@ -6616,11 +6682,14 @@ class Mbackoffice extends Model {
         $params = array(
             '_UserId' => 'visioN@0315',
             '_Psw' => 'j%asbwY3',
-            '_totale' => true
+            '_totale' => true,
+            '_anno' => '2018'
         );
-        $result = $client->getNoteGruppo($params);
-        $jsonR = $result->getNoteGruppoResult;
+        $result = $client->getNoteGruppo_Test($params);
+        $jsonR = $result->getNoteGruppo_TestResult;
         $task_array = json_decode($jsonR, true);
+        //print_r($task_array);
+        //die();
         foreach ($task_array as $nota) {
             $idNotaDev = $nota["IdNota"];
             //echo trim($nota["ultimaModifica"])."<br />";
@@ -7661,6 +7730,15 @@ class Mbackoffice extends Model {
             return 1;
         }
         return 0;
+    }
+    
+    function makeNotePrivate($noteId,$nStatus){
+        $this->db->where('n_id',$noteId);
+        $updateArray = array(
+            'n_public' => $nStatus
+        );
+        $this->db->update("plused_book_notes",$updateArray);
+        return 1;
     }
 }
 ?>

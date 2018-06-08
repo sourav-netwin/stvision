@@ -1366,11 +1366,36 @@ INSERT INTO `agnt_email_template` (`emt_id`, `emt_from_email`, `emt_to_email`, `
 ALTER TABLE `frontweb_extra_day_activity_details` ADD `extra_flag` TINYINT(1) NOT NULL DEFAULT '1' COMMENT '1 : Not extra activity & 2 : Extra activity' AFTER `extra_day_activity_id`; 
 
 
-/* ----------------------------Not Executed---------------------------- */
+/* Date: 21-May-2018 | Sandip Kalbhile */
+ALTER TABLE `agnt_pack_exc_bookings` ADD `exb_weeks` INT( 10 ) NOT NULL AFTER `exb_type` ;
 
 /* Date: 11-May-2018 | Sourav Dhara */
 INSERT INTO `plused_role_menu` (`mnu_menuid`, `mnu_parent_menu_id`, `mnu_menu_name`, `mnu_caption`, `mnu_url`, `mnu_status`, `mnu_level`, `mnu_type`, `mnu_sequence`, `mnu_icon_class`, `mnu_created_on`, `mnu_created_by`, `mnu_modified_on`, `mnu_modified_by`, `is_deleted`) VALUES (NULL, '249', 'Show extra activity', '', 'frontweb/master/index/manage_extra_activity', '1', '2', 'Left', '18', '', '2018-05-11 00:00:00', '1', '2018-05-11 00:00:00', '1', '0'); 
 
-/* Date: 21-May-2018 | Sandip Kalbhile */
-ALTER TABLE `agnt_pack_exc_bookings` ADD `exb_weeks` INT( 10 ) NOT NULL AFTER `exb_type` ;
 
+/* Date: 23-May-2018 | Sandip Kalbhile */
+UPDATE `plused_role_menu` SET `mnu_url` = 'backoffice/addGroupToBusCode,backoffice/busExcReset,backoffice/reviewBusForPlan,backoffice/busExcConfirm' WHERE `plused_role_menu`.`mnu_menuid` = 285;
+
+
+/* Date: 28-May-2018 | Sourav Dhara */
+UPDATE `plused_role_menu` SET `mnu_url` = 'frontweb/master_activity/add_edit,frontweb/master_activity/export_to_excel,frontweb/master_activity/copy,frontweb/master/copy_photo' WHERE `plused_role_menu`.`mnu_menuid` = 285;
+
+
+/* Date: 28-May-2018 | Sandip Kalbhile */
+INSERT INTO `plused_role_menu` (`mnu_menuid`, `mnu_parent_menu_id`, `mnu_menu_name`, `mnu_caption`, `mnu_url`, `mnu_status`, `mnu_level`, `mnu_type`, `mnu_sequence`, `mnu_icon_class`, `mnu_created_on`, `mnu_created_by`, `mnu_modified_on`, `mnu_modified_by`, `is_deleted`) VALUES (NULL, '0', 'Transfers [New]', '', '', '1', '1', 'Left', '18', 'fa-plane', '2018-05-28 00:00:00', '0', '2018-05-28 00:00:00', '0', '0');
+INSERT INTO `plused_role_menu` (`mnu_menuid`, `mnu_parent_menu_id`, `mnu_menu_name`, `mnu_caption`, `mnu_url`, `mnu_status`, `mnu_level`, `mnu_type`, `mnu_sequence`, `mnu_icon_class`, `mnu_created_on`, `mnu_created_by`, `mnu_modified_on`, `mnu_modified_by`, `is_deleted`) VALUES (NULL, '300', 'Book inbound transfers', '', 'transfers/setTransfers/inbound', '1', '2', 'Left', '1', '', '2018-05-28 00:00:00', '0', '2018-05-28 00:00:00', '0', '0');
+INSERT INTO `plused_role_menu` (`mnu_menuid`, `mnu_parent_menu_id`, `mnu_menu_name`, `mnu_caption`, `mnu_url`, `mnu_status`, `mnu_level`, `mnu_type`, `mnu_sequence`, `mnu_icon_class`, `mnu_created_on`, `mnu_created_by`, `mnu_modified_on`, `mnu_modified_by`, `is_deleted`) VALUES (NULL, '300', 'Book outbound transfers', '', 'transfers/setTransfers/outbound', '1', '2', 'Left', '2', '', '2018-05-28 00:00:00', '0', '2018-05-28 00:00:00', '0', '0');
+INSERT INTO `plused_role_menu` (`mnu_menuid`, `mnu_parent_menu_id`, `mnu_menu_name`, `mnu_caption`, `mnu_url`, `mnu_status`, `mnu_level`, `mnu_type`, `mnu_sequence`, `mnu_icon_class`, `mnu_created_on`, `mnu_created_by`, `mnu_modified_on`, `mnu_modified_by`, `is_deleted`) VALUES (NULL, '300', 'View booked transfers', '', 'transfers/viewBookedTransfers', '1', '2', 'Left', '3', '', '2018-05-28 00:00:00', '0', '2018-05-28 00:00:00', '0', '0');
+INSERT INTO `plused_role_menu` (`mnu_menuid`, `mnu_parent_menu_id`, `mnu_menu_name`, `mnu_caption`, `mnu_url`, `mnu_status`, `mnu_level`, `mnu_type`, `mnu_sequence`, `mnu_icon_class`, `mnu_created_on`, `mnu_created_by`, `mnu_modified_on`, `mnu_modified_by`, `is_deleted`) VALUES (NULL, '300', 'Lost and found transfers', '', 'transfers/resetLostTransfers', '1', '2', 'Left', '4', '', '2018-05-28 00:00:00', '0', '2018-05-28 00:00:00', '0', '0');
+INSERT INTO `plused_role_menu` (`mnu_menuid`, `mnu_parent_menu_id`, `mnu_menu_name`, `mnu_caption`, `mnu_url`, `mnu_status`, `mnu_level`, `mnu_type`, `mnu_sequence`, `mnu_icon_class`, `mnu_created_on`, `mnu_created_by`, `mnu_modified_on`, `mnu_modified_by`, `is_deleted`) VALUES (NULL, '300', 'Review transfers', '', 'transfers/reviewOpTransfers', '1', '2', 'Left', '5', '', '2018-05-28 00:00:00', '0', '2018-05-28 00:00:00', '0', '0');
+
+INSERT INTO `plused_role_menu` (`mnu_menuid`, `mnu_parent_menu_id`, `mnu_menu_name`, `mnu_caption`, `mnu_url`, `mnu_status`, `mnu_level`, `mnu_type`, `mnu_sequence`, `mnu_icon_class`, `mnu_created_on`, `mnu_created_by`, `mnu_modified_on`, `mnu_modified_by`, `is_deleted`) VALUES (NULL, '301', 'Set transportation', 'internal', 'transfers/setTransfersTransport', '1', '3', 'Left', '1', '', '2018-05-28 00:00:00', '0', '2018-05-28 00:00:00', '0', '0');
+
+UPDATE `plused_role_menu` SET `mnu_url` = 'transfers/setTransfersTransport,transfers/plusedConfirmTransfersBuses,transfers/busTraDetail,transfers/busTraReset,transfers/addPaxToExistingTransfer,transfers/actionResetLostTrasfers' WHERE `plused_role_menu`.`mnu_menuid` = 306;
+INSERT INTO `plused_role_menu` (`mnu_menuid`, `mnu_parent_menu_id`, `mnu_menu_name`, `mnu_caption`, `mnu_url`, `mnu_status`, `mnu_level`, `mnu_type`, `mnu_sequence`, `mnu_icon_class`, `mnu_created_on`, `mnu_created_by`, `mnu_modified_on`, `mnu_modified_by`, `is_deleted`) VALUES (NULL, '301', 'Confirm transfers action', 'internal', 'transfers/busTraConfirm', '1', '3', 'Left', '2', '', '2018-05-28 00:00:00', '0', '2018-05-28 00:00:00', '0', '0');
+
+-- inserted this queries on live
+INSERT INTO `members` (`id`, `first_name`, `last_name`, `username`, `password`, `email`, `role`, `campusid_ref`) VALUES (NULL, 'BRIGHTON', 'BURSAR', 'bubrighton', 'lKkZA8GU', 'r.russo@plus-ed.com', 'bursars', '63');
+INSERT INTO `members` (`id` ,`first_name` ,`last_name` ,`username` ,`password` ,`email` ,`role` ,`campusid_ref`)VALUES (NULL , 'LONDON UXBRIDGE', 'BURSAR', 'bulondonuxbridge', 'o1nXwOmN', 'r.russo@plus-ed.com', 'bursars', '70');
+
+/* ----------------------------Not Executed---------------------------- */

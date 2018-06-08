@@ -24,12 +24,12 @@ $plan = isset($plan_detail[0]) ? $plan_detail[0] : null;
           <div class="box-body pos_rel">                
 
             <h4>
-              <?php echo ucfirst($tipoe) ?> excursion detail - Code: <?php echo $bus_code?><span style="float:right;color:<?php echo $coloreok ?>;"><?php echo $statook ?></span>               
+                Excursion detail - Code: <?php echo $bus_code?><span style="float:right;color:<?php echo $coloreok ?>;"><?php echo $statook ?></span>               
             </h4>
 
             <div>
               <h3 class="evidence"><?php echo $plan["exc_excursion"] ?> - <em><?php echo ucfirst($plan["exc_length"]) ?></em>
-              <div class="excursion_type"><?php echo ucfirst($tipoe) ?> excursion</div></h3>
+              <div class="excursion_type">Excursion</div></h3>
               <p>Campus: <span><?php echo $plan["nome_centri"] ?></span></p>
               <p>Date: <span class="refstandby"><?php echo date("d/m/Y",strtotime($plan["pbe_excdate"])) ?></span></p>
               <p>Pickup place @ time: <span><?php echo $plan["pbe_pickupplace"] ?> @ </span><span class="refstandby"><?php echo date("H:i",strtotime($plan["pbe_hpickup"])) ?></span></p>
@@ -165,17 +165,18 @@ $plan = isset($plan_detail[0]) ? $plan_detail[0] : null;
                 </div>
 
                 <div class="actions">
-                  <div class="left">
+                  <div class="pull-left">
                     <a href="<?php echo base_url(); ?>index.php/backoffice/printPDFExc/<?php echo $bus_code?>" target="_blank"><input type="button" class="btn btn-danger" value="Print PDF for Companies" name="printPDFExc" id="printPDFExc" /></a>
                   </div>          
-                  <div class="right">
-                  <?php if($dataCheckExc > $dataCheckToday){ 
+                  <div class="pull-right">
+                  <?php 
+                  if($dataCheckExc > $dataCheckToday){ 
                   ?>
-                    <input type="button" class="btn btn-danger" value="Reset" name="resetExc" id="resetExc" />
+                        <input type="button" class="btn btn-danger" value="Reset" name="resetExc" id="resetExc" />
                   <?php
                   if($status_ex1=="STANDBY"){
                   ?>
-                    <input type="button" value="Confirm" name="confirmExc" id="confirmExc" class="btn btn-default"/>
+                        <input type="button" value="Confirm" name="confirmExc" id="confirmExc" class="btn btn-default"/>
                   <?php
                   }
                   }
@@ -255,45 +256,53 @@ $plan = isset($plan_detail[0]) ? $plan_detail[0] : null;
   </div>
 </section>
 <script>
-  pageHighlightMenu = "backoffice/servicesReview";
+  pageHighlightMenu = "backoffice/viewPlannedExcursions";
   $(document).ready(function() {
     <?php if($this->session->userdata('role')==100){ ?> 
     
     $("#resetExc").click(function(){
-      if(confirm("Are you sure you want to reset this excursion plan?")){
-        window.location.replace("<?php echo base_url(); ?>index.php/backoffice/busExcReset/<?php echo $bus_code?>");
-      }
+        confirmAction('Are you sure you want to reset this excursion plan?', function(s){
+            if(s){
+                window.location.replace("<?php echo base_url(); ?>index.php/backoffice/busExcReset/<?php echo $bus_code ?>");
+            }
+        },true, true);
     });
     $("#confirmExc").click(function(){
-      if(confirm("Are you sure you want to confirm this excursion plan?")){
-        window.location.replace("<?php echo base_url(); ?>index.php/backoffice/busExcConfirm/<?php echo $bus_code?>");
-      }
+        confirmAction('Are you sure you want to confirm this excursion plan?', function(s){
+            if(s){
+                window.location.replace("<?php echo base_url(); ?>index.php/backoffice/busExcConfirm/<?php echo $bus_code ?>");
+            }
+        },true, true);
     }); 
     $(".addGroup").click(function(){
-      if(confirm("Are you sure you want to add this group to the excursion plan?")){
         var exbId = $(this).attr("id").split("_")[1];
-        window.location.replace("<?php echo base_url(); ?>index.php/backoffice/addGroupToBusCode/<?php echo $bus_code?>/"+exbId+"/<?php echo $plan["pbe_excdate"] ?>");
-        return false;
-      }
+        confirmAction('Are you sure you want to add this group to the excursion plan?', function(s){
+            if(s){
+                window.location.replace("<?php echo base_url(); ?>index.php/backoffice/addGroupToBusCode/<?php echo $bus_code ?>/"+exbId+"/<?php echo $plan["pbe_excdate"] ?>");
+                return false;
+            }
+        },true, true);
     }); 
 
     <?php }else{ ?>
     
     $("#setRevExc").click(function(){
-      if(confirm("Are you sure you want to review informations and notes for this excursion plan?")){
-        if($("#bus_not_compliant").attr("checked")=="checked"){
-          $("#cm_bus_not_compliant").val("1");
-        }else{
-          $("#cm_bus_not_compliant").val("0");
-        } 
-        if($("#service_completed").attr("checked")=="checked"){
-          $("#cm_service_completed").val("1");
-        }else{
-          $("#cm_service_completed").val("0");
-        }       
-        $("#cm_exc_notes").val($("#exc_notes").val());        
-        $("#revExcForm").submit();
-      }
+        confirmAction('Are you sure you want to review informations and notes for this excursion plan?', function(s){
+            if(s){
+                if($("#bus_not_compliant").attr("checked")=="checked"){
+                $("#cm_bus_not_compliant").val("1");
+                }else{
+                $("#cm_bus_not_compliant").val("0");
+                } 
+                if($("#service_completed").attr("checked")=="checked"){
+                $("#cm_service_completed").val("1");
+                }else{
+                $("#cm_service_completed").val("0");
+                }       
+                $("#cm_exc_notes").val($("#exc_notes").val());        
+                $("#revExcForm").submit();
+            }
+        },true, true);
     }); 
     <?php } ?>
     

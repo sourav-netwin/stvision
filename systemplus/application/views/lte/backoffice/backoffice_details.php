@@ -635,9 +635,16 @@
                                     <?php
                                     foreach ($insertNote as $nota) {
                                         echo date("d/m/Y H:i", strtotime($nota["n_datetime"])) . " - User: " . $nota["n_userid"];
-                                        if ($nota["n_public"] == 1) {
-                                            echo " | Public note";
+//                                        if ($nota["n_public"] == 1) {
+//                                            echo " | Public note";
+//                                        }
+                                        if($this->session->userdata('role') == 100){
+                                            echo "<div class='pull-right'>
+                                                    <label id='lblMakePrivate_".$nota["n_id"]."' for='chkMakePrivate_".$nota["n_id"]."'>".($nota['n_public'] == 1 ? 'Public | Mark as private' : 'Private | Mark as public')."</label>
+                                                    <input type='checkbox' value='1' class='makeItPrivate' data-note='".$nota['n_id']."' ".($nota['n_public'] == 1 ? '' : 'checked')." data-status='".$nota['n_public']."' id='chkMakePrivate_".$nota["n_id"]."'>
+                                                    </div>";
                                         }
+                                        
                                         echo "<br />" . $nota["n_testo"];
                                         echo "<br />----------------------------------------------<br /><br />";
                                     }
@@ -937,6 +944,11 @@
             checkboxClass: 'icheckbox_square-blue',
             increaseArea: '10%' // optional
         });
+        $('input.makeItPrivate').iCheck('destroy');
+        $('input.makeItPrivate').iCheck({
+            checkboxClass: 'icheckbox_square-blue',
+            increaseArea: '10%' // optional
+        });
     }
     $(document).ready(function () {
         
@@ -1160,6 +1172,61 @@
                 $("#txtEditNote").focus();
             }
         });
+        
+        
+        $('.makeItPrivate').on('ifChanged', function(event){
+            var nid = $(this).attr('data-note');
+            var nStatus = $(this).attr('data-status');
+            var modifyToStatus = "";
+            if(parseInt(nStatus))
+            {
+                modifyToStatus = "private";
+                nStatus = 0;
+            }
+            else
+            {
+                modifyToStatus = "public";
+                nStatus = 1;
+            }
+            confirmAction("Are you sure you want to make this note "+modifyToStatus+"?", function (s) {
+                if (s) {
+                    $.post(siteUrl + "backoffice/makeNotePrivate",
+                    {'nid':nid,'nStatus':nStatus},function(data){
+                        if(data.result){
+                            swal("Success","Note is successfully made "+modifyToStatus+".");
+                            $("#chkMakePrivate_"+nid).attr('data-status',nStatus);
+                            if(parseInt(nStatus))
+                                $("#lblMakePrivate_"+nid).html("Public | Mark as private");
+                            else
+                                $("#lblMakePrivate_"+nid).html("Private | Mark as public");
+                        }
+                        else
+                            swal("Error","Unable to make note "+modifyToStatus+".");
+                    },'json');
+                }
+                else{
+                    $("#chkMakePrivate_"+nid).iCheck('uncheck');
+                }
+            }, true, true);
+        });
+        /*$('.makeItPrivate').on('ifUnchecked', function(event){
+            var nid = $(this).attr('data-note');
+            var nStatus = $(this).attr('data-status');
+            confirmAction("Are you sure you want to make this note public?", function (s) {
+                if (s) {
+                    $.post(siteUrl + "backoffice/makeNotePrivate",
+                    {'nid':nid,'nStatus':nStatus},function(data){
+                        if(data.result){
+                            swal("Success","Note is successfully made public.");
+                            $("#chkMakePrivate_"+nid).attr('disabled','disabled');
+                        }
+                        else
+                            swal("Error","Unable to make note public.");
+                    },'json');
+                }
+            }, true, true);
+        });*/
+        
         
         $('#btnElapsedMarked').click(function () {
             var id = $("#bkDetBookId").val();

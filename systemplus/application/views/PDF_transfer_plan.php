@@ -50,20 +50,26 @@ table.corpopre tr.testapreventivo td{background-color:#aaa;border-bottom:1px sol
 		</tr>
 		<tr><td colspan="2" style="height:20px;">&nbsp;</td></tr>
 		<tr><td colspan="2">Transfer CODE: <font style="font-weight:bold;"><?php echo $bus_code?></font></td></tr>
-		<?if($tipotransfer=="inbound"){ ?>
-		<tr><td colspan="2">From Airport: <font style="font-weight:bold;"><?php echo str_replace("to/from ","",$plan["exc_excursion"]) ?></font></td></tr>
-		<tr><td colspan="2">To College: <font style="font-weight:bold;"><?php echo $plan["nome_centri"] ?></font></td></tr>
-		<?php }else{ ?>
-		<tr><td colspan="2">From College: <font style="font-weight:bold;"><?php echo $plan["nome_centri"] ?></font></td></tr>		
-		<tr><td colspan="2">To Airport: <font style="font-weight:bold;"><?php echo str_replace("to/from ","",$plan["exc_excursion"]) ?></font></td></tr>		
+		<?if($tipotransfer=="inbound"){ 
+                    $fromAirportName = str_replace("to/from","",$plan["exc_excursion"]);
+                    $fromAirportName = strtoupper(str_replace("inbound","",$fromAirportName));
+                ?>
+		<tr><td colspan="2">From Airport: <font style="font-weight:bold;"><?php echo $fromAirportName ?></font></td></tr>
+                <tr><td colspan="2">To College: <font style="font-weight:bold;"><?php echo strtoupper($plan["nome_centri"]) ?></font></td></tr>
+		<?php }else{ 
+                    $toAirportName = str_replace("to/from","",$plan["exc_excursion"]);
+                    $toAirportName = strtoupper(str_replace(" outbound","",$toAirportName));
+                ?>
+                <tr><td colspan="2">From College: <font style="font-weight:bold;"><?php echo strtoupper($plan["nome_centri"]) ?></font></td></tr>		
+		<tr><td colspan="2">To Airport: <font style="font-weight:bold;"><?php echo $toAirportName ?></font></td></tr>		
 		<?php } ?>
 		<tr><td colspan="2" style="height:20px;">&nbsp;</td></tr>
 		<tr>
 			<td colspan="2" style="border-bottom:1px solid #ddd;">
 				<?if($tipotransfer=="inbound"){ ?>
-				Transfer information: <strong>from <?php echo str_replace("to/from ","",$plan["exc_excursion"]) ?> to <?php echo $plan["nome_centri"] ?>  |  <?php echo $plan["exc_type"] ?> / <?php echo $plan["exc_length"] ?></strong><br />
+                            Transfer information: <strong>Inbound transfer from <?php echo $fromAirportName ?> to <?php echo strtoupper($plan["nome_centri"]) ?> <?php echo (!empty($plan["exc_length"]) ? "/ ".$plan["exc_length"] : "") ?></strong><br />
 				<?php }else{ ?>
-				Transfer information: <strong>from <?php echo $plan["nome_centri"] ?> to <?php echo str_replace("to/from ","",$plan["exc_excursion"]) ?>  |  <?php echo $plan["exc_type"] ?> / <?php echo $plan["exc_length"] ?></strong><br />				
+                            Transfer information: <strong>Outbound transfer from <?php echo strtoupper($plan["nome_centri"]) ?> to <?php echo $toAirportName ?> <?php echo (!empty($plan["exc_length"]) ? "/ ".$plan["exc_length"] : "") ?></strong><br />				
 				<?php } ?>
 				Date: <strong><?php echo date("d/m/Y",strtotime($plan["pbe_excdate"])) ?></strong><br />
 				Extra information: <strong><?php echo $plan["pbe_pickupplace"] ?></strong><br />

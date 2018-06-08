@@ -18,10 +18,11 @@
 	var active_confirmation = "<?php echo $this->lang->line("active_confirmation"); ?>";
 	var delete_confirmation = "<?php echo $this->lang->line("delete_confirmation"); ?>";
 	var please_enter_dynamic = "<?php echo $this->lang->line("please_enter_dynamic"); ?>";
+	var please_select_dynamic = "<?php echo $this->lang->line("please_select_dynamic"); ?>";
 	var duplicate_dynamic = "<?php echo $this->lang->line("duplicate_dynamic"); ?>";
 	var valid_data_error_msg = "<?php echo $this->lang->line("valid_data_error_msg"); ?>";
 </script>
-<script src="<?php echo LTE; ?>frontweb/custom/master.js?v=1.9"></script>
+<script src="<?php echo LTE; ?>frontweb/custom/master.js?v=2.3"></script>
 
 <div class="right_col" role="main">
 	<div class="row">
@@ -140,6 +141,55 @@
 <?php
 									echo form_dropdown('student_group' , array('' => 'Please select group') , '' , 'class="form-control" id="student_group"');
 ?>
+								</div>
+							</div>
+						</div>
+						<div class="clearfix"></div>
+						<div class="modal-footer">
+							<button type="submit" class="btn btn-info">Save</button>
+							<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+						</div>
+					<?php echo form_close(); ?>
+				</div>
+			</div>
+		</div>
+		<!--------------This is the copy master activity modal(End)--------------->
+<?php
+	}
+	elseif($moduleName == 'manage_activity_photogallery')
+	{
+?>
+		<!-------------Bootstrap multiselect css and js---------------->
+		<link rel="stylesheet" href="<?php echo LTE; ?>frontweb/bootstrap-multiselect.css" />
+		<script src="<?php echo LTE; ?>frontweb/bootstrap-multiselect.js"></script>
+
+		<!--------------This is the copy master activity modal(Start)--------------->
+		<div class="modal fade" id="copyPhotoModal" role="dialog">
+			<div class="modal-dialog modal-md">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal">&times;</button>
+						<h4 class="modal-title modalTitle">Copy photo gallery</h4>
+					</div>
+<?php
+					$formAttribute = array(
+						'class' => 'form-horizontal form-label-left show-custom-error-tag',
+						'id' => 'copyPhotoForm',
+						'method' =>'post'
+					);
+					echo form_open_multipart('frontweb/master/copy_photo' , $formAttribute);
+?>
+						<input type="hidden" name="id" id="id">
+						<div class="modal-body">
+							<div class="form-group">
+								<label class="control-label custom-control-label col-md-3 col-sm-3 col-xs-12">
+									Select centre<span class="required">*</span>
+								</label>
+								<div class="col-md-9 col-sm-9 col-xs-12">
+<?php
+									echo form_dropdown('centre_id[]' , getCentreDetails() , '' , 'class="form-control multiSelect" multiple="multiple"');
+?>
+									<br><span class="error centreErrorMsg"></span>
 								</div>
 							</div>
 						</div>

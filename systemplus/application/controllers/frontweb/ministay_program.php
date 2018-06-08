@@ -89,13 +89,29 @@
 					);
 					if($this->input->post('flag') == 'as')
 					{
-						$this->admin_model->commonAdd(TABLE_JUNIOR_MINISTAY_STATIC_PROGRAM , $updateData);
+						$insertId = $this->admin_model->commonAdd(TABLE_JUNIOR_MINISTAY_STATIC_PROGRAM , $updateData);
 						$this->session->set_flashdata('success_message', str_replace('**module**' , 'Ministay program' , $this->lang->line('add_success_message')));
 					}
 					elseif($this->input->post('flag') == 'es')
 					{
 						$this->admin_model->commonUpdate(TABLE_JUNIOR_MINISTAY_STATIC_PROGRAM , 'junior_ministay_static_program_id = '.$id , $updateData);
 						$this->session->set_flashdata('success_message', str_replace('**module**' , 'Ministay program' , $this->lang->line('edit_success_message')));
+					}
+
+					//Save the course program details in subtable
+					$courseProgram = $this->input->post('course_program');
+					if($this->input->post('flag') == 'es')
+						$this->admin_model->commonDelete(TABLE_MINISTAY_COURSE_PROGRAM , 'ministay_program_id = '.$id);
+					if(!empty($courseProgram))
+					{
+						foreach($courseProgram as $programId)
+						{
+							$insertData = array(
+								'course_program_id' => $programId,
+								'ministay_program_id' => ($this->input->post('flag') == 'as') ? $insertId : $id
+							);
+							$this->admin_model->commonAdd(TABLE_MINISTAY_COURSE_PROGRAM , $insertData);
+						}
 					}
 
 					//For image cropping
@@ -107,6 +123,15 @@
 			if($id != '')
 			{
 				$post = $this->admin_model->commonGetData('junior_ministay_static_program_id , program_name , description , logo' , 'junior_ministay_static_program_id = '.$id , TABLE_JUNIOR_MINISTAY_STATIC_PROGRAM , 1);
+
+				//Get the course program details to show in the edit page
+				$result = $this->admin_model->commonGetdata('course_program_id' , 'ministay_program_id = '.$id , TABLE_MINISTAY_COURSE_PROGRAM , 2);
+				if(!empty($result))
+				{
+					foreach($result as $value)
+						$post['course_program'][] = $value['course_program_id'];
+				}
+
 				$data['post'] = $post;
 			}
 			$data['id'] = $id;

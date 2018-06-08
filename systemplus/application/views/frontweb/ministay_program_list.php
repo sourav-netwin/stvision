@@ -16,7 +16,7 @@
 	var active_confirmation = "<?php echo $this->lang->line("active_confirmation"); ?>";
 	var delete_confirmation = "<?php echo $this->lang->line("delete_confirmation"); ?>";
 </script>
-<script src="<?php echo LTE; ?>frontweb/custom/ministay_program.js?v=1.1"></script>
+<script src="<?php echo LTE; ?>frontweb/custom/ministay_program.js?v=1.3"></script>
 
 <div class="right_col" role="main">
 	<div class="row">

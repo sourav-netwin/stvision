@@ -486,4 +486,58 @@ CREATE TABLE `vision_plus`.`frontweb_activity_photo_gallery` ( `activity_photo_g
   PRIMARY KEY (`feature_id`)
 ) ENGINE=MyISAM;
 
+ 
+ 
+  /* Date: 24-May-2018 | Sourav Dhara */
+ CREATE TABLE `vision_plus`.`frontweb_user_devices` ( `user_device_id` INT NOT NULL AUTO_INCREMENT COMMENT 'primary key' ,
+ `user_id` INT NULL , `device_id` TEXT NULL , `device_type` ENUM('A','I') NULL COMMENT 'A : Android & I : IOS' , 
+ `created_on` DATETIME NULL , PRIMARY KEY (`user_device_id`)) ENGINE = MyISAM; 
+ 
+ALTER TABLE `frontweb_user_devices` CHANGE `user_id` `user_id` VARCHAR(200) NULL DEFAULT NULL COMMENT 'This is uuid of user'; 
+ 
+CREATE TABLE IF NOT EXISTS `frontweb_push_notification_history` (
+  `push_notification_history_id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'primary key',
+  `message_string` mediumtext,
+  `response_string` mediumtext,
+  `user_list` mediumtext,
+  `message_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`push_notification_history_id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8; 
+ 
+CREATE TABLE IF NOT EXISTS `frontweb_user_notification` (
+  `user_notification_id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'primary key',
+  `title` varchar(255) DEFAULT NULL,
+  `message` text,
+  `user_id` int(11) DEFAULT NULL,
+  `is_read` tinyint(1) NOT NULL DEFAULT '0' COMMENT '0 : not read & 1 : read',
+  `created_on` datetime DEFAULT NULL,
+  `notification_type` varchar(200) DEFAULT NULL,
+  `push_notification_history_id` int(11) DEFAULT NULL COMMENT 'foreign key',
+  PRIMARY KEY (`user_notification_id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
+ALTER TABLE `frontweb_user_notification` CHANGE `user_id` `user_id` VARCHAR(200) NULL DEFAULT NULL COMMENT 'This is uuid of user'; 
+
+ALTER TABLE `frontweb_user_notification` ADD `user_device_id` INT NULL COMMENT 'foreign key' AFTER `push_notification_history_id`; 
+ 
+/* Date: 5-June-2018 | Sourav Dhara */
+ 
+CREATE TABLE `vision_plus`.`frontweb_ministay_course_program` ( `ministay_course_program` INT NOT NULL AUTO_INCREMENT 
+COMMENT 'primary key' , `course_program_id` INT NULL , `ministay_program_id` INT NULL COMMENT 'foreign key' , 
+PRIMARY KEY (`ministay_course_program`)) ENGINE = MyISAM;
+
+ 
+/* Date: 7-June-2018 | Sourav Dhara */
+
+CREATE TABLE `vision_plus`.`frontweb_plus_general_info` ( `plus_general_info_id` INT NOT NULL AUTO_INCREMENT 
+COMMENT 'primary key' , `name` VARCHAR(255) NULL , `centre_id` INT NULL , `description` TEXT NULL , `front_image` 
+VARCHAR(255) NULL , `added_date` DATE NULL , `show_type` TINYINT(1) NOT NULL DEFAULT '1' COMMENT '1:upload image & 
+2: enter text' , `show_text` VARCHAR(255) NULL , `sequence` INT NULL , `status` TINYINT(1) NOT NULL DEFAULT '1' 
+COMMENT '1:Active & 0:Inactive' , `delete_flag` TINYINT(1) NOT NULL DEFAULT '0' COMMENT '1:deleted & 0:not deleted' , 
+PRIMARY KEY (`plus_general_info_id`)) ENGINE = MyISAM; 
+
+CREATE TABLE `vision_plus`.`frontweb_plus_general_info_file` ( `plus_general_info_file_id` INT NOT NULL AUTO_INCREMENT 
+COMMENT 'primary key' , `file_name` VARCHAR(255) NOT NULL , `plus_general_info_id` INT NOT NULL COMMENT 'foreign key' , 
+PRIMARY KEY (`plus_general_info_file_id`)) ENGINE = MyISAM; 
+
  /* ----------------------------Not Executed---------------------------- */

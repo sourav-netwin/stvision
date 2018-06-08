@@ -228,7 +228,7 @@
 				.insertAfter( $('#contractTable_wrapper .row .col-sm-12').first());
 			}
 		} );	
-                $("#contractYearFilter").val("2017");
+                $("#contractYearFilter").val("2018");
                 
 		$('body').on('change','#contractStatusFilter', function(){
 			objTable.columns(6).search(this.value).draw();

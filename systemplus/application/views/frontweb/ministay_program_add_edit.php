@@ -6,6 +6,10 @@
 <script src="<?php echo base_url(); ?>js/tuition/jquery_validations1.9.0.js"></script>
 <link rel="stylesheet" href="<?php echo LTE; ?>frontweb/style.css?v=1.1">
 
+<!-------------Bootstrap multiselect css and js---------------->
+<link rel="stylesheet" href="<?php echo LTE; ?>frontweb/bootstrap-multiselect.css" />
+<script src="<?php echo LTE; ?>frontweb/bootstrap-multiselect.js"></script>
+
 <!------------custom javascript for program course------------>
 <script>
 	var pageType = 'add_edit';
@@ -17,7 +21,7 @@
 	var width1 = "<?php echo MINISTAY_PROGRAM_THUMB_WIDTH; ?>";
 	var minimum_image_dimension = "<?php echo $this->lang->line("minimum_image_dimension"); ?>";
 </script>
-<script src="<?php echo LTE; ?>frontweb/custom/ministay_program.js?v=1.1"></script>
+<script src="<?php echo LTE; ?>frontweb/custom/ministay_program.js?v=1.3"></script>
 
 <div class="right_col" role="main">
 	<div class="row">
@@ -62,6 +66,18 @@
 								echo form_textarea($inputFieldAttribute);
 ?>
 							<span id="descriptionErrorMessage" style="color:#ff0000"></span>
+							</div>
+						</div>
+						<div class="form-group">
+							<label class="control-label custom-control-label col-md-3 col-sm-3 col-xs-12">Select program</label>
+							<div class="col-md-6 col-sm-6 col-xs-12">
+<?php
+								$courseProgram = isset($post['course_program']) ? $post['course_program'] : '';
+								echo form_dropdown('course_program[]' , getCourseProgramDetails() , $courseProgram , 'class="form-control" id="course_program" multiple="multiple"');
+?>
+								<small style="display:block">
+									( Note: Already Add on program is added )
+								</small>
 							</div>
 						</div>
 						<div class="form-group">

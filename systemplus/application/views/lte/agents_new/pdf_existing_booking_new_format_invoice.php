@@ -270,7 +270,10 @@
                                     if ($bc['glPaidType'] == "Free")  // it means there are some free GLs
                                     {
                                         // calculate the ratio cost.
-                                        $ratioCost = ($display_price / $freeGlPerPax) * ($freeGlPerPax - $remaingPaxToReachFreeGL);
+                                        if($freeGlPerPax)
+                                            $ratioCost = ($display_price / $freeGlPerPax) * ($freeGlPerPax - $remaingPaxToReachFreeGL);
+                                        else
+                                            $ratioCost = ($display_price) * ($freeGlPerPax - $remaingPaxToReachFreeGL);
                                         if($ratioCost < $extraGLPrice)
                                             $extraGLPrice = $ratioCost;
                                         echo $book['valuta'] . number_format(($extraGLPrice / $numOfWeeks), 2, '.', '');
@@ -281,7 +284,10 @@
                                         echo $book['valuta'] . number_format(($extraGLPrice / $numOfWeeks), 2, '.', '');
                                     } else 
                                     {
-                                        $ratioCost = ($display_price / $freeGlPerPax) * ($freeGlPerPax - $remaingPaxToReachFreeGL);
+                                        if($freeGlPerPax)
+                                            $ratioCost = ($display_price / $freeGlPerPax) * ($freeGlPerPax - $remaingPaxToReachFreeGL);
+                                        else
+                                            $ratioCost = ($display_price) * ($freeGlPerPax - $remaingPaxToReachFreeGL);
                                         if($ratioCost > $extraGLPrice)
                                             $ratioCost = $extraGLPrice;
                                         echo $book['valuta'] . number_format(($ratioCost / $numOfWeeks), 2, '.', '');

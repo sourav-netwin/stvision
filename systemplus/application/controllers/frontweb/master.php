@@ -163,6 +163,23 @@
 
 							$insertId = $this->admin_model->commonAdd($moduleArr['dbName'] , $post);
 							$this->session->set_flashdata('success_message', str_replace('**module**' , $moduleArr['title'] , $this->lang->line('add_success_message')));
+
+							//For manage walking tour module , after add new video link send push notification
+							if($moduleName == 'manage_walking_tour')
+							{
+								$userIdArr = $this->mastermodel->getUserUuid($post['centre_id']);
+								if(!empty($userIdArr))
+								{
+									$this->load->library('frontweb/notification');
+									$notificationData = array(
+										'title' => str_replace('**module**' , 'walking tour video' , $this->lang->line('dynamic_module_added')),
+										'message' => $this->lang->line('video_notification_message'),
+										'notification_type' => $this->lang->line('video_notification_type')
+									);
+									$this->notification->initialize($userIdArr , $notificationData);
+								}
+							}
+
 						}
 						elseif($this->input->post('flag') == 'es')
 						{
@@ -369,6 +386,42 @@
 			$data['pageHeader'] = $data['moduleArr']['title'];
 			$data['title'] = 'plus-ed.com | '.$data['pageHeader'];
 			$this->ltelayout->view('frontweb/manage_submodule' , $data);
+		}
+
+		/**
+		*This function is used to copy one image for the another centres(used to the photo gallery module)
+		*
+		*@author S.D
+		*@since 28th May , 2018
+		*@access public
+		*@param NONE
+		*@return NONE
+		*/
+		public function copy_photo()
+		{
+			if($this->input->post('id') != '')
+			{
+				$imageInfo = $this->admin_model->commonGetData('image_name' , 'activity_photo_gallery_id = '.$this->input->post('id') , TABLE_ACTIVITY_PHOTO_GALLERY);
+				$centreArr = $this->input->post('centre_id');
+				if(!empty($centreArr))
+				{
+					foreach($centreArr as $centreId)
+					{
+						if(trim($centreId) != '')
+						{
+							$insertData = array(
+								'centre_id' => trim($centreId),
+								'image_name' => $imageInfo['image_name'],
+								'added_date' => date('Y-m-d H:i:s'),
+								'added_type' => 1
+							);
+							$this->admin_model->commonAdd(TABLE_ACTIVITY_PHOTO_GALLERY , $insertData);
+						}
+					}
+				}
+			}
+			$this->session->set_flashdata('success_message', str_replace('**module**' , 'photo' , $this->lang->line('add_success_message')));
+			redirect('/frontweb/master/index/manage_activity_photogallery');
 		}
 
 		/***********Image Cropping functionality for master modules Start***********/

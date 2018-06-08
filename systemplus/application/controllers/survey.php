@@ -4,7 +4,7 @@
  * @Programmer  : SK
  * @Maintainer  : SK
  * @Created     : 04-May-2016
- * @Modified    : 
+ * @Modified    :
  * @Description : survey used to authenticate pulsed_row user pax with type GL
  */
 class Survey extends Controller {
@@ -38,9 +38,9 @@ class Survey extends Controller {
 	}
 
 	/**
-	 * login 
-	 * this function uses email address and survey password to check/authenticate user 
-	 * if user is authenticated basic information is save into the session and user gets loggedin. 
+	 * login
+	 * this function uses email address and survey password to check/authenticate user
+	 * if user is authenticated basic information is save into the session and user gets loggedin.
 	 */
 	function login() {
 		if (!empty($_POST)) {
@@ -95,7 +95,7 @@ class Survey extends Controller {
 
 	/**
 	 * dashboard
-	 * this function loads survey dashboard. 
+	 * this function loads survey dashboard.
 	 */
 	function dashboard() {
 		if ($this -> session -> userdata('role') == 501) {
@@ -116,8 +116,8 @@ class Survey extends Controller {
 	}
 
 	/**
-	 * logout 
-	 * this function is used to destroy survey session. 
+	 * logout
+	 * this function is used to destroy survey session.
 	 */
 	function logout() {
 		$this -> session -> sess_destroy();
@@ -709,7 +709,7 @@ class Survey extends Controller {
 						}
 					}
 				}
-                                
+
                                 function getgroupleaders(){
                                     if ($this -> session -> userdata('username') && $this -> session -> userdata('role') != 200) {
                                         $campusId = $this -> input -> post('campusId');
@@ -936,11 +936,11 @@ class Survey extends Controller {
 					}
 				}
 				/* End: Student report Arunsankar */
-                                
-                                
+
+
     function getGLStudentsDetail() {
         if ($this->session->userdata('username') && $this->session->userdata('role') != 200) {
-            
+
             $hidd_campus = $this->input->post('hidd_campus');
             $hidd_survey = $this->input->post('hidd_survey');
             $hidd_agent = $this->input->post('hidd_agent');
@@ -1008,6 +1008,6 @@ class Survey extends Controller {
             }
         }
     }
-    
+
 }
 /* End of file survey.php */

@@ -76,6 +76,7 @@
                                         <th>Agency</th>									
                                         <th>W</th>
                                         <th>Excursion</th>								
+                                        <th>Package</th>								
                                         <th>Pax</th>
                                         <th class="no-sort">Select</th>
                                     </tr>
@@ -98,7 +99,8 @@
                                                     <font style="font-weight:bold;display:block;clear:both;">
                                                     <?php echo ucfirst($exc["exc_length"]) ?>
                                                     </font>
-                                                </td>									
+                                                </td>
+                                                <td><?php echo $exc["pack_package"] ?></td>
                                                 <td><?php echo $exc["exb_tot_pax"] ?></td>
                                                 <td class="center containcheck">
                                                     <input type="checkbox" name="excur_<?php echo $exc["exb_id"] ?>" value="<?php echo date("d-m-Y", strtotime($exc["arrival_date"])) ?>_<?php echo date("d-m-Y", strtotime($exc["departure_date"])) ?>_<?php echo $exc["exc_id"] ?>_<?php echo $exc["exb_tot_pax"] ?>" class="excn_<?php echo $exc["exc_id"] ?>" id="group<?php echo $exc["id_book"] ?>_<?php echo $exc["exb_id"] ?>" />

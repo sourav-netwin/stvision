@@ -17,7 +17,6 @@ class Excursionexpimpmodel extends Model {
 	function getExportData($campuses) {
 		$this -> db -> _protect_identifiers = FALSE;
 		$mapData = $this -> getCampusCompanyMap($campuses);
-		//$this -> db -> select('"" as jn_id, c.exc_id, b.id,b.nome_centri, c.exc_length,c.exc_excursion,c.exc_type,c.exc_weeks, e.tra_bus_id, d.tra_cp_name, e.tra_bus_name,"" as jn_price,"" as Cost,"" as Budget,f.cur_id as jn_currency, b.valuta_fattura')
 		$this -> db -> select('"" as jn_id, ce.excm_exc_id, b.id,b.nome_centri, 
                                 exc.exc_day_type as exc_length, exc.exc_excursion_name,
                                 concat_ws(" ",exc.exc_type,exc.exc_old_type) as exc_type,exc.exc_weeks,
@@ -25,7 +24,6 @@ class Excursionexpimpmodel extends Model {
                                 jn_price, jn_cost as Cost, jn_budget as Budget,
                                 f.cur_id as jn_currency, b.valuta_fattura')
 				-> from('centri as b')
-				//-> join('plused_exc_all as c', 'c.exc_id_centro=b.id')
                                 -> join('agnt_campus_excursion as ce', 'ce.excm_campus_id = b.id')
                                 -> join('agnt_excursions as exc', 'ce.excm_exc_id = exc.exc_id')
 				-> join('plused_tra_companies as d', "d.tra_cp_server_type = exc.exc_type OR d.tra_cp_server_type = 'Both'")
@@ -33,22 +31,26 @@ class Excursionexpimpmodel extends Model {
 				-> join('plused_tb_currency as f', 'f.cur_codice=b.valuta_fattura')
 				-> join('plused_exc_join as ej', "ej.jn_id_exc = exc.exc_id AND ej.jn_id_campus = b.id AND ej.jn_id_bus = e.tra_bus_id",'left');
 		$loop = 0;
+                $orWhereC = "";
 		if (!empty($mapData)) {
 			foreach ($mapData as $map) {
 				if ($loop == 0) {
-					$this -> db -> where('(b.id = ' . $map['centri_id'] . ' and d.tra_cp_id = ' . $map['tra_cp_id'] . ')');
+					$orWhereC .= '(b.id = ' . $map['centri_id'] . ' and d.tra_cp_id = ' . $map['tra_cp_id'] . ')';
 				}
 				else {
-					$this -> db -> or_where('(b.id = ' . $map['centri_id'] . ' and d.tra_cp_id = ' . $map['tra_cp_id'] . ')');
+					$orWhereC .= ' OR (b.id = ' . $map['centri_id'] . ' and d.tra_cp_id = ' . $map['tra_cp_id'] . ')';
 				}
 				$loop += 1;
 			}
 		}
-		//$this -> db -> order_by('b.id, d.tra_cp_id,c.exc_length,c.exc_excursion, c.exc_type, c.exc_weeks, e.tra_bus_name');
+                $orWhereC .= "";
 		$this -> db -> order_by('b.nome_centri,d.tra_cp_name,exc.exc_excursion_name, e.tra_bus_name');
-
+                if(!empty($orWhereC)){
+                    $this->db->where("(".$orWhereC.")");
+                }
+                $this->db->where('exc.exc_is_active','1');
+                $this->db->where('exc.exc_is_deleted','0');
 		$result = $this -> db -> get();
-                //echo $this->db->last_query();die;
 		if ($result -> num_rows()) {
 			return $result -> result_array();
 		}

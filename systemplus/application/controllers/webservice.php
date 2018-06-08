@@ -75,10 +75,11 @@ class Webservice extends Controller {
                 $client = new SoapClient($wsdl_url, array('soap_version' => SOAP_1_1));
                 $params = array(
                     '_UserId' => 'visioN@0315',
-                    '_Psw' => 'j%asbwY3'
+                    '_Psw' => 'j%asbwY3',
+                    '_anno' => '2018'
                 );
-                $wsresult = $client->getPrenotazioniRimborsi($params);
-                $jsonR = $wsresult->getPrenotazioniRimborsiResult;
+                $wsresult = $client->getPrenotazioniRimborsi_Test($params);
+                $jsonR = $wsresult->getPrenotazioniRimborsi_TestResult;
                 $json_data = json_decode($jsonR, true);
                 $result = $this->importJsonContent($json_data);
 

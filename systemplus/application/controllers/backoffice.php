@@ -1,5 +1,11 @@
 <?php
-
+/**
+ * This is backoffice controller which handles almost all 
+ * backoffice requests
+ * Some of the request are converted to new authentication 
+ * but some are not as the roles and responsibilities are not defined.
+ *  
+ */
 class Backoffice extends Controller {
 
     public function __construct() {
@@ -31,10 +37,6 @@ class Backoffice extends Controller {
             redirect('backoffice/dashboard', 'refresh');
         }
     }
-
-    /* function gimmeInfo(){
-      phpinfo();
-      } */
 
     function login() {
         header('Expires: 0');
@@ -184,7 +186,7 @@ class Backoffice extends Controller {
             redirect('backoffice', 'refresh');
         }
     }
-
+    
     function changeCredentials() {
         //$bOArray = array(1, 200, 300, 400, 100, 550, 551, 553); // BACKOFFICE USERS ROLE IDS
         //if (in_array($this->session->userdata('role'), $bOArray)) {
@@ -528,10 +530,6 @@ class Backoffice extends Controller {
                     $valoreAcconto = $data['book'][0]["tot_pax"] * 1 * $data['book'][0]["valore_acconto"] * 1;
                     $this->load->view('lte/backoffice/backoffice_details', $data);
                 }
-//				echo json_encode(array(
-//					'result' => 1,
-//					'message' => $html
-//				));
             }
         } else {
             redirect('backoffice', 'refresh');
@@ -2764,6 +2762,7 @@ class Backoffice extends Controller {
                 $tuttiPax = 0;
                 $insertTransfers = $this->mbackoffice->setTransfersTransport($type, $quando);
                 $allTransfers = $this->mbackoffice->getTransfersById($insertTransfers);
+            
                 foreach ($allTransfers as $uT) {
                     $tuttiPax+=$uT["tot_pax"];
                     if ($type == "inbound") {
@@ -5044,6 +5043,7 @@ class Backoffice extends Controller {
         if ($this->session->userdata('role') == 100) {
             $data['importStudyCSV'] = $this->mbackoffice->TEST_importStudyJSON();
             echo "<br />Import done<br />";
+            //die();
             $data['syncStudyPax'] = $this->mbackoffice->syncStudyPax();
             echo "Sync done<br />";
             echo "Checking inbound<br />";
@@ -5072,10 +5072,11 @@ class Backoffice extends Controller {
             $client = new SoapClient($wsdl_url, array('soap_version' => SOAP_1_1));
             $params = array(
                 '_UserId' => 'visioN@0315',
-                '_Psw' => 'j%asbwY3'
+                '_Psw' => 'j%asbwY3',
+                '_anno' => '2018'
             );
-            $result = $client->getPrenotazioniRimborsi($params);
-            $jsonR = $result->getPrenotazioniRimborsiResult;
+            $result = $client->getPrenotazioniRimborsi_Test($params);
+            $jsonR = $result->getPrenotazioniRimborsi_TestResult;
             print_r($jsonR);
             die();
             $task_array = json_decode($jsonR, true);
@@ -5094,12 +5095,11 @@ class Backoffice extends Controller {
             $client = new SoapClient($wsdl_url, array('soap_version' => SOAP_1_1));
             $params = array(
                 '_UserId' => 'visioN@0315',
-                '_Psw' => 'j%asbwY3'
+                '_Psw' => 'j%asbwY3',
+                '_anno' => '2018'
             );
-            $result = $client->getPrenotazioniSupplementi($params);
-            $jsonR = $result->getPrenotazioniSupplementiResult;
-            print_r($jsonR);
-            die();
+            $result = $client->getPrenotazioniSupplementi_Test($params);
+            $jsonR = $result->getPrenotazioniSupplementi_TestResult;
             $task_array = json_decode($jsonR, true);
             //echo count($task_array);
             echo "<pre>";
@@ -5109,6 +5109,7 @@ class Backoffice extends Controller {
             die("Error!");
         }
     }
+
 
 //inizio funzioni view per roster in backoffice
 
@@ -7229,13 +7230,19 @@ class Backoffice extends Controller {
 
             $objWriter = PHPExcel_IOFactory::createWriter($this->excel_180, 'Excel5');
             $objWriter->save('php://output');
-
             die();
         } else {
             redirect('backoffice', 'refresh');
         }
     }
-
+    
+    /* UPDATE NOTE STATUS: TO PRIVATE*/
+    function makeNotePrivate(){
+        $noteId = $this->input->post('nid');
+        $nStatus = $this->input->post('nStatus');
+        $result = $this->mbackoffice->makeNotePrivate($noteId,$nStatus);
+        echo json_encode(array("result"=>$result));
+    }
 }
 
 //End : additions by Arunsankar S
