@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: 127.0.0.1
--- Generation Time: Apr 17, 2018 at 09:46 AM
+-- Generation Time: Jun 11, 2018 at 05:27 AM
 -- Server version: 5.7.9
 -- PHP Version: 5.6.16
 
@@ -32,7 +32,7 @@ CREATE TABLE IF NOT EXISTS `plused_role_access` (
   `acc_role_id` int(11) NOT NULL COMMENT 'Fk for role table',
   `acc_menu_id` int(11) NOT NULL COMMENT 'Fk for menus',
   PRIMARY KEY (`acc_id`)
-) ENGINE=MyISAM AUTO_INCREMENT=933 DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM AUTO_INCREMENT=935 DEFAULT CHARSET=latin1;
 
 --
 -- Dumping data for table `plused_role_access`
@@ -496,7 +496,9 @@ INSERT INTO `plused_role_access` (`acc_id`, `acc_role_id`, `acc_menu_id`) VALUES
 (929, 300, 285),
 (930, 300, 286),
 (931, 99, 287),
-(932, 300, 288);
+(932, 300, 288),
+(933, 300, 289),
+(934, 300, 290);
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;

@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: 127.0.0.1
--- Generation Time: Apr 17, 2018 at 09:46 AM
+-- Generation Time: Jun 11, 2018 at 05:28 AM
 -- Server version: 5.7.9
 -- PHP Version: 5.6.16
 
@@ -44,7 +44,7 @@ CREATE TABLE IF NOT EXISTS `plused_role_menu` (
   `mnu_modified_by` int(8) NOT NULL COMMENT 'Id of the user who modified the menu details',
   `is_deleted` int(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`mnu_menuid`)
-) ENGINE=MyISAM AUTO_INCREMENT=289 DEFAULT CHARSET=latin1 COMMENT='Menu Details';
+) ENGINE=MyISAM AUTO_INCREMENT=291 DEFAULT CHARSET=latin1 COMMENT='Menu Details';
 
 --
 -- Dumping data for table `plused_role_menu`
@@ -284,20 +284,22 @@ INSERT INTO `plused_role_menu` (`mnu_menuid`, `mnu_parent_menu_id`, `mnu_menu_na
 (270, 268, 'Delete junior mini stay', 'Internal link', 'frontweb/junior_ministay/delete', 1, 3, 'Left', 1, '', '2017-12-18 00:00:00', 1, '2017-12-18 00:00:00', 1, 0),
 (271, 267, 'Add menu content', 'Internal link', 'frontweb/cmsmenu/content,frontweb/cmsmenu/addmenu', 1, 3, 'Left', 1, '', '2016-09-05 00:00:00', 1, '2016-09-05 00:00:00', 1, 0),
 (272, 249, 'Manage video', '', 'frontweb/manage_video', 1, 2, 'Left', 7, '', '2018-01-11 00:00:00', 1, '2018-01-11 00:00:00', 1, 0),
-(273, 249, 'Manage walking tour', '', 'frontweb/walking_tour', 1, 2, 'Left', 8, '', '2018-01-12 00:00:00', 1, '2018-01-12 00:00:00', 1, 0),
+(273, 249, 'Manage walking tour', '', 'frontweb/master/index/manage_walking_tour', 1, 2, 'Left', 8, '', '2018-01-12 00:00:00', 1, '2018-01-12 00:00:00', 1, 0),
 (276, 249, 'Section setting', '', 'frontweb/section_setting', 1, 2, 'Left', 9, '', '2018-02-06 00:00:00', 1, '2018-02-06 00:00:00', 1, 0),
 (275, 274, 'Add activity', 'Internal link', 'frontweb/manage_activity/add_edit,frontweb/manage_activity/delete', 1, 3, 'Left', 1, '', '2018-01-18 00:00:00', 1, '2018-01-18 00:00:00', 1, 0),
 (277, 249, 'Manage ministay program', '', 'frontweb/ministay_program', 1, 2, 'Left', 10, '', '2018-02-13 00:00:00', 1, '2018-02-13 00:00:00', 1, 0),
 (278, 277, 'Add ministay program', 'Internal link', 'frontweb/ministay_program/add_edit,frontweb/ministay_program/process,frontweb/ministay_program/delete', 1, 3, 'Left', 1, '', '2018-02-13 00:00:00', 1, '2018-02-13 00:00:00', 1, 0),
 (279, 249, 'Manage Adult Course', '', 'frontweb/master/index/manage_adult_course', 1, 2, 'Left', 11, '', '2018-02-14 00:00:00', 1, '2018-02-14 00:00:00', 1, 0),
-(280, 279, 'Add Adult course', 'Internal link', 'frontweb/master/add_edit/manage_adult_course,frontweb/master/process,frontweb/master/delete/manage_adult_course', 1, 3, 'Left', 1, '', '2018-02-14 00:00:00', 1, '2018-02-14 00:00:00', 1, 0),
+(280, 279, 'Add Adult course', 'Internal link', 'frontweb/master/add_edit/manage_adult_course,frontweb/master/process,frontweb/master/delete/manage_adult_course,frontweb/master/datatable,frontweb/master/manage_submodule', 1, 3, 'Left', 1, '', '2018-02-14 00:00:00', 1, '2018-02-14 00:00:00', 1, 0),
 (281, 249, 'Manage master activity', '', 'frontweb/master/index/manage_fixed_activity', 1, 2, 'Left', 14, '', '2018-02-27 00:00:00', 1, '2018-02-27 00:00:00', 1, 0),
 (287, 131, 'Campus videos', '', 'agents/videoGallery', 1, 2, 'Left', 4, '', '2018-03-16 00:00:00', 1, '2018-03-16 00:00:00', 1, 0),
 (283, 249, 'Manage extra activity', '', 'frontweb/extra_activity', 1, 2, 'Left', 15, '', '2018-03-01 00:00:00', 1, '2018-03-01 00:00:00', 1, 0),
 (284, 283, 'Update extra activity', 'Internal link', 'frontweb/extra_activity/update', 1, 3, 'Left', 1, '', '2018-03-02 00:00:00', 1, '2018-03-02 00:00:00', 1, 0),
-(285, 281, 'Add master activity', 'Internal link', 'frontweb/master_activity/add_edit,frontweb/master_activity/export_to_excel,frontweb/master_activity/copy', 1, 3, 'Left', 1, '', '2018-03-06 00:00:00', 1, '2018-03-06 00:00:00', 1, 0),
+(285, 281, 'Add master activity', 'Internal link', 'frontweb/master_activity/add_edit,frontweb/master_activity/export_to_excel,frontweb/master_activity/copy,frontweb/master/copy_photo', 1, 3, 'Left', 1, '', '2018-03-06 00:00:00', 1, '2018-03-06 00:00:00', 1, 0),
 (286, 249, 'Activity report', '', 'frontweb/master_activity/report', 1, 2, 'Left', 16, '', '2018-03-08 00:00:00', 1, '2018-03-08 00:00:00', 1, 0),
-(288, 249, 'Manage student group', '', 'frontweb/master/index/manage_student_group', 1, 2, 'Left', 12, '', '2018-03-20 00:00:00', 1, '2018-03-20 00:00:00', 1, 0);
+(288, 249, 'Manage student group', '', 'frontweb/master/index/manage_student_group', 1, 2, 'Left', 12, '', '2018-03-20 00:00:00', 1, '2018-03-20 00:00:00', 1, 0),
+(289, 249, 'Manage activity photogallery', '', 'frontweb/master/index/manage_activity_photogallery', 1, 2, 'Left', 17, '', '2018-04-20 00:00:00', 1, '2018-04-20 00:00:00', 1, 0),
+(290, 249, 'Show extra activity', '', 'frontweb/master/index/manage_extra_activity', 1, 2, 'Left', 18, '', '2018-05-11 00:00:00', 1, '2018-05-11 00:00:00', 1, 0);
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
